@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/service"
@@ -15,31 +15,29 @@ type NPCEditControllerImp struct {
 	creationDataService service.CreationDataService
 	creationOptions     service.NPCCreationOptions
 	randomizerService   service.RandomizerService
+	factory             service.NPCFactory
+	builder             service.NPCBuilder
 	npc                 model.NPC
 	observers           []shared.NPCEditObserver
 }
 
 // NewNPCEditController : Returns a new NPC controller.
-func NewNPCEditController(view shared.NPCEditViewer, loader shared.NPCConfigLoader) *NPCEditControllerImp {
+func NewNPCEditController(view shared.NPCEditViewer, loader shared.NPCConfigLoader) (*NPCEditControllerImp, error) {
 	creationDataService, err := service.NewCreationDataService(loader)
 	if err != nil {
-		log.Fatalf("Error creating NPCEditController %v", err)
+		return nil, fmt.Errorf("failed to create NPCEditController: %w", err)
 	}
 	creationOptions := service.NewNPCCreationOptions(*creationDataService)
 	randomizerService := service.NewRandomizerService(*creationDataService, *creationOptions)
+
 	return &NPCEditControllerImp{
 		view:                view,
 		creationDataService: *creationDataService,
 		creationOptions:     *creationOptions,
 		randomizerService:   *randomizerService,
+		factory:             *service.NewNPCFactory(*randomizerService),
 		observers:           []shared.NPCEditObserver{view},
-	}
-}
-
-func (c *NPCEditControllerImp) CreateNPC(npcType string, faction string) {
-	factory := service.NewNPCFactory(c.randomizerService)
-	c.npc = factory.CreateNPCWithOptions(npcType, faction)
-
+	}, nil
 }
 
 // EditNPC : Edit NPC (return updated NPC)
@@ -56,8 +54,31 @@ func (c *NPCEditControllerImp) NotifyObservers() {
 	}
 }
 
+// create a new NPC
+func (c *NPCEditControllerImp) CreateNPC(npcType string, faction string) {
+	c.builder = c.factory.CreateNPCWithOptions(npcType, faction)
+}
+
+func (c *NPCEditControllerImp) LoadNPC(npc model.NPC) {
+	c.npc = npc
+	c.builder = *service.NewBuilder().
+		WithID(npc.ID()).
+		WithName(npc.Name()).
+		WithFaction(npc.Faction()).
+		WithSpecies(npc.Species()).
+		WithType(npc.NPCType()).
+		WithSubType(npc.NPCSubtype()).
+		WithTrait(npc.Trait()).
+		WithStats(npc.Stats()).
+		WithItems(npc.Items()).
+		WithAbilities(npc.Abilities())
+
+	c.NotifyObservers()
+}
+
 // Save NPC (return updated NPC)
 func (c *NPCEditControllerImp) SaveNPC() model.NPC {
+	c.npc = c.builder.Build(c.randomizerService)
 	c.NotifyObservers()
 	return c.npc
 }

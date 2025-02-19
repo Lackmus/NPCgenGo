@@ -28,7 +28,7 @@ func NewNPCListController(storage shared.NPCStorage, loader shared.NPCConfigLoad
 	}
 }
 
-func (c *NPCListController) InitEditController(editView shared.NPCEditViewer) shared.NPCEditController {
+func (c *NPCListController) InitEditController(editView shared.NPCEditViewer) (shared.NPCEditController, error) {
 	return NewNPCEditController(editView, c.loader)
 }
 

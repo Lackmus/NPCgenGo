@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/lackmus/npcgengo/controller"
 	"github.com/lackmus/npcgengo/loader"
 	"github.com/lackmus/npcgengo/view"
@@ -18,7 +20,10 @@ func main() {
 
 	// new editview
 	editView := view.NewConsoleEditView()
-	editController := npcController.InitEditController(editView)
+	editController, err := npcController.InitEditController(editView)
+	if err != nil {
+		panic(fmt.Errorf("failed to create edit controller: %w", err))
+	}
 
 	for i := 0; i < 2; i++ {
 		editController.CreateNPC("", "")

@@ -26,8 +26,8 @@ func (n NPC) ID() string         { return n.id }
 func (n NPC) Name() string       { return n.name }
 func (n NPC) Faction() string    { return n.faction }
 func (n NPC) Species() string    { return n.species }
-func (n NPC) NpcType() string    { return n.npcType }
-func (n NPC) NpcSubtype() string { return n.npcSubtype }
+func (n NPC) NPCType() string    { return n.npcType }
+func (n NPC) NPCSubtype() string { return n.npcSubtype }
 func (n NPC) Trait() string      { return n.trait }
 func (n NPC) Drive() string      { return n.drive }
 func (n NPC) Stats() map[string]int {
