@@ -33,7 +33,7 @@ func NewNPCService(loader shared.NPCStorage) NPCService {
 
 // AddNpc fügt einen neuen NPC hinzu und speichert ihn direkt
 func (s *NPCService) AddNpc(npc model.NPC) {
-	s.npcs[npc.ID] = npc
+	s.npcs[npc.ID()] = npc
 	s.loader.SaveNPC(npc)
 }
 
@@ -57,7 +57,7 @@ func (s *NPCService) GetNpcByID(id string) (model.NPC, error) {
 
 // UpdateNpc aktualisiert einen bestehenden NPC und speichert ihn
 func (s *NPCService) UpdateNPC(updatedNpc model.NPC) error {
-	id := updatedNpc.ID
+	id := updatedNpc.ID()
 	if _, found := s.npcs[id]; !found {
 		return fmt.Errorf("NPC mit ID %s nicht gefunden", id)
 	}
