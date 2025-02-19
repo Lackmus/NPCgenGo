@@ -1,6 +1,10 @@
 // model/npc.go
 package model
 
+import (
+	"fmt"
+)
+
 // NPC represents an immutable non-player character.
 type NPC struct {
 	id          string
@@ -93,4 +97,19 @@ func copyStringMap(m map[string]string) map[string]string {
 		cp[k] = v
 	}
 	return cp
+}
+
+// string returns a string representation of the NPC. with all the fields. \n are used to separate the fields.
+func (n NPC) String() string {
+	return "Name: " + n.name + "\n" +
+		"Faction: " + n.faction + "\n" +
+		"Species: " + n.species + "\n" +
+		"Type: " + n.npcType + "\n" +
+		"Subtype: " + n.npcSubtype + "\n" +
+		"Trait: " + n.trait + "\n" +
+		"Drive: " + n.drive + "\n" +
+		"Stats: " + fmt.Sprint(n.stats) + "\n" +
+		"Items: " + fmt.Sprint(n.items) + "\n" +
+		"Abilities: " + fmt.Sprint(n.abilities) + "\n" +
+		"Description: " + n.description
 }
