@@ -1,0 +1,10 @@
+{
+    "name": "Ambitious",
+    "description": "Having or showing a strong desire and determination to succeed.",
+    "opposes": "Lazy",
+    "stats": {
+      "morale": 4,
+      "intelligence": 3,
+      "health": -2
+    }
+  }

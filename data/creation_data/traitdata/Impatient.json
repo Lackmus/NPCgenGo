@@ -1,0 +1,10 @@
+{
+    "name": "Impatient",
+    "description": "Restless or eager to act, often unwilling to wait or tolerate delays.",
+    "opposes": "Patient",
+    "stats": {
+      "morale": -2,
+      "health": -1,
+      "trading": -3
+    }
+  }

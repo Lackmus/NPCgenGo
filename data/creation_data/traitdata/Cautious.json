@@ -1,0 +1,10 @@
+{
+    "name": "Cautious",
+    "description": "Avoids risks and acts carefully to prevent potential problems.",
+    "opposes": "Reckless",
+    "stats": {
+      "intelligence": 3,
+      "morale": 2,
+      "health": 2
+    }
+  }

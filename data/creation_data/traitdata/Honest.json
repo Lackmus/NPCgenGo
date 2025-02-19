@@ -1,0 +1,10 @@
+{
+    "name": "Honest",
+    "description": "Truthful, sincere, and free of deceit.",
+    "opposes": "Deceitful",
+    "stats": {
+      "charisma": 3,
+      "morale": 4,
+      "trading": 2
+    }
+  }

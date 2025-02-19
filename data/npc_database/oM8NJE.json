@@ -1,0 +1,22 @@
+{
+  "ID": "oM8NJE",
+  "Name": "Noir Fumetail",
+  "Faction": "eyriedynasties",
+  "Species": "Skunk",
+  "NpcType": "Military",
+  "NpcSubtype": "Soldier",
+  "Trait": "Cautious: Avoids risks and acts carefully to prevent potential problems. Opposes: Reckless",
+  "Drive": "",
+  "Stats": {
+    "combat": 7,
+    "defense": 9,
+    "strength": 5
+  },
+  "Items": {
+    "accessories": "Gauntlets",
+    "armor": "Gambeson",
+    "weapons": "Bow and Arrows"
+  },
+  "Abilities": null,
+  "Description": ""
+}

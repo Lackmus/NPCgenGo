@@ -1,0 +1,10 @@
+{
+    "name": "Curious",
+    "description": "Eager to know or learn something.",
+    "opposes": "Indifferent",
+    "stats": {
+      "intelligence": 4,
+      "morale": 2,
+      "trading": 1
+    }
+  }

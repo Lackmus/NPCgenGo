@@ -1,0 +1,10 @@
+{
+    "name": "Cowardly",
+    "description": "Lacks courage and avoids danger or difficulty.",
+    "opposes": "Brave",
+    "stats": {
+      "morale": -5,
+      "health": -2,
+      "charisma": -3
+    }
+  }

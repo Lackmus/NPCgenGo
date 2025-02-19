@@ -1,0 +1,25 @@
+{
+    "name": "Neutral",
+    "speciesList":  [
+        "Chicken",
+        "Fox",
+        "Rabbit",
+        "Squirrel",
+        "Mouse",
+        "Hedgehog",
+        "Owl",
+        "Toad",
+        "Badger",
+        "Beaver",
+        "Deer",
+        "Weasel",
+        "Raccoon",
+        "Skunk",
+        "Marten",
+        "Wren",
+        "Turtle",
+        "Owl",
+        "Wolf"
+      ],
+    "description": ["#0000FF"]
+}

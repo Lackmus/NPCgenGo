@@ -1,0 +1,21 @@
+{
+  "ID": "1jM79F",
+  "Name": "Saber Steelclaw",
+  "Faction": "eyriedynasties",
+  "Species": "wolf",
+  "NpcType": "Civilian",
+  "NpcSubtype": "Farmer",
+  "Trait": "Honest: Truthful, sincere, and free of deceit. Opposes: Deceitful",
+  "Drive": "",
+  "Stats": {
+    "farming": 6,
+    "strength": 9
+  },
+  "Items": {
+    "accessories": "Tool Belt",
+    "clothing": "Farmers Hat and Boots",
+    "tools": "Watering Can"
+  },
+  "Abilities": null,
+  "Description": ""
+}

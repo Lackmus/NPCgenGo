@@ -1,0 +1,10 @@
+{
+    "name": "Treacherous",
+    "description": "Guilty of or involving betrayal or deception.",
+    "opposes": "Loyal",
+    "stats": {
+      "charisma": -3,
+      "morale": -4,
+      "trading": -2
+    }
+  }

@@ -1,0 +1,22 @@
+{
+  "ID": "mUFiKO",
+  "Name": "Rusty Moonwhisker",
+  "Faction": "marquisedecat",
+  "Species": "Fox",
+  "NpcType": "Military",
+  "NpcSubtype": "Soldier",
+  "Trait": "Aggressive: Ready or likely to attack or confront; characterized by or resulting from aggression. Opposes: Peaceful",
+  "Drive": "",
+  "Stats": {
+    "combat": 6,
+    "defense": 5,
+    "strength": 8
+  },
+  "Items": {
+    "accessories": "Gauntlets",
+    "armor": "Plate Armor",
+    "weapons": "Dagger"
+  },
+  "Abilities": null,
+  "Description": ""
+}

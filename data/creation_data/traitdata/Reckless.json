@@ -1,0 +1,10 @@
+{
+    "name": "Reckless",
+    "description": "Acts without thinking or caring about the consequences of an action.",
+    "opposes": "Cautious",
+    "stats": {
+      "morale": 2,
+      "intelligence": -4,
+      "health": -3
+    }
+  }
