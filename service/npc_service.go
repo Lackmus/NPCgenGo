@@ -75,18 +75,18 @@ func (s *NPCService) DeleteNPC(id string) error {
 }
 
 // DeleteAllNPCs löscht alle NPCs
-func (s *NPCService) DeleteAllNPCs() {
+func (s *NPCService) DeleteAllNPC() {
 	s.loader.DeleteAllNPC()
 	s.npcs = make(map[string]model.NPC)
 }
 
 // CountNPCs gibt die Anzahl der NPCs zurück
-func (s *NPCService) CountNPCs() int {
+func (s *NPCService) CountNPC() int {
 	return len(s.npcs)
 }
 
 // PrintNPCs gibt alle NPCs aus
-func (s *NPCService) PrintNPCs() {
+func (s *NPCService) PrintAllNPC() {
 	for _, npc := range s.npcs {
 		fmt.Println(npc)
 	}

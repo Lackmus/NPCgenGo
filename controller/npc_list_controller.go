@@ -67,3 +67,15 @@ func (c *NPCListController) AddNpc(npc model.NPC) {
 	c.npcService.AddNpc(npc)
 	c.NotifyObservers() // Now updates all views
 }
+
+// DeleteNPC deletes an NPC and notifies observers
+func (c *NPCListController) DeleteNPC(id string) {
+	c.npcService.DeleteNPC(id)
+	c.NotifyObservers()
+}
+
+// delete all npcs
+func (c *NPCListController) DeleteAllNPC() {
+	c.npcService.DeleteAllNPC()
+	c.NotifyObservers()
+}

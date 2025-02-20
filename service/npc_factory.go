@@ -12,7 +12,7 @@ func NewNPCFactory(randomizerService RandomizerService) *NPCFactory {
 }
 
 func (of *NPCFactory) CreateNPCWithOptions(npcType string, faction string) NPCBuilder {
-	return *NewBuilder().
+	return *NewNPCBuilder().
 		WithType(npcType).
 		WithFaction(faction)
 }

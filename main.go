@@ -30,4 +30,11 @@ func main() {
 		npcController.AddNpc(editController.SaveNPC())
 	}
 
+	editController.LoadNPC(npcController.GetAllNpcs()[0])
+	// change field with new value
+	editController.RandomizeField("name")
+	npcController.AddNpc(editController.SaveNPC())
+
+	//delete all npcs
+	npcController.DeleteAllNPC()
 }

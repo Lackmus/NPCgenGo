@@ -7,71 +7,20 @@ import (
 	"path/filepath"
 
 	"github.com/lackmus/npcgengo/model"
+	"github.com/lackmus/npcgengo/service"
 )
 
-// JSONNPCStorage manages saving/loading NPCs as JSON.
+// JsonDatabaseLoader speichert den Pfad zum JSON-Ordner
 type JSONNPCStorage struct {
 	Dir string
 }
 
-// NewJSONNPCStorage creates a new instance.
+// NewJsonDatabaseLoader erstellt eine neue Instanz
 func NewJSONNPCStorage(dir string) *JSONNPCStorage {
 	return &JSONNPCStorage{Dir: dir}
 }
 
-// dtoNPC is a Data Transfer Object used only for JSON marshalling/unmarshalling.
-type dtoNPC struct {
-	ID          string            `json:"id"`
-	Name        string            `json:"name"`
-	Faction     string            `json:"faction"`
-	Species     string            `json:"species"`
-	NpcType     string            `json:"npc_type"`
-	NpcSubtype  string            `json:"npc_subtype"`
-	Trait       string            `json:"trait"`
-	Drive       string            `json:"drive"`
-	Stats       map[string]int    `json:"stats"`
-	Items       map[string]string `json:"items"`
-	Abilities   map[string]string `json:"abilities"`
-	Description string            `json:"description"`
-}
-
-// toDTO converts an immutable NPC into its DTO form.
-func toDTO(n model.NPC) dtoNPC {
-	return dtoNPC{
-		ID:          n.ID(),
-		Name:        n.Name(),
-		Faction:     n.Faction(),
-		Species:     n.Species(),
-		NpcType:     n.NPCType(),
-		NpcSubtype:  n.NPCSubtype(),
-		Trait:       n.Trait(),
-		Drive:       n.Drive(),
-		Stats:       n.Stats(),
-		Items:       n.Items(),
-		Abilities:   n.Abilities(),
-		Description: n.Description(),
-	}
-}
-
-// fromDTO converts a dtoNPC to an immutable NPC.
-func fromDTO(dto dtoNPC) model.NPC {
-	return model.NewNPC(
-		dto.ID,
-		dto.Name,
-		dto.Faction,
-		dto.Species,
-		dto.NpcType,
-		dto.NpcSubtype,
-		dto.Trait,
-		dto.Drive,
-		dto.Description,
-		dto.Stats,
-		dto.Items,
-		dto.Abilities,
-	)
-}
-
-// LoadNPC loads an NPC from a JSON file.
+// LoadNpc lädt einen NPC aus einer JSON-Datei
 func (j *JSONNPCStorage) LoadNPC(id string) (model.NPC, error) {
 	filename := filepath.Join(j.Dir, id+".json")
 	file, err := os.Open(filename)
@@ -80,16 +29,17 @@ func (j *JSONNPCStorage) LoadNPC(id string) (model.NPC, error) {
 	}
 	defer file.Close()
 
-	var dto dtoNPC
-	if err := json.NewDecoder(file).Decode(&dto); err != nil {
+	var data service.NPCBuilder
+	if err := json.NewDecoder(file).Decode(&data); err != nil {
 		return model.NPC{}, err
 	}
-	return fromDTO(dto), nil
+	return data.Build(), nil
 }
 
-// LoadAllNPC loads all NPCs from the directory.
+// LoadAllNpc lädt alle NPCs aus dem Verzeichnis
 func (j *JSONNPCStorage) LoadAllNPC() (map[string]model.NPC, error) {
 	dataMap := make(map[string]model.NPC)
+
 	files, err := os.ReadDir(j.Dir)
 	if err != nil {
 		return nil, err
@@ -99,23 +49,30 @@ func (j *JSONNPCStorage) LoadAllNPC() (map[string]model.NPC, error) {
 		if file.IsDir() || filepath.Ext(file.Name()) != ".json" {
 			continue
 		}
-		id := file.Name()[0 : len(file.Name())-len(".json")]
-		npc, err := j.LoadNPC(id)
+
+		id := file.Name()[:len(file.Name())-5] // ".json" entfernen
+		data, err := j.LoadNPC(id)
 		if err != nil {
-			fmt.Printf("Warning: Could not load %s: %v\n", file.Name(), err)
+			fmt.Printf("Warnung: Konnte %s nicht laden: %v\n", file.Name(), err)
 			continue
 		}
-		dataMap[id] = npc
+		dataMap[id] = data
 	}
 	return dataMap, nil
 }
 
-// SaveNPC saves an NPC to a JSON file.
+// SaveNpc speichert einen NPC in eine JSON-Datei
 func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 	if err := os.MkdirAll(j.Dir, os.ModePerm); err != nil {
 		return err
 	}
-	filename := filepath.Join(j.Dir, npc.ID()+".json")
+
+	var data service.NPCBuilder
+	data.SetNPC(npc)
+
+	filename := filepath.Join(j.Dir, data.ID+".json")
+
+	// Datei öffnen mit O_WRONLY (schreiben), O_CREATE (erstellen, falls nicht existiert), O_TRUNC (alte Daten überschreiben)
 	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -124,29 +81,29 @@ func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
-	return encoder.Encode(toDTO(npc))
+	return encoder.Encode(data)
 }
 
-// SaveAllNPC saves all NPCs from a map.
+// SaveAllNpc speichert alle NPCs aus einer Map
 func (j *JSONNPCStorage) SaveAllNPC(dataMap map[string]model.NPC) error {
-	for _, npc := range dataMap {
-		if err := j.SaveNPC(npc); err != nil {
+	for _, data := range dataMap {
+		if err := j.SaveNPC(data); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// DeleteNPC deletes an NPC file.
+// DeleteNpc löscht eine NPC-Datei
 func (j *JSONNPCStorage) DeleteNPC(id string) error {
 	filename := filepath.Join(j.Dir, id+".json")
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return fmt.Errorf("NPC %s not found", id)
+		return fmt.Errorf("NPC %s nicht gefunden", id)
 	}
 	return os.Remove(filename)
 }
 
-// DeleteAllNPC deletes the entire directory (use with caution!).
+// DeleteAllNpc löscht das gesamte Verzeichnis (vorsichtig nutzen!)
 func (j *JSONNPCStorage) DeleteAllNPC() error {
 	return os.RemoveAll(j.Dir)
 }

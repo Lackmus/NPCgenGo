@@ -30,3 +30,8 @@ func (v *ConsoleEditView) UpdateNPC(npc model.NPC) {
 func (v *ConsoleEditView) Render() {
 
 }
+
+// uodate field
+func (v *ConsoleEditView) UpdateField(field string, value any) {
+	fmt.Println("Field: ", field, " Value: ", value)
+}

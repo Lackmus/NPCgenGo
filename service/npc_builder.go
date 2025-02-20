@@ -21,7 +21,7 @@ type NPCBuilder struct {
 }
 
 // NewBuilder creates a new instance of NPCBuilder with sensible defaults.
-func NewBuilder() *NPCBuilder {
+func NewNPCBuilder() *NPCBuilder {
 	return &NPCBuilder{
 		Stats:     make(map[string]int),
 		Items:     make(map[string]string),
@@ -29,11 +29,28 @@ func NewBuilder() *NPCBuilder {
 	}
 }
 
+func (b *NPCBuilder) Build() model.NPC {
+	return model.NewNPC(
+		b.ID,
+		b.Name,
+		b.Faction,
+		b.Species,
+		b.NPCType,
+		b.NPCSubtype,
+		b.Trait,
+		b.Drive,
+		b.Description,
+		b.Stats,
+		b.Items,
+		b.Abilities,
+	)
+}
+
 // Build constructs the final NPC object from the builder.
-func (b *NPCBuilder) Build(rand RandomizerService) model.NPC {
+func (b *NPCBuilder) BuildWithRandom(rand RandomizerService) model.NPC {
 	// Apply random options for any empty fields
 	if b.ID == "" {
-		b.ID = rand.GenerateID()
+		b.WithID(rand.GenerateID())
 	}
 	if b.NPCType == "" {
 		b.NPCType = rand.RandomType()
@@ -65,22 +82,7 @@ func (b *NPCBuilder) Build(rand RandomizerService) model.NPC {
 	if len(b.Abilities) == 0 {
 		//TODO: Generate abilities
 	}
-
-	// Return the final NPC object
-	return model.NewNPC(
-		b.ID,
-		b.Name,
-		b.Faction,
-		b.Species,
-		b.NPCType,
-		b.NPCSubtype,
-		b.Trait,
-		b.Drive,
-		b.Description,
-		b.Stats,
-		b.Items,
-		b.Abilities,
-	)
+	return b.Build()
 }
 
 // WithID sets the NPC's ID.
@@ -155,11 +157,19 @@ func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
 	return b
 }
 
-// NewOptionNPC uses a builder to create a new immutable NPC by applying the provided options.
-func NewOptionNPC(rand RandomizerService, opts ...func(*NPCBuilder) *NPCBuilder) model.NPC {
-	builder := NewBuilder()
-	for _, opt := range opts {
-		opt(builder)
-	}
-	return builder.Build(rand)
+// setNpc
+func (b *NPCBuilder) SetNPC(npc model.NPC) *NPCBuilder {
+	b.ID = npc.ID()
+	b.Name = npc.Name()
+	b.Faction = npc.Faction()
+	b.Species = npc.Species()
+	b.NPCType = npc.NPCType()
+	b.NPCSubtype = npc.NPCSubtype()
+	b.Trait = npc.Trait()
+	b.Drive = npc.Drive()
+	b.Description = npc.Description()
+	b.Stats = npc.Stats()
+	b.Items = npc.Items()
+	b.Abilities = npc.Abilities()
+	return b
 }
