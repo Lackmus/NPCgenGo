@@ -10,6 +10,7 @@ import (
 
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/model/types"
+	"github.com/lackmus/npcgengo/shared"
 )
 
 // JsonNpcConfigLoader loads NPC generation data from JSON files
@@ -18,62 +19,57 @@ import (
 // =============================================================================
 
 // JsonNpcConfigLoader loads NPC configuration data from JSON files stored in directories.
-type JSONNPCConfigLoader struct {
-	Dir                   string
-	factionDir            string
-	speciesDir            string
-	traitDir              string
-	nameDir               string
-	npcCivilianSubtypeDir string
-	npcMilitarySubtypeDir string
+type JSONNPCConfigLoader struct{}
+
+// NewJSONNPCConfigLoader creates a new JSONNPCConfigLoader instance.
+func NewJSONNPCConfigLoader() shared.NPCConfigLoader {
+	return &JSONNPCConfigLoader{}
 }
 
-// NewJSONNpcConfigLoader creates a new instance of JSONNpcConfigLoader with default directory paths.
-func NewJSONNpcConfigLoader() *JSONNPCConfigLoader {
-	return &JSONNPCConfigLoader{
-		Dir:                   "data/creation_data",
-		factionDir:            "factiondata",
-		speciesDir:            "speciesdata",
-		traitDir:              "traitdata",
-		nameDir:               "namedata",
-		npcCivilianSubtypeDir: "npctypedata/civilian",
-		npcMilitarySubtypeDir: "npctypedata/military",
-	}
-}
+const (
+	// Default directory paths for JSON data files.
+	dir                   = "data/creation_data"
+	factionDir            = "factiondata"
+	speciesDir            = "speciesdata"
+	traitDir              = "traitdata"
+	nameDir               = "namedata"
+	npcCivilianSubtypeDir = "npctypedata/civilian"
+	npcMilitarySubtypeDir = "npctypedata/military"
+)
 
 // LoadFactionMap loads faction configuration data.
 func (j *JSONNPCConfigLoader) LoadFactionMap() (map[string]model.Faction, error) {
-	return LoadJSONMap[model.Faction](filepath.Join(j.Dir, j.factionDir))
+	return loadJSONMap[model.Faction](filepath.Join(dir, factionDir))
 }
 
 // LoadSpeciesMap loads species configuration data.
 func (j *JSONNPCConfigLoader) LoadSpeciesMap() (map[string]model.Species, error) {
-	return LoadJSONMap[model.Species](filepath.Join(j.Dir, j.speciesDir))
+	return loadJSONMap[model.Species](filepath.Join(dir, speciesDir))
 }
 
 // LoadTraitMap loads trait configuration data.
 func (j *JSONNPCConfigLoader) LoadTraitMap() (map[string]model.Trait, error) {
-	return LoadJSONMap[model.Trait](filepath.Join(j.Dir, j.traitDir))
+	return loadJSONMap[model.Trait](filepath.Join(dir, traitDir))
 }
 
 // LoadNameMap loads name data configuration.
 func (j *JSONNPCConfigLoader) LoadNameMap() (map[string]model.NameData, error) {
-	return LoadJSONMap[model.NameData](filepath.Join(j.Dir, j.nameDir))
+	return loadJSONMap[model.NameData](filepath.Join(dir, nameDir))
 }
 
 // LoadNpcCivilianSubtypeMap loads civilian NPC subtype configuration data.
 func (j *JSONNPCConfigLoader) LoadNpcCivilianSubtypeMap() (map[string]types.NPCSubtype, error) {
-	return LoadJSONMap[types.NPCSubtype](filepath.Join(j.Dir, j.npcCivilianSubtypeDir))
+	return loadJSONMap[types.NPCSubtype](filepath.Join(dir, npcCivilianSubtypeDir))
 }
 
 // LoadNpcMilitarySubtypeMap loads military NPC subtype configuration data.
 func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap() (map[string]types.NPCSubtype, error) {
-	return LoadJSONMap[types.NPCSubtype](filepath.Join(j.Dir, j.npcMilitarySubtypeDir))
+	return loadJSONMap[types.NPCSubtype](filepath.Join(dir, npcMilitarySubtypeDir))
 }
 
 // LoadJSONMap loads all JSON files from the given directory into a map keyed by filename (without extension).
 // It returns an aggregated error if one or more files fail to load.
-func LoadJSONMap[T any](dir string) (map[string]T, error) {
+func loadJSONMap[T any](dir string) (map[string]T, error) {
 	dataMap := make(map[string]T)
 	files, err := os.ReadDir(dir)
 	if err != nil {
@@ -95,7 +91,7 @@ func LoadJSONMap[T any](dir string) (map[string]T, error) {
 
 		// Use the filename (without extension) as the key.
 		id := file.Name()[:len(file.Name())-len(ext)]
-		data, err := LoadJSON[T](filepath.Join(dir, file.Name()))
+		data, err := loadJSON[T](filepath.Join(dir, file.Name()))
 		if err != nil {
 			errs = append(errs, fmt.Errorf("failed to load file %s: %w", file.Name(), err))
 			continue
@@ -111,7 +107,7 @@ func LoadJSONMap[T any](dir string) (map[string]T, error) {
 
 // LoadJSON reads and decodes a JSON file into the provided generic type T.
 // If T implements a Validate() error method, it is called to perform schema validation.
-func LoadJSON[T any](filePath string) (T, error) {
+func loadJSON[T any](filePath string) (T, error) {
 	var result T
 
 	file, err := os.Open(filePath)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/lackmus/npcgengo/model"
+	"github.com/lackmus/npcgengo/shared"
 )
 
 // ConsoleView is an observer that prints NPC updates to the console
@@ -11,7 +12,7 @@ type ConsoleView struct {
 }
 
 // NewConsoleView creates a ConsoleView and registers it as an observer
-func NewConsoleView() *ConsoleView {
+func NewConsoleView() shared.NPCViewer {
 	return &ConsoleView{}
 }
 

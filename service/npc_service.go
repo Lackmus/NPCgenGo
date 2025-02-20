@@ -18,14 +18,14 @@ type NPCService struct {
 }
 
 // NewNpcService erstellt einen neuen NpcService und lädt vorhandene NPCs
-func NewNPCService(loader shared.NPCStorage) NPCService {
+func NewNPCService(loader shared.NPCStorage) *NPCService {
 	npcMap, err := loader.LoadAllNPC()
 	if err != nil {
 		fmt.Println("Fehler beim Laden der NPCs:", err)
 		npcMap = make(map[string]model.NPC) // Falls Fehler, leere Map erstellen
 	}
 
-	return NPCService{
+	return &NPCService{
 		loader: loader,
 		npcs:   npcMap,
 	}

@@ -12,11 +12,11 @@ import (
 // struct
 
 type RandomizerService struct {
-	creationData       CreationDataService
-	npcCreationOptions NPCCreationOptions
+	creationData       *CreationDataService
+	npcCreationOptions *NPCCreationOptions
 }
 
-func NewRandomizerService(creationData CreationDataService, npcCreationOptions NPCCreationOptions) *RandomizerService {
+func NewRandomizerService(creationData *CreationDataService, npcCreationOptions *NPCCreationOptions) *RandomizerService {
 	return &RandomizerService{
 		creationData:       creationData,
 		npcCreationOptions: npcCreationOptions,
@@ -62,8 +62,8 @@ func (r *RandomizerService) GenerateTraitDescription() string {
 
 // generating random name
 func (r *RandomizerService) GenerateName(species string) string {
-	nameDataKey := r.creationData.SpeciesNameMap[species]
-	nameData := r.creationData.NameMap[nameDataKey]
+	nameDataKey := r.creationData.GetSpeciesNameMap()[species]
+	nameData := r.creationData.GetNameData(nameDataKey)
 	forename := helper.GetRandomElement(nameData.Forenames)
 	surname := helper.GetRandomElement(nameData.Surnames)
 	return forename + " " + surname
@@ -71,10 +71,9 @@ func (r *RandomizerService) GenerateName(species string) string {
 
 func (r *RandomizerService) GenerateEquipment(npcSubtype string) map[string]string {
 	items := make(map[string]string)
-	if subtype, ok := r.creationData.NpcSubtypeMap[npcSubtype]; ok {
-		for category, equipmentOptions := range subtype.EquipmentOptions {
-			items[category] = helper.GetRandomElement(equipmentOptions)
-		}
+	subtype := r.creationData.GetNpcSubtypeData(npcSubtype)
+	for category, equipmentOptions := range subtype.EquipmentOptions {
+		items[category] = helper.GetRandomElement(equipmentOptions)
 	}
 	return items
 }

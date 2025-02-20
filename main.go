@@ -10,10 +10,10 @@ import (
 func main() {
 
 	// service.creationsuppöier
-	creationSupplier := service.NewNPCCreationSupplier(loader.NewJSONNpcConfigLoader())
+	creationSupplier := service.NewNPCCreationSupplier(loader.NewJSONNPCConfigLoader())
 	npcController := controller.NewNPCListController(
 		loader.NewJSONNPCStorage("data/npc_database"),
-		*creationSupplier,
+		creationSupplier,
 		view.NewConsoleView(),
 	)
 

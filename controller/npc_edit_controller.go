@@ -8,15 +8,15 @@ import (
 
 // NPCEditController : The controller for the NPC model.
 type NPCEditController struct {
-	creationSupplier service.NPCCreationSupplier
-	rand             service.RandomizerService
-	npcBuilder       service.NPCBuilder
+	creationSupplier *service.NPCCreationSupplier
+	rand             *service.RandomizerService
+	npcBuilder       *service.NPCBuilder
 	npc              model.NPC
 	observers        []shared.NPCEditObserver
 }
 
 // NewNPCEditController : Returns a new NPC controller.
-func NewNPCEditController(view shared.NPCEditViewer, creationSupplier service.NPCCreationSupplier) *NPCEditController {
+func NewNPCEditController(view shared.NPCEditViewer, creationSupplier *service.NPCCreationSupplier) *NPCEditController {
 	return &NPCEditController{
 		creationSupplier: creationSupplier,
 		rand:             creationSupplier.RandomizerService,
@@ -46,7 +46,7 @@ func (c *NPCEditController) NotifyObserversField(field string, value any) {
 
 func (c *NPCEditController) LoadNPC(npc model.NPC) {
 	c.npc = npc
-	c.npcBuilder = *service.NewNPCBuilderFromNPC(npc)
+	c.npcBuilder = service.NewNPCBuilderFromNPC(npc)
 	c.NotifyObservers()
 }
 

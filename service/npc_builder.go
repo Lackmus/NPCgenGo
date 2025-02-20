@@ -49,23 +49,13 @@ func NewNPCBuilderFromNPC(npc model.NPC) *NPCBuilder {
 
 func (b *NPCBuilder) Build() model.NPC {
 	return model.NewNPC(
-		b.ID,
-		b.Name,
-		b.Faction,
-		b.Species,
-		b.NPCType,
-		b.NPCSubtype,
-		b.Trait,
-		b.Drive,
-		b.Description,
-		b.Stats,
-		b.Items,
-		b.Abilities,
+		b.ID, b.Name, b.Faction, b.Species, b.NPCType, b.NPCSubtype,
+		b.Trait, b.Drive, b.Description, b.Stats, b.Items, b.Abilities,
 	)
 }
 
 // Build constructs the final NPC object from the builder.
-func (b *NPCBuilder) BuildWithRandom(rand RandomizerService) model.NPC {
+func (b *NPCBuilder) BuildWithRandom(rand *RandomizerService) model.NPC {
 	// Apply random options for any empty fields
 	if b.ID == "" {
 		b.WithID(rand.GenerateID())
@@ -103,73 +93,20 @@ func (b *NPCBuilder) BuildWithRandom(rand RandomizerService) model.NPC {
 	return b.Build()
 }
 
-// WithID sets the NPC's ID.
-func (b *NPCBuilder) WithID(id string) *NPCBuilder {
-	b.ID = id
-	return b
-}
-
-// WithName sets the NPC's name.
-func (b *NPCBuilder) WithName(name string) *NPCBuilder {
-	b.Name = name
-	return b
-}
-
-// WithFaction sets the NPC's faction.
-func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder {
-	b.Faction = faction
-	return b
-}
-
-// WithSpecies sets the NPC's species.
-func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder {
-	b.Species = species
-	return b
-}
-
-// WithType sets the NPC's type.
-func (b *NPCBuilder) WithType(npcType string) *NPCBuilder {
-	b.NPCType = npcType
-	return b
-}
-
-// WithSubType sets the NPC's subtype.
-func (b *NPCBuilder) WithSubType(npcSubtype string) *NPCBuilder {
-	b.NPCSubtype = npcSubtype
-	return b
-}
-
-// WithTrait sets the NPC's trait.
-func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder {
-	b.Trait = trait
-	return b
-}
-
-// WithDrive sets the NPC's drive.
-func (b *NPCBuilder) WithDrive(drive string) *NPCBuilder {
-	b.Drive = drive
-	return b
-}
-
-// WithStats sets the NPC's stats.
-func (b *NPCBuilder) WithStats(stats map[string]int) *NPCBuilder {
-	b.Stats = stats
-	return b
-}
-
-// WithItems sets the NPC's items.
-func (b *NPCBuilder) WithItems(items map[string]string) *NPCBuilder {
-	b.Items = items
-	return b
-}
-
-// WithAbilities sets the NPC's abilities.
+func (b *NPCBuilder) WithID(id string) *NPCBuilder                  { b.ID = id; return b }
+func (b *NPCBuilder) WithName(name string) *NPCBuilder              { b.Name = name; return b }
+func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder        { b.Faction = faction; return b }
+func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder        { b.Species = species; return b }
+func (b *NPCBuilder) WithType(npcType string) *NPCBuilder           { b.NPCType = npcType; return b }
+func (b *NPCBuilder) WithSubType(npcSubtype string) *NPCBuilder     { b.NPCSubtype = npcSubtype; return b }
+func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder            { b.Trait = trait; return b }
+func (b *NPCBuilder) WithDrive(drive string) *NPCBuilder            { b.Drive = drive; return b }
+func (b *NPCBuilder) WithStats(stats map[string]int) *NPCBuilder    { b.Stats = stats; return b }
+func (b *NPCBuilder) WithItems(items map[string]string) *NPCBuilder { b.Items = items; return b }
 func (b *NPCBuilder) WithAbilities(abilities map[string]string) *NPCBuilder {
 	b.Abilities = abilities
 	return b
 }
-
-// WithDescription sets the NPC's description.
 func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
 	b.Description = description
 	return b

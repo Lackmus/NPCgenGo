@@ -11,21 +11,21 @@ import (
 
 // CreationDataViewModel holds only the necessary string lists for the UI.
 type NPCCreationOptions struct {
-	Factions             []string            `json:"factions"`
-	Species              []string            `json:"species"`
-	Traits               []string            `json:"traits"`
-	NpcTypes             []string            `json:"npcTypes"`
-	NpcSubtypeForTypeMap map[string][]string `json:"npcSubtypesMap"`
+	Factions             []string
+	Species              []string
+	Traits               []string
+	NpcTypes             []string
+	NpcSubtypeForTypeMap map[string][]string
 }
 
 // NewCreationDataViewModel creates a new CreationDataViewModel.
-func NewNPCCreationOptions(creationservice CreationDataService) *NPCCreationOptions {
-	factionKeys := slices.Collect(maps.Keys(creationservice.FactionMap))
-	speciesKeys := slices.Collect(maps.Keys(creationservice.SpeciesMap))
-	traitKeys := slices.Collect(maps.Keys(creationservice.TraitMap))
-	npcTypeKeys := slices.Collect(maps.Keys(creationservice.NpcTypeMap))
+func NewNPCCreationOptions(creationservice *CreationDataService) *NPCCreationOptions {
+	factionKeys := slices.Collect(maps.Keys(creationservice.GetFactionMap()))
+	speciesKeys := slices.Collect(maps.Keys(creationservice.GetSpeciesMap()))
+	traitKeys := slices.Collect(maps.Keys(creationservice.GetTraitMap()))
+	npcTypeKeys := slices.Collect(maps.Keys(creationservice.GetNpcTypeMap()))
 
-	npcSubtypeForTypeMap := creationservice.NpcSubtypeForTypeMap
+	npcSubtypeForTypeMap := creationservice.GetNpcSubtypeForTypeMap()
 
 	return &NPCCreationOptions{
 		Factions:             factionKeys,

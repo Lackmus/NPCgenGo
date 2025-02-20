@@ -8,6 +8,7 @@ import (
 
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/service"
+	"github.com/lackmus/npcgengo/shared"
 )
 
 // JsonDatabaseLoader speichert den Pfad zum JSON-Ordner
@@ -16,7 +17,7 @@ type JSONNPCStorage struct {
 }
 
 // NewJsonDatabaseLoader erstellt eine neue Instanz
-func NewJSONNPCStorage(dir string) *JSONNPCStorage {
+func NewJSONNPCStorage(dir string) shared.NPCStorage {
 	return &JSONNPCStorage{Dir: dir}
 }
 

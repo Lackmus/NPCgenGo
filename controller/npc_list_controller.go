@@ -12,18 +12,16 @@ import (
 
 // DefaultNpcController is a controller that mediates between the NPC service and the UI (observers).
 type NPCListController struct {
-	npcService       service.NPCService
-	creationSupplier service.NPCCreationSupplier
-	view             shared.NPCViewer
+	npcService       *service.NPCService // Changed to pointer
+	creationSupplier *service.NPCCreationSupplier
 	observers        []shared.NPCObserver
 }
 
-// NewDefaultNpcController creates a new instance of DefaultNpcController.
-func NewNPCListController(storage shared.NPCStorage, creationSupplier service.NPCCreationSupplier, view shared.NPCViewer) *NPCListController {
+func NewNPCListController(storage shared.NPCStorage, creationSupplier *service.NPCCreationSupplier, view shared.NPCViewer) *NPCListController {
+	npcService := service.NewNPCService(storage)
 	return &NPCListController{
-		npcService:       service.NewNPCService(storage),
+		npcService:       npcService, // Pass pointer here
 		creationSupplier: creationSupplier,
-		view:             view,
 		observers:        []shared.NPCObserver{view},
 	}
 }

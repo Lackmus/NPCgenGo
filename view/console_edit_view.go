@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/lackmus/npcgengo/model"
+	"github.com/lackmus/npcgengo/shared"
 )
 
 // =============================================================================
@@ -15,7 +16,7 @@ type ConsoleEditView struct {
 }
 
 // NewDefaultNpcView creates a new instance of DefaultNpcView.
-func NewConsoleEditView() *ConsoleEditView {
+func NewConsoleEditView() shared.NPCEditViewer {
 	return &ConsoleEditView{}
 }
 

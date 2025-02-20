@@ -7,9 +7,9 @@ import (
 )
 
 type NPCCreationSupplier struct {
-	CreationDataService CreationDataService
-	CreationOptions     NPCCreationOptions
-	RandomizerService   RandomizerService
+	CreationDataService *CreationDataService
+	CreationOptions     *NPCCreationOptions
+	RandomizerService   *RandomizerService
 }
 
 func NewNPCCreationSupplier(loader shared.NPCConfigLoader) *NPCCreationSupplier {
@@ -17,12 +17,12 @@ func NewNPCCreationSupplier(loader shared.NPCConfigLoader) *NPCCreationSupplier 
 	if err != nil {
 		panic(fmt.Sprintf("Error creating NPCCreationSupplier: %s", err))
 	}
-	creationOptions := NewNPCCreationOptions(*creationDataService)
-	randomizerService := NewRandomizerService(*creationDataService, *creationOptions)
+	creationOptions := NewNPCCreationOptions(creationDataService)                   // Pass pointer directly
+	randomizerService := NewRandomizerService(creationDataService, creationOptions) // Pass pointers
 
 	return &NPCCreationSupplier{
-		CreationDataService: *creationDataService,
-		CreationOptions:     *creationOptions,
-		RandomizerService:   *randomizerService,
+		CreationDataService: creationDataService, // Pass pointers here too
+		CreationOptions:     creationOptions,
+		RandomizerService:   randomizerService,
 	}
 }
