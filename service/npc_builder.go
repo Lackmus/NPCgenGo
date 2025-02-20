@@ -29,6 +29,24 @@ func NewNPCBuilder() *NPCBuilder {
 	}
 }
 
+// NewBuilderFromNPC creates a new instance of NPCBuilder with the values from the provided NPC.
+func NewNPCBuilderFromNPC(npc model.NPC) *NPCBuilder {
+	return &NPCBuilder{
+		ID:          npc.ID(),
+		Name:        npc.Name(),
+		Faction:     npc.Faction(),
+		Species:     npc.Species(),
+		NPCType:     npc.NPCType(),
+		NPCSubtype:  npc.NPCSubtype(),
+		Trait:       npc.Trait(),
+		Drive:       npc.Drive(),
+		Description: npc.Description(),
+		Stats:       npc.Stats(),
+		Items:       npc.Items(),
+		Abilities:   npc.Abilities(),
+	}
+}
+
 func (b *NPCBuilder) Build() model.NPC {
 	return model.NewNPC(
 		b.ID,
@@ -154,22 +172,5 @@ func (b *NPCBuilder) WithAbilities(abilities map[string]string) *NPCBuilder {
 // WithDescription sets the NPC's description.
 func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
 	b.Description = description
-	return b
-}
-
-// setNpc
-func (b *NPCBuilder) SetNPC(npc model.NPC) *NPCBuilder {
-	b.ID = npc.ID()
-	b.Name = npc.Name()
-	b.Faction = npc.Faction()
-	b.Species = npc.Species()
-	b.NPCType = npc.NPCType()
-	b.NPCSubtype = npc.NPCSubtype()
-	b.Trait = npc.Trait()
-	b.Drive = npc.Drive()
-	b.Description = npc.Description()
-	b.Stats = npc.Stats()
-	b.Items = npc.Items()
-	b.Abilities = npc.Abilities()
 	return b
 }

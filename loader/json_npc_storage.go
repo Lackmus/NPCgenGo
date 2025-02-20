@@ -67,9 +67,7 @@ func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 		return err
 	}
 
-	var data service.NPCBuilder
-	data.SetNPC(npc)
-
+	var data = service.NewNPCBuilderFromNPC(npc)
 	filename := filepath.Join(j.Dir, data.ID+".json")
 
 	// Datei öffnen mit O_WRONLY (schreiben), O_CREATE (erstellen, falls nicht existiert), O_TRUNC (alte Daten überschreiben)

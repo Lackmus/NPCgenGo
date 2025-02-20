@@ -6,9 +6,8 @@ import (
 	"github.com/lackmus/npcgengo/shared"
 )
 
-// NPCController : The controller for the NPC model.
-
-type NPCEditControllerImp struct {
+// NPCEditController : The controller for the NPC model.
+type NPCEditController struct {
 	creationSupplier service.NPCCreationSupplier
 	rand             service.RandomizerService
 	npcBuilder       service.NPCBuilder
@@ -17,8 +16,8 @@ type NPCEditControllerImp struct {
 }
 
 // NewNPCEditController : Returns a new NPC controller.
-func NewNPCEditController(view shared.NPCEditViewer, creationSupplier service.NPCCreationSupplier) *NPCEditControllerImp {
-	return &NPCEditControllerImp{
+func NewNPCEditController(view shared.NPCEditViewer, creationSupplier service.NPCCreationSupplier) *NPCEditController {
+	return &NPCEditController{
 		creationSupplier: creationSupplier,
 		rand:             creationSupplier.RandomizerService,
 		observers:        []shared.NPCEditObserver{view},
@@ -26,39 +25,39 @@ func NewNPCEditController(view shared.NPCEditViewer, creationSupplier service.NP
 }
 
 // EditNPC : Edit NPC (return updated NPC)
-func (c *NPCEditControllerImp) EditNPC(npc model.NPC) {
+func (c *NPCEditController) EditNPC(npc model.NPC) {
 }
 
-func (c *NPCEditControllerImp) RegisterObserver(o shared.NPCEditObserver) {
+func (c *NPCEditController) RegisterObserver(o shared.NPCEditObserver) {
 	c.observers = append(c.observers, o)
 }
 
-func (c *NPCEditControllerImp) NotifyObservers() {
+func (c *NPCEditController) NotifyObservers() {
 	for _, o := range c.observers {
 		o.UpdateNPC(c.npc)
 	}
 }
 
-func (c *NPCEditControllerImp) NotifyObserversField(field string, value any) {
+func (c *NPCEditController) NotifyObserversField(field string, value any) {
 	for _, o := range c.observers {
 		o.UpdateField(field, value)
 	}
 }
 
-func (c *NPCEditControllerImp) LoadNPC(npc model.NPC) {
+func (c *NPCEditController) LoadNPC(npc model.NPC) {
 	c.npc = npc
-	c.npcBuilder = *service.NewNPCBuilder().SetNPC(npc)
+	c.npcBuilder = *service.NewNPCBuilderFromNPC(npc)
 	c.NotifyObservers()
 }
 
 // Save NPC (return updated NPC)
-func (c *NPCEditControllerImp) SaveNPC() model.NPC {
+func (c *NPCEditController) SaveNPC() model.NPC {
 	c.npc = c.npcBuilder.BuildWithRandom(c.rand)
 	c.NotifyObservers()
 	return c.npc
 }
 
-func (c *NPCEditControllerImp) RandomizeField(field string) {
+func (c *NPCEditController) RandomizeField(field string) {
 	var updatedValue any
 	switch field {
 	case "name":
@@ -91,7 +90,7 @@ func (c *NPCEditControllerImp) RandomizeField(field string) {
 	c.NotifyObserversField(field, updatedValue)
 }
 
-func (c *NPCEditControllerImp) SaveField(field string, value any) {
+func (c *NPCEditController) SaveField(field string, value any) {
 	switch field {
 	case "name":
 		c.npcBuilder.WithName(value.(string))
@@ -118,7 +117,7 @@ func (c *NPCEditControllerImp) SaveField(field string, value any) {
 	}
 }
 
-func (c *NPCEditControllerImp) GetFieldOptions(field string) []string {
+func (c *NPCEditController) GetFieldOptions(field string) []string {
 	var options = c.creationSupplier.CreationOptions
 	switch field {
 	case "npcType":
