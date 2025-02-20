@@ -3,7 +3,7 @@ package shared
 import "github.com/lackmus/npcgengo/model"
 
 type NPCEditController interface {
-	CreateNPC(npcType string, faction string)
+	CreateNPC(npcType string, faction string) model.NPC
 	LoadNPC(npc model.NPC)
 	EditNPC(npc model.NPC)
 	SaveNPC() model.NPC

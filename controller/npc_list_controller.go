@@ -12,24 +12,24 @@ import (
 
 // DefaultNpcController is a controller that mediates between the NPC service and the UI (observers).
 type NPCListController struct {
-	npcService service.NPCService
-	loader     shared.NPCConfigLoader
-	view       shared.NPCViewer
-	observers  []shared.NPCObserver
+	npcService       service.NPCService
+	creationSupplier service.NPCCreationSupplier
+	view             shared.NPCViewer
+	observers        []shared.NPCObserver
 }
 
 // NewDefaultNpcController creates a new instance of DefaultNpcController.
-func NewNPCListController(storage shared.NPCStorage, loader shared.NPCConfigLoader, view shared.NPCViewer) *NPCListController {
+func NewNPCListController(storage shared.NPCStorage, creationSupplier service.NPCCreationSupplier, view shared.NPCViewer) *NPCListController {
 	return &NPCListController{
-		npcService: service.NewNPCService(storage),
-		loader:     loader,
-		view:       view,
-		observers:  []shared.NPCObserver{view},
+		npcService:       service.NewNPCService(storage),
+		creationSupplier: creationSupplier,
+		view:             view,
+		observers:        []shared.NPCObserver{view},
 	}
 }
 
 func (c *NPCListController) InitEditController(editView shared.NPCEditViewer) (shared.NPCEditController, error) {
-	return NewNPCEditController(editView, c.loader)
+	return NewNPCEditController(editView, c.creationSupplier)
 }
 
 // intview

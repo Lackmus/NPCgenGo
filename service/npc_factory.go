@@ -1,18 +1,10 @@
 package service
 
-// NPCFactory
-type NPCFactory struct {
-	randomizerService RandomizerService
-}
+import "github.com/lackmus/npcgengo/model"
 
-func NewNPCFactory(randomizerService RandomizerService) *NPCFactory {
-	return &NPCFactory{
-		randomizerService: randomizerService,
-	}
-}
-
-func (of *NPCFactory) CreateNPCWithOptions(npcType string, faction string) NPCBuilder {
-	return *NewNPCBuilder().
+func CreateNPCWithOptions(npcType string, faction string, randomizerService RandomizerService) model.NPC {
+	return NewNPCBuilder().
 		WithType(npcType).
-		WithFaction(faction)
+		WithFaction(faction).
+		BuildWithRandom(randomizerService)
 }

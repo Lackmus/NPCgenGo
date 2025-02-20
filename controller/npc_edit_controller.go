@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"fmt"
-
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/service"
 	"github.com/lackmus/npcgengo/shared"
@@ -11,31 +9,25 @@ import (
 // NPCController : The controller for the NPC model.
 
 type NPCEditControllerImp struct {
-	creationDataService service.CreationDataService
-	creationOptions     service.NPCCreationOptions
-	randomizerService   service.RandomizerService
-	factory             service.NPCFactory
-	npcBuilder          service.NPCBuilder
-	npc                 model.NPC
-	observers           []shared.NPCEditObserver
+	creationSupplier service.NPCCreationSupplier
+	rand             service.RandomizerService
+	npcBuilder       service.NPCBuilder
+	npc              model.NPC
+	observers        []shared.NPCEditObserver
 }
 
 // NewNPCEditController : Returns a new NPC controller.
-func NewNPCEditController(view shared.NPCEditViewer, loader shared.NPCConfigLoader) (*NPCEditControllerImp, error) {
-	creationDataService, err := service.NewCreationDataService(loader)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create NPCEditController: %w", err)
-	}
-	creationOptions := service.NewNPCCreationOptions(*creationDataService)
-	randomizerService := service.NewRandomizerService(*creationDataService, *creationOptions)
-
+func NewNPCEditController(view shared.NPCEditViewer, creationSupplier service.NPCCreationSupplier) (*NPCEditControllerImp, error) {
 	return &NPCEditControllerImp{
-		creationDataService: *creationDataService,
-		creationOptions:     *creationOptions,
-		randomizerService:   *randomizerService,
-		factory:             *service.NewNPCFactory(*randomizerService),
-		observers:           []shared.NPCEditObserver{view},
+		creationSupplier: creationSupplier,
+		rand:             creationSupplier.RandomizerService,
+		observers:        []shared.NPCEditObserver{view},
 	}, nil
+}
+
+// createNPCWithOptions : Create NPC with options.
+func (c *NPCEditControllerImp) CreateNPC(npcType string, faction string) model.NPC {
+	return service.CreateNPCWithOptions(npcType, faction, c.rand)
 }
 
 // EditNPC : Edit NPC (return updated NPC)
@@ -58,11 +50,6 @@ func (c *NPCEditControllerImp) NotifyObserversField(field string, value any) {
 	}
 }
 
-// create a new NPC
-func (c *NPCEditControllerImp) CreateNPC(npcType string, faction string) {
-	c.npcBuilder = c.factory.CreateNPCWithOptions(npcType, faction)
-}
-
 func (c *NPCEditControllerImp) LoadNPC(npc model.NPC) {
 	c.npc = npc
 	c.npcBuilder = *service.NewNPCBuilder().SetNPC(npc)
@@ -71,7 +58,7 @@ func (c *NPCEditControllerImp) LoadNPC(npc model.NPC) {
 
 // Save NPC (return updated NPC)
 func (c *NPCEditControllerImp) SaveNPC() model.NPC {
-	c.npc = c.npcBuilder.BuildWithRandom(c.randomizerService)
+	c.npc = c.npcBuilder.BuildWithRandom(c.rand)
 	c.NotifyObservers()
 	return c.npc
 }
@@ -80,24 +67,24 @@ func (c *NPCEditControllerImp) RandomizeField(field string) {
 	var updatedValue any
 	switch field {
 	case "name":
-		updatedValue = c.randomizerService.GenerateName(c.npcBuilder.Species)
+		updatedValue = c.rand.GenerateName(c.npcBuilder.Species)
 	case "faction":
-		updatedValue = c.randomizerService.RandomFaction()
+		updatedValue = c.rand.RandomFaction()
 	case "species":
-		updatedValue = c.randomizerService.RandomSpecies()
+		updatedValue = c.rand.RandomSpecies()
 	case "npcType":
-		updatedValue = c.randomizerService.RandomType()
+		updatedValue = c.rand.RandomType()
 	case "npcSubtype":
-		updatedValue = c.randomizerService.RandomSubtype(c.npcBuilder.NPCType)
+		updatedValue = c.rand.RandomSubtype(c.npcBuilder.NPCType)
 	case "trait":
-		updatedValue = c.randomizerService.RandomTrait()
+		updatedValue = c.rand.RandomTrait()
 	case "drive":
 		//option = c.randomizerService.GenerateDrive()
 		//c.Builder.WithDrive(option.(string))
 	case "stats":
-		updatedValue = c.randomizerService.ApplySubtypeStats(c.npcBuilder.NPCSubtype)
+		updatedValue = c.rand.ApplySubtypeStats(c.npcBuilder.NPCSubtype)
 	case "items":
-		updatedValue = c.randomizerService.GenerateEquipment(c.npcBuilder.NPCSubtype)
+		updatedValue = c.rand.GenerateEquipment(c.npcBuilder.NPCSubtype)
 
 	case "abilities":
 		//option = c.randomizerService.GenerateAbilities(c.Builder.NPCSubtype)
@@ -137,17 +124,18 @@ func (c *NPCEditControllerImp) SaveField(field string, value any) {
 }
 
 func (c *NPCEditControllerImp) GetFieldOptions(field string) []string {
+	var options = c.creationSupplier.CreationOptions
 	switch field {
 	case "npcType":
-		return c.creationOptions.NpcTypes
+		return options.NpcTypes
 	case "faction":
-		return c.creationOptions.Factions
+		return options.Factions
 	case "species":
-		return c.creationOptions.Species
+		return options.Species
 	case "npcSubtype":
-		return c.creationOptions.NpcSubtypeForTypeMap[c.npcBuilder.NPCType]
+		return options.NpcSubtypeForTypeMap[c.npcBuilder.NPCType]
 	case "trait":
-		return c.creationOptions.Traits
+		return options.Traits
 	default:
 		return nil
 	}

@@ -5,14 +5,17 @@ import (
 
 	"github.com/lackmus/npcgengo/controller"
 	"github.com/lackmus/npcgengo/loader"
+	"github.com/lackmus/npcgengo/service"
 	"github.com/lackmus/npcgengo/view"
 )
 
 func main() {
 
+	// service.creationsuppöier
+	creationSupplier := service.NewNPCCreationSupplier(loader.NewJSONNpcConfigLoader())
 	npcController := controller.NewNPCListController(
 		loader.NewJSONNPCStorage("data/npc_database"),
-		loader.NewJSONNpcConfigLoader(),
+		*creationSupplier,
 		view.NewConsoleView(),
 	)
 
@@ -25,9 +28,9 @@ func main() {
 		panic(fmt.Errorf("failed to create edit controller: %w", err))
 	}
 
-	for i := 0; i < 2; i++ {
-		editController.CreateNPC("", "")
-		npcController.AddNpc(editController.SaveNPC())
+	for i := 0; i < 5; i++ {
+		npc := editController.CreateNPC("", "")
+		npcController.AddNpc(npc)
 	}
 
 	editController.LoadNPC(npcController.GetAllNpcs()[0])
