@@ -17,17 +17,12 @@ type NPCEditControllerImp struct {
 }
 
 // NewNPCEditController : Returns a new NPC controller.
-func NewNPCEditController(view shared.NPCEditViewer, creationSupplier service.NPCCreationSupplier) (*NPCEditControllerImp, error) {
+func NewNPCEditController(view shared.NPCEditViewer, creationSupplier service.NPCCreationSupplier) *NPCEditControllerImp {
 	return &NPCEditControllerImp{
 		creationSupplier: creationSupplier,
 		rand:             creationSupplier.RandomizerService,
 		observers:        []shared.NPCEditObserver{view},
-	}, nil
-}
-
-// createNPCWithOptions : Create NPC with options.
-func (c *NPCEditControllerImp) CreateNPC(npcType string, faction string) model.NPC {
-	return service.CreateNPCWithOptions(npcType, faction, c.rand)
+	}
 }
 
 // EditNPC : Edit NPC (return updated NPC)

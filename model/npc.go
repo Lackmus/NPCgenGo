@@ -3,6 +3,8 @@ package model
 
 import (
 	"fmt"
+
+	"github.com/lackmus/npcgengo/helper"
 )
 
 // NPC represents an immutable non-player character.
@@ -22,36 +24,18 @@ type NPC struct {
 }
 
 // Getters to access the fields
-func (n NPC) ID() string         { return n.id }
-func (n NPC) Name() string       { return n.name }
-func (n NPC) Faction() string    { return n.faction }
-func (n NPC) Species() string    { return n.species }
-func (n NPC) NPCType() string    { return n.npcType }
-func (n NPC) NPCSubtype() string { return n.npcSubtype }
-func (n NPC) Trait() string      { return n.trait }
-func (n NPC) Drive() string      { return n.drive }
-func (n NPC) Stats() map[string]int {
-	cp := make(map[string]int)
-	for k, v := range n.stats {
-		cp[k] = v
-	}
-	return cp
-}
-func (n NPC) Items() map[string]string {
-	cp := make(map[string]string)
-	for k, v := range n.items {
-		cp[k] = v
-	}
-	return cp
-}
-func (n NPC) Abilities() map[string]string {
-	cp := make(map[string]string)
-	for k, v := range n.abilities {
-		cp[k] = v
-	}
-	return cp
-}
-func (n NPC) Description() string { return n.description }
+func (n NPC) ID() string                   { return n.id }
+func (n NPC) Name() string                 { return n.name }
+func (n NPC) Faction() string              { return n.faction }
+func (n NPC) Species() string              { return n.species }
+func (n NPC) NPCType() string              { return n.npcType }
+func (n NPC) NPCSubtype() string           { return n.npcSubtype }
+func (n NPC) Trait() string                { return n.trait }
+func (n NPC) Drive() string                { return n.drive }
+func (n NPC) Stats() map[string]int        { return helper.CopyMap(n.stats) }
+func (n NPC) Items() map[string]string     { return helper.CopyMap(n.items) }
+func (n NPC) Abilities() map[string]string { return helper.CopyMap(n.abilities) }
+func (n NPC) Description() string          { return n.description }
 
 // NewNPC is the constructor to create an immutable NPC.
 func NewNPC(
@@ -71,32 +55,10 @@ func NewNPC(
 		trait:       trait,
 		drive:       drive,
 		description: description,
-		stats:       copyIntMap(stats),
-		items:       copyStringMap(items),
-		abilities:   copyStringMap(abilities),
+		stats:       helper.CopyMap(stats),
+		items:       helper.CopyMap(items),
+		abilities:   helper.CopyMap(abilities),
 	}
-}
-
-func copyIntMap(m map[string]int) map[string]int {
-	if m == nil {
-		return nil
-	}
-	cp := make(map[string]int)
-	for k, v := range m {
-		cp[k] = v
-	}
-	return cp
-}
-
-func copyStringMap(m map[string]string) map[string]string {
-	if m == nil {
-		return nil
-	}
-	cp := make(map[string]string)
-	for k, v := range m {
-		cp[k] = v
-	}
-	return cp
 }
 
 // string returns a string representation of the NPC. with all the fields. \n are used to separate the fields.
