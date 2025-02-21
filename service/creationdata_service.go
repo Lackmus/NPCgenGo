@@ -62,7 +62,7 @@ func NewCreationDataService(npcConfigLoader shared.NPCConfigLoader) (*CreationDa
 		militarySubtypeMap: militarySubtypeMap,
 	}
 	cds.npcTypeMap = cds.loadNpcTypeMap()
-	cds.npcSubtypeMap = cds.mergeNpcSubtypeMaps()
+	cds.npcSubtypeMap = cds.mergeNpcSubtypeMaps(civilianSubtypeMap, militarySubtypeMap)
 	cds.speciesNameMap = cds.buildSpeciesNameMap()
 	cds.npcSubtypeForTypeMap = cds.buildNpcTypeNameMap()
 	return cds, nil
@@ -92,10 +92,13 @@ func (c *CreationDataService) buildNpcTypeNameMap() map[string][]string {
 	}
 }
 
-func (c *CreationDataService) mergeNpcSubtypeMaps() map[string]types.NPCSubtype {
-	merged := maps.Clone(c.civilianSubtypeMap)
-	for key, subtype := range c.militarySubtypeMap {
-		merged[key] = subtype
+// refactor mergeNpcSubtypeMaps to use a variadic parameter
+func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeMaps ...map[string]types.NPCSubtype) map[string]types.NPCSubtype {
+	merged := make(map[string]types.NPCSubtype)
+	for _, subtypeMap := range subtypeMaps {
+		for key, subtype := range subtypeMap {
+			merged[key] = subtype
+		}
 	}
 	return merged
 }

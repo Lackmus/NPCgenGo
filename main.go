@@ -21,14 +21,16 @@ func main() {
 	editView := view.NewConsoleEditView()
 	editController := npcController.InitEditController(editView)
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		npc := service.CreateNPCWithOptions("", "", creationSupplier.RandomizerService)
 		npcController.AddNpc(npc)
 	}
 
-	editController.LoadNPC(npcController.GetAllNpcs()[0])
-	editController.RandomizeField("name")
-	npcController.AddNpc(editController.SaveNPC())
+	for _, npc := range npcController.GetAllNpcs() {
+		editController.LoadNPC(npc)
+		editController.RandomizeField("name")
+		npcController.UpdateNpc(editController.SaveNPC())
+	}
 
 	npcController.DeleteAllNPC()
 }

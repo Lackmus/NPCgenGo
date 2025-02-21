@@ -17,7 +17,7 @@ type NPCCreationSupplier struct {
 func NewNPCCreationSupplier(loader shared.NPCConfigLoader) *NPCCreationSupplier {
 	creationDataService, err := NewCreationDataService(loader)
 	if err != nil {
-		log.Fatalf("Failed to create NPCCreationSupplier: %v", err) // Logs and exits the program
+		log.Fatalf("Failed to create NPCCreationSupplier: %v", err)
 	}
 
 	creationOptions := NewNPCCreationOptions(creationDataService)
