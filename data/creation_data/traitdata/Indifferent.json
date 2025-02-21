@@ -1,10 +1,5 @@
 {
     "name": "Indifferent",
     "description": "Lacking interest, concern, or sympathy; uninterested.",
-    "opposes": "Curious",
-    "stats": {
-      "morale": -3,
-      "intelligence": -2,
-      "charisma": -2
-    }
+    "opposes": "Curious"
   }

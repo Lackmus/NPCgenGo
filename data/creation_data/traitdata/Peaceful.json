@@ -1,10 +1,5 @@
 {
     "name": "Peaceful",
     "description": "Prefers to avoid conflict and seeks harmony in all situations.",
-    "opposes": "Aggressive",
-    "stats": {
-      "morale": 3,
-      "health": 2,
-      "charisma": 4
-    }
+    "opposes": "Aggressive"
   }

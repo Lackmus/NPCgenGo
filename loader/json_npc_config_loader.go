@@ -13,12 +13,6 @@ import (
 	"github.com/lackmus/npcgengo/shared"
 )
 
-type JSONNPCConfigLoader struct{}
-
-func NewJSONNPCConfigLoader() shared.NPCConfigLoader {
-	return &JSONNPCConfigLoader{}
-}
-
 const (
 	dir                   = "data/creation_data"
 	factionDir            = "factiondata"
@@ -28,6 +22,13 @@ const (
 	npcCivilianSubtypeDir = "npctypedata/civilian"
 	npcMilitarySubtypeDir = "npctypedata/military"
 )
+
+// JSONNPCConfigLoader loads the NPC configuration data from JSON files.
+type JSONNPCConfigLoader struct{}
+
+func NewJSONNPCConfigLoader() shared.NPCConfigLoader {
+	return &JSONNPCConfigLoader{}
+}
 
 func (j *JSONNPCConfigLoader) LoadFactionMap() (map[string]model.Faction, error) {
 	return loadJSONMap[model.Faction](filepath.Join(dir, factionDir))

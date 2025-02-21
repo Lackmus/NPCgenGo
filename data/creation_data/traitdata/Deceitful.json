@@ -1,10 +1,5 @@
 {
     "name": "Deceitful",
     "description": "Guilty of or involving deceit; deceiving or misleading others.",
-    "opposes": "Honest",
-    "stats": {
-      "charisma": 4,
-      "morale": -2,
-      "trading": 3
-    }
+    "opposes": "Honest"
   }

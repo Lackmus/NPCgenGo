@@ -1,12 +1,7 @@
 {
     "name": "Foolish",
     "description": "Lacking good sense or judgment; unwise.",
-    "opposes": "Wise",
-    "stats": {
-      "intelligence": -5,
-      "morale": -3,
-      "trading": -2
-    }
+    "opposes": "Wise"
   }
   
   

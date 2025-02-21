@@ -1,10 +1,5 @@
 {
     "name": "Flexible",
     "description": "Willing to adapt or change in response to new situations or ideas.",
-    "opposes": "Stubborn",
-    "stats": {
-      "intelligence": 3,
-      "morale": 2,
-      "trading": 2
-    }
+    "opposes": "Stubborn"
   }

@@ -1,10 +1,5 @@
 {
     "name": "Loyal",
     "description": "Gives or shows firm and constant support or allegiance to a person or institution.",
-    "opposes": "Treacherous",
-    "stats": {
-      "morale": 5,
-      "charisma": 3,
-      "trading": 1
-    }
+    "opposes": "Treacherous"
   }

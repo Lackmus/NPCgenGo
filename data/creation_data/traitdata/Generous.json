@@ -1,10 +1,5 @@
 {
     "name": "Generous",
     "description": "Willing to give more of something, especially money, than is strictly necessary or expected.",
-    "opposes": "Stingy",
-    "stats": {
-      "trading": -3,
-      "morale": 4,
-      "charisma": 5
-    }
+    "opposes": "Stingy"
   }

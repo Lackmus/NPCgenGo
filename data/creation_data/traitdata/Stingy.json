@@ -1,10 +1,5 @@
 {
     "name": "Stingy",
     "description": "Unwilling to give or spend; ungenerous.",
-    "opposes": "Generous",
-    "stats": {
-      "trading": -4,
-      "morale": -2,
-      "charisma": -3
-    }
+    "opposes": "Generous"
   }

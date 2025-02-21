@@ -1,10 +1,5 @@
 {
     "name": "Stubborn",
     "description": "Having or showing dogged determination not to change one's attitude or position on something.",
-    "opposes": "Flexible",
-    "stats": {
-      "morale": 3,
-      "charisma": -2,
-      "health": 1
-    }
+    "opposes": "Flexible"
   }

@@ -1,10 +1,5 @@
 {
     "name": "Wise",
     "description": "Makes decisions based on deep understanding and experience.",
-    "opposes": "Foolish",
-    "stats": {
-      "intelligence": 5,
-      "morale": 3,
-      "trading": 4
-    }
+    "opposes": "Foolish"
   }
