@@ -4,8 +4,6 @@ import (
 	"math/rand"
 
 	"github.com/lackmus/npcgengo/helper"
-	"github.com/lackmus/npcgengo/model"
-	"github.com/lackmus/npcgengo/model/types"
 )
 
 // RandomTrait returns a random trait from the provided options.
@@ -78,33 +76,11 @@ func (r *RandomizerService) GenerateEquipment(npcSubtype string) map[string]stri
 	return items
 }
 
-func (r *RandomizerService) ApplyTraitStats(trait string) map[string]int {
-	return r.applyStats(r.creationData.GetTraitData(trait))
-}
-
-func (r *RandomizerService) ApplyTypeStats(npcType string) map[string]int {
-	return r.applyStats(r.creationData.GetNpcTypeData(npcType))
-}
-
 func (r *RandomizerService) ApplySubtypeStats(npcSubtype string) map[string]int {
-	return r.applyStats(r.creationData.GetNpcSubtypeData(npcSubtype))
-}
-
-func (r *RandomizerService) applyStats(data interface{}) map[string]int {
 	stats := make(map[string]int)
-	switch d := data.(type) {
-	case model.Trait:
-		for key, value := range d.Stats {
-			stats[key] += value
-		}
-	case types.NPCType:
-		for _, stat := range d.Stats {
-			stats[stat] += rand.Intn(10) + 1
-		}
-	case types.NPCSubtype:
-		for _, stat := range d.Stats {
-			stats[stat] += rand.Intn(10) + 1
-		}
+	subtype := r.creationData.GetNpcSubtypeData(npcSubtype)
+	for _, stat := range subtype.Stats {
+		stats[stat] += rand.Intn(10) + 1
 	}
 	return stats
 }
