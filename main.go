@@ -9,7 +9,6 @@ import (
 
 func main() {
 
-	// service.creationsuppöier
 	creationSupplier := service.NewNPCCreationSupplier(loader.NewJSONNPCConfigLoader())
 	npcController := controller.NewNPCListController(
 		loader.NewJSONNPCStorage("data/npc_database"),
@@ -19,7 +18,6 @@ func main() {
 
 	npcController.InitView()
 
-	// new editview
 	editView := view.NewConsoleEditView()
 	editController := npcController.InitEditController(editView)
 
@@ -29,10 +27,8 @@ func main() {
 	}
 
 	editController.LoadNPC(npcController.GetAllNpcs()[0])
-	// change field with new value
 	editController.RandomizeField("name")
 	npcController.AddNpc(editController.SaveNPC())
 
-	//delete all npcs
 	npcController.DeleteAllNPC()
 }

@@ -92,9 +92,9 @@ func (c *NPCEditController) RandomizeField(field string) {
 		// Uncomment and implement as needed:
 		// updatedValue = c.rand.GenerateDrive()
 	case FieldStats:
-		updatedValue = c.rand.ApplySubtypeStats(c.npcBuilder.NPCSubtype)
+		updatedValue = c.rand.ApplySubtypeStats(c.npcBuilder.NPCSubType)
 	case FieldItems:
-		updatedValue = c.rand.GenerateEquipment(c.npcBuilder.NPCSubtype)
+		updatedValue = c.rand.GenerateEquipment(c.npcBuilder.NPCSubType)
 	case FieldAbilities:
 		// Uncomment and implement as needed:
 		// updatedValue = c.rand.GenerateAbilities(c.npcBuilder.NPCSubtype)

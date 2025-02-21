@@ -1,26 +1,18 @@
 package service
 
 import (
+	"maps"
+
 	"github.com/lackmus/npcgengo/model"
 )
 
-// NPCBuilder is a mutable structure used to collect values before constructing the immutable model.NPC.
 type NPCBuilder struct {
-	ID          string
-	Name        string
-	Faction     string
-	Species     string
-	NPCType     string
-	NPCSubtype  string
-	Trait       string
-	Drive       string
-	Stats       map[string]int
-	Items       map[string]string
-	Abilities   map[string]string
-	Description string
+	ID, Name, Faction, Species, NPCType, NPCSubType, Trait, Drive, Description string
+	Stats                                                                      map[string]int
+	Items, Abilities                                                           map[string]string
 }
 
-// NewBuilder creates a new instance of NPCBuilder with sensible defaults.
+// NewNPCBuilder creates a new NPCBuilder with default values.
 func NewNPCBuilder() *NPCBuilder {
 	return &NPCBuilder{
 		Stats:     make(map[string]int),
@@ -29,7 +21,7 @@ func NewNPCBuilder() *NPCBuilder {
 	}
 }
 
-// NewBuilderFromNPC creates a new instance of NPCBuilder with the values from the provided NPC.
+// NewNPCBuilderFromNPC initializes a builder from an existing NPC.
 func NewNPCBuilderFromNPC(npc model.NPC) *NPCBuilder {
 	return &NPCBuilder{
 		ID:          npc.ID(),
@@ -37,77 +29,85 @@ func NewNPCBuilderFromNPC(npc model.NPC) *NPCBuilder {
 		Faction:     npc.Faction(),
 		Species:     npc.Species(),
 		NPCType:     npc.NPCType(),
-		NPCSubtype:  npc.NPCSubtype(),
+		NPCSubType:  npc.NPCSubtype(),
 		Trait:       npc.Trait(),
 		Drive:       npc.Drive(),
 		Description: npc.Description(),
-		Stats:       npc.Stats(),
-		Items:       npc.Items(),
-		Abilities:   npc.Abilities(),
+		Stats:       maps.Clone(npc.Stats()),
+		Items:       maps.Clone(npc.Items()),
+		Abilities:   maps.Clone(npc.Abilities()),
 	}
 }
 
+// Build constructs the NPC from the builder.
 func (b *NPCBuilder) Build() model.NPC {
 	return model.NewNPC(
-		b.ID, b.Name, b.Faction, b.Species, b.NPCType, b.NPCSubtype,
+		b.ID, b.Name, b.Faction, b.Species, b.NPCType, b.NPCSubType,
 		b.Trait, b.Drive, b.Description, b.Stats, b.Items, b.Abilities,
 	)
 }
 
-// Build constructs the final NPC object from the builder.
+// BuildWithRandom fills missing fields using randomization.
 func (b *NPCBuilder) BuildWithRandom(rand *RandomizerService) model.NPC {
-	// Apply random options for any empty fields
 	if b.ID == "" {
 		b.WithID(rand.GenerateID())
 	}
 	if b.NPCType == "" {
-		b.NPCType = rand.RandomType()
+		b.WithType(rand.RandomType())
 	}
-	if b.NPCSubtype == "" {
-		b.NPCSubtype = rand.RandomSubtype(b.NPCType)
+	if b.NPCSubType == "" {
+		b.WithSubType(rand.RandomSubtype(b.NPCType))
 	}
 	if b.Faction == "" {
-		b.Faction = rand.RandomFaction()
+		b.WithFaction(rand.RandomFaction())
 	}
 	if b.Species == "" {
-		b.Species = rand.RandomSpecies()
+		b.WithSpecies(rand.RandomSpecies())
 	}
 	if b.Name == "" {
-		b.Name = rand.GenerateName(b.Species)
+		b.WithName(rand.GenerateName(b.Species))
 	}
 	if b.Trait == "" {
-		b.Trait = rand.GenerateTraitDescription()
+		b.WithTrait(rand.GenerateTraitDescription())
 	}
 	if b.Description == "" {
-		//TODO: Generate a description
+		//nb.WithDescription(rand.GenerateDescription(nb.Name, nb.Species, nb.Type))
 	}
 	if len(b.Items) == 0 {
-		b.Items = rand.GenerateEquipment(b.NPCSubtype)
+		b.WithItems(rand.GenerateEquipment(b.NPCSubType))
 	}
 	if len(b.Stats) == 0 {
-		b.Stats = rand.ApplySubtypeStats(b.NPCSubtype)
+		b.WithStats(rand.ApplySubtypeStats(b.NPCSubType))
 	}
 	if len(b.Abilities) == 0 {
-		//TODO: Generate abilities
+		//nb.WithAbilities(rand.GenerateAbilities(nb.SubType))
 	}
+
 	return b.Build()
 }
 
-func (b *NPCBuilder) WithID(id string) *NPCBuilder                  { b.ID = id; return b }
-func (b *NPCBuilder) WithName(name string) *NPCBuilder              { b.Name = name; return b }
-func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder        { b.Faction = faction; return b }
-func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder        { b.Species = species; return b }
-func (b *NPCBuilder) WithType(npcType string) *NPCBuilder           { b.NPCType = npcType; return b }
-func (b *NPCBuilder) WithSubType(npcSubtype string) *NPCBuilder     { b.NPCSubtype = npcSubtype; return b }
-func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder            { b.Trait = trait; return b }
-func (b *NPCBuilder) WithDrive(drive string) *NPCBuilder            { b.Drive = drive; return b }
-func (b *NPCBuilder) WithStats(stats map[string]int) *NPCBuilder    { b.Stats = stats; return b }
-func (b *NPCBuilder) WithItems(items map[string]string) *NPCBuilder { b.Items = items; return b }
-func (b *NPCBuilder) WithAbilities(abilities map[string]string) *NPCBuilder {
-	b.Abilities = abilities
+// Setter methods for fluent API
+func (b *NPCBuilder) WithID(id string) *NPCBuilder           { b.ID = id; return b }
+func (b *NPCBuilder) WithName(name string) *NPCBuilder       { b.Name = name; return b }
+func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder { b.Faction = faction; return b }
+func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder { b.Species = species; return b }
+func (b *NPCBuilder) WithType(t string) *NPCBuilder          { b.NPCType = t; return b }
+func (b *NPCBuilder) WithSubType(st string) *NPCBuilder      { b.NPCSubType = st; return b }
+func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder     { b.Trait = trait; return b }
+func (b *NPCBuilder) WithDrive(drive string) *NPCBuilder     { b.Drive = drive; return b }
+func (b *NPCBuilder) WithStats(stats map[string]int) *NPCBuilder {
+	b.Stats = maps.Clone(stats)
 	return b
 }
-func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
-	b.Description = description
+func (b *NPCBuilder) WithItems(items map[string]string) *NPCBuilder {
+	b.Items = maps.Clone(items)
+	return b
+}
+func (b *NPCBuilder) WithAbilities(abilities map[string]string) *NPCBuilder {
+	b.Abilities = maps.Clone(abilities)
+	return b
+}
+func (b *NPCBuilder) WithDescription(desc string) *NPCBuilder {
+	b.Description = desc
 	return b
 }

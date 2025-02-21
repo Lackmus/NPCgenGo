@@ -9,18 +9,9 @@ import (
 
 // NPC represents an immutable non-player character.
 type NPC struct {
-	id          string
-	name        string
-	faction     string
-	species     string
-	npcType     string
-	npcSubtype  string
-	trait       string
-	drive       string
-	stats       map[string]int
-	items       map[string]string
-	abilities   map[string]string
-	description string
+	id, name, faction, species, npcType, npcSubtype, trait, drive, description string
+	stats                                                                      map[string]int
+	items, abilities                                                           map[string]string
 }
 
 // Getters to access the fields

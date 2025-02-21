@@ -2,7 +2,7 @@ package loader
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -54,7 +54,7 @@ func (j *JSONNPCStorage) LoadAllNPC() (map[string]model.NPC, error) {
 		id := file.Name()[:len(file.Name())-5] // ".json" entfernen
 		data, err := j.LoadNPC(id)
 		if err != nil {
-			fmt.Printf("Warnung: Konnte %s nicht laden: %v\n", file.Name(), err)
+			log.Printf("Error loading NPC %s: %v", id, err)
 			continue
 		}
 		dataMap[id] = data
@@ -97,12 +97,22 @@ func (j *JSONNPCStorage) SaveAllNPC(dataMap map[string]model.NPC) error {
 func (j *JSONNPCStorage) DeleteNPC(id string) error {
 	filename := filepath.Join(j.Dir, id+".json")
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return fmt.Errorf("NPC %s nicht gefunden", id)
+		log.Printf("File %s does not exist: %v", filename, err)
+		return nil
 	}
 	return os.Remove(filename)
 }
 
 // DeleteAllNpc löscht das gesamte Verzeichnis (vorsichtig nutzen!)
 func (j *JSONNPCStorage) DeleteAllNPC() error {
-	return os.RemoveAll(j.Dir)
+	dir, err := os.ReadDir(j.Dir)
+	if err != nil {
+		log.Printf("Error reading directory %s: %v", j.Dir, err)
+	}
+	for _, file := range dir {
+		if err := os.Remove(filepath.Join(j.Dir, file.Name())); err != nil {
+			log.Printf("Error deleting file %s: %v", file.Name(), err)
+		}
+	}
+	return nil
 }
