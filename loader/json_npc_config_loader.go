@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	dir                   = "data/creation_data"
 	factionDir            = "factiondata"
 	speciesDir            = "speciesdata"
 	traitDir              = "traitdata"
@@ -24,34 +23,38 @@ const (
 )
 
 // JSONNPCConfigLoader loads the NPC configuration data from JSON files.
-type JSONNPCConfigLoader struct{}
+type JSONNPCConfigLoader struct {
+	dir string
+}
 
-func NewJSONNPCConfigLoader() shared.NPCConfigLoader {
-	return &JSONNPCConfigLoader{}
+func NewJSONNPCConfigLoader(dir string) shared.NPCConfigLoader {
+	return &JSONNPCConfigLoader{
+		dir: dir,
+	}
 }
 
 func (j *JSONNPCConfigLoader) LoadFactionMap() (map[string]model.Faction, error) {
-	return loadJSONMap[model.Faction](filepath.Join(dir, factionDir))
+	return loadJSONMap[model.Faction](filepath.Join(j.dir, factionDir))
 }
 
 func (j *JSONNPCConfigLoader) LoadSpeciesMap() (map[string]model.Species, error) {
-	return loadJSONMap[model.Species](filepath.Join(dir, speciesDir))
+	return loadJSONMap[model.Species](filepath.Join(j.dir, speciesDir))
 }
 
 func (j *JSONNPCConfigLoader) LoadTraitMap() (map[string]model.Trait, error) {
-	return loadJSONMap[model.Trait](filepath.Join(dir, traitDir))
+	return loadJSONMap[model.Trait](filepath.Join(j.dir, traitDir))
 }
 
 func (j *JSONNPCConfigLoader) LoadNameMap() (map[string]model.NameData, error) {
-	return loadJSONMap[model.NameData](filepath.Join(dir, nameDir))
+	return loadJSONMap[model.NameData](filepath.Join(j.dir, nameDir))
 }
 
 func (j *JSONNPCConfigLoader) LoadNpcCivilianSubtypeMap() (map[string]types.NPCSubtype, error) {
-	return loadJSONMap[types.NPCSubtype](filepath.Join(dir, npcCivilianSubtypeDir))
+	return loadJSONMap[types.NPCSubtype](filepath.Join(j.dir, npcCivilianSubtypeDir))
 }
 
 func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap() (map[string]types.NPCSubtype, error) {
-	return loadJSONMap[types.NPCSubtype](filepath.Join(dir, npcMilitarySubtypeDir))
+	return loadJSONMap[types.NPCSubtype](filepath.Join(j.dir, npcMilitarySubtypeDir))
 }
 
 func loadJSONMap[T any](dir string) (map[string]T, error) {
@@ -69,7 +72,8 @@ func loadJSONMap[T any](dir string) (map[string]T, error) {
 		if !strings.EqualFold(ext, ".json") {
 			continue
 		}
-		id := file.Name()[:len(file.Name())-len(ext)]
+		// id is the name field inside of the JSON file
+		id := strings.TrimSuffix(file.Name(), ext) // remove the extension
 		data, err := loadJSON[T](filepath.Join(dir, file.Name()))
 		if err != nil {
 			errs = append(errs, fmt.Errorf("failed to load file %s: %w", file.Name(), err))
