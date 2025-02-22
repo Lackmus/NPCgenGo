@@ -3,37 +3,33 @@ package model
 
 import (
 	"fmt"
-
-	"github.com/lackmus/npcgengo/helper"
 )
 
 // NPC represents an immutable non-player character.
 type NPC struct {
-	id, name, faction, species, npcType, npcSubtype, trait, drive, description string
-	stats                                                                      map[string]int
-	items, abilities                                                           map[string]string
+	id, name, faction, species, npcType, npcSubtype, trait, description string
+	components                                                          map[string]string
 }
 
 // Getters to access the fields
-func (n NPC) ID() string                   { return n.id }
-func (n NPC) Name() string                 { return n.name }
-func (n NPC) Faction() string              { return n.faction }
-func (n NPC) Species() string              { return n.species }
-func (n NPC) NPCType() string              { return n.npcType }
-func (n NPC) NPCSubtype() string           { return n.npcSubtype }
-func (n NPC) Trait() string                { return n.trait }
-func (n NPC) Drive() string                { return n.drive }
-func (n NPC) Stats() map[string]int        { return helper.CopyMap(n.stats) }
-func (n NPC) Items() map[string]string     { return helper.CopyMap(n.items) }
-func (n NPC) Abilities() map[string]string { return helper.CopyMap(n.abilities) }
-func (n NPC) Description() string          { return n.description }
+func (n NPC) ID() string         { return n.id }
+func (n NPC) Name() string       { return n.name }
+func (n NPC) Faction() string    { return n.faction }
+func (n NPC) Species() string    { return n.species }
+func (n NPC) NPCType() string    { return n.npcType }
+func (n NPC) NPCSubtype() string { return n.npcSubtype }
+func (n NPC) Trait() string      { return n.trait }
+func (n NPC) Description() string {
+	return n.description
+}
+func (n NPC) Components() map[string]string {
+	return n.components
+}
 
 // NewNPC is the constructor to create an immutable NPC.
 func NewNPC(
-	id, name, faction, species, npcType, npcSubtype, trait, drive, description string,
-	stats map[string]int,
-	items map[string]string,
-	abilities map[string]string,
+	id, name, faction, species, npcType, npcSubtype, trait, description string,
+	components map[string]string,
 ) NPC {
 	// Optionally perform deep copies of the maps here.
 	return NPC{
@@ -44,11 +40,8 @@ func NewNPC(
 		npcType:     npcType,
 		npcSubtype:  npcSubtype,
 		trait:       trait,
-		drive:       drive,
 		description: description,
-		stats:       helper.CopyMap(stats),
-		items:       helper.CopyMap(items),
-		abilities:   helper.CopyMap(abilities),
+		components:  components,
 	}
 }
 
@@ -60,9 +53,15 @@ func (n NPC) String() string {
 		"Type: " + n.npcType + "\n" +
 		"Subtype: " + n.npcSubtype + "\n" +
 		"Trait: " + n.trait + "\n" +
-		"Drive: " + n.drive + "\n" +
-		"Stats: " + fmt.Sprint(n.stats) + "\n" +
-		"Items: " + fmt.Sprint(n.items) + "\n" +
-		"Abilities: " + fmt.Sprint(n.abilities) + "\n" +
+		n.PrintComponents() +
 		"Description: " + n.description
+}
+
+// print components of the NPC
+func (n NPC) PrintComponents() string {
+	var result string
+	for k, v := range n.components {
+		result += fmt.Sprintf("%s: %s\n", k, v)
+	}
+	return result
 }
