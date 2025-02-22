@@ -5,3 +5,7 @@ type NPCType struct {
 	Description string
 	Stats       []string
 }
+
+func (n NPCType) GetName() string {
+	return n.Name
+}

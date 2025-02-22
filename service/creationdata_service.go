@@ -72,7 +72,7 @@ func (c *CreationDataService) buildSpeciesNameMap() map[string]string {
 	snm := make(map[string]string)
 	for key, species := range c.speciesMap {
 		if nameData, ok := c.nameMap[species.NameSource]; ok {
-			snm[key] = nameData.Name
+			snm[key] = nameData.GetName()
 		}
 	}
 	return snm

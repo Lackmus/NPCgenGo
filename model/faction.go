@@ -6,3 +6,7 @@ type Faction struct {
 	SpeciesList []string
 	Description []string
 }
+
+func (f Faction) GetName() string {
+	return f.Name
+}

@@ -8,3 +8,8 @@ type NPCSubtype struct {
 	Stats            []string
 	EquipmentOptions map[string][]string
 }
+
+// GetName returns the name of the NPCSubtype.
+func (n NPCSubtype) GetName() string {
+	return n.Name
+}

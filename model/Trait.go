@@ -9,5 +9,10 @@ type Trait struct {
 
 // print the struct in a human readable format
 func (t Trait) String() string {
-	return t.Name + ": " + t.Description + " Opposes: " + t.Opposes
+	return t.GetName() + ": " + t.Description + " Opposes: " + t.Opposes
+}
+
+// Name returns the name of the trait
+func (t Trait) GetName() string {
+	return t.Name
 }

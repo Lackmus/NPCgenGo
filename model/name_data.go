@@ -6,3 +6,8 @@ type NameData struct {
 	Forenames []string
 	Surnames  []string
 }
+
+// Name : Return the name of the NameData
+func (n NameData) GetName() string {
+	return n.Name
+}

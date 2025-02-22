@@ -57,7 +57,7 @@ func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap() (map[string]types.NPCS
 	return loadJSONMap[types.NPCSubtype](filepath.Join(j.dir, npcMilitarySubtypeDir))
 }
 
-func loadJSONMap[T any](dir string) (map[string]T, error) {
+func loadJSONMap[T shared.Nameable](dir string) (map[string]T, error) {
 	dataMap := make(map[string]T)
 	files, err := os.ReadDir(dir)
 	if err != nil {
@@ -72,13 +72,12 @@ func loadJSONMap[T any](dir string) (map[string]T, error) {
 		if !strings.EqualFold(ext, ".json") {
 			continue
 		}
-		// id is the name field inside of the JSON file
-		id := strings.TrimSuffix(file.Name(), ext) // remove the extension
 		data, err := loadJSON[T](filepath.Join(dir, file.Name()))
 		if err != nil {
 			errs = append(errs, fmt.Errorf("failed to load file %s: %w", file.Name(), err))
 			continue
 		}
+		id := data.GetName()
 		dataMap[id] = data
 	}
 	if len(errs) > 0 {
