@@ -16,7 +16,10 @@ const (
 	FieldNPCType    = "npcType"
 	FieldNPCSubtype = "npcSubtype"
 	FieldTrait      = "trait"
-	FieldComponents = "components"
+	FieldDrive      = "drive"
+	FieldStats      = "stats"
+	FieldItems      = "items"
+	FieldAbilities  = "abilities"
 )
 
 // NPCEditController manages the editing of an NPC.
@@ -63,7 +66,7 @@ func (c *NPCEditController) LoadNPC(npc model.NPC) {
 }
 
 func (c *NPCEditController) SaveNPC() model.NPC {
-	c.npc = c.npcBuilder.Build()
+	c.npc = c.npcBuilder.BuildWithRandom(c.rand)
 	c.NotifyObservers()
 	return c.npc
 }
@@ -85,6 +88,16 @@ func (c *NPCEditController) RandomizeField(field string) {
 		updatedValue = c.rand.RandomSubtype(c.npcBuilder.NPCType)
 	case FieldTrait:
 		updatedValue = c.rand.RandomTrait()
+	case FieldDrive:
+		// Uncomment and implement as needed:
+		// updatedValue = c.rand.GenerateDrive()
+	case FieldStats:
+		updatedValue = c.rand.ApplySubtypeStats(c.npcBuilder.NPCSubType)
+	case FieldItems:
+		updatedValue = c.rand.GenerateEquipment(c.npcBuilder.NPCSubType)
+	case FieldAbilities:
+		// Uncomment and implement as needed:
+		// updatedValue = c.rand.GenerateAbilities(c.npcBuilder.NPCSubtype)
 	default:
 		return // Field not recognized; do nothing.
 	}
@@ -131,11 +144,29 @@ func (c *NPCEditController) SaveField(field string, value any) {
 		} else {
 			log.Printf("Type assertion failed for field %s; expected string", FieldTrait)
 		}
-	case FieldComponents:
+	case FieldDrive:
 		if v, ok := value.(string); ok {
-			c.npcBuilder.WithComponent(field, v)
+			c.npcBuilder.WithDrive(v)
 		} else {
-			log.Printf("Type assertion failed for field %s; expected map[string]string", FieldComponents)
+			log.Printf("Type assertion failed for field %s; expected string", FieldDrive)
+		}
+	case FieldStats:
+		if v, ok := value.(map[string]int); ok {
+			c.npcBuilder.WithStats(v)
+		} else {
+			log.Printf("Type assertion failed for field %s; expected map[string]int", FieldStats)
+		}
+	case FieldItems:
+		if v, ok := value.(map[string]string); ok {
+			c.npcBuilder.WithItems(v)
+		} else {
+			log.Printf("Type assertion failed for field %s; expected map[string]string", FieldItems)
+		}
+	case FieldAbilities:
+		if v, ok := value.(map[string]string); ok {
+			c.npcBuilder.WithAbilities(v)
+		} else {
+			log.Printf("Type assertion failed for field %s; expected map[string]string", FieldAbilities)
 		}
 	default:
 		// Unrecognized field; do nothing.
