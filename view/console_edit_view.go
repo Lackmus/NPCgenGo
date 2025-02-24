@@ -23,7 +23,7 @@ func NewConsoleEditView() shared.NPCEditViewer {
 // UpdateWithNPC updates the view with a new NPC.
 func (v *ConsoleEditView) UpdateNPC(npc model.NPC) {
 	fmt.Println("\n=== NPC Generator Console Edit View ===")
-	fmt.Println(npc)
+	fmt.Printf("  %s\n", npc.String())
 
 }
 

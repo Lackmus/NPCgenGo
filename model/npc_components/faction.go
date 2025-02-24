@@ -1,4 +1,4 @@
-package model
+package npc_components
 
 // Faction : A faction in the game has a name, a lsit of strings and a description.
 type Faction struct {
@@ -9,4 +9,11 @@ type Faction struct {
 
 func (f Faction) GetName() string {
 	return f.Name
+}
+
+func (f Faction) NewFactionComponent() *Component {
+	return &Component{
+		Name:  CompFaction,
+		Value: f.Name,
+	}
 }

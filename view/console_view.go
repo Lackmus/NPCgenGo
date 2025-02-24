@@ -24,9 +24,9 @@ func (v *ConsoleView) Update(npcs []model.NPC) {
 		return
 	}
 
-	fmt.Println("Available NPCs:")
-	for i, npc := range npcs {
-		fmt.Printf("[%d] %s (Type: %s)\n", i+1, npc.Name(), npc.NPCType())
+	fmt.Println("  Available NPCs:")
+	for _, npc := range npcs {
+		fmt.Printf("\n  %s\n", npc.ShortString())
 	}
 }
 

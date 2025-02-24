@@ -8,8 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/lackmus/npcgengo/model"
-	"github.com/lackmus/npcgengo/model/types"
+	c "github.com/lackmus/npcgengo/model/npc_components"
 	"github.com/lackmus/npcgengo/shared"
 )
 
@@ -33,28 +32,28 @@ func NewJSONNPCConfigLoader(dir string) shared.NPCConfigLoader {
 	}
 }
 
-func (j *JSONNPCConfigLoader) LoadFactionMap() (map[string]model.Faction, error) {
-	return loadJSONMap[model.Faction](filepath.Join(j.dir, factionDir))
+func (j *JSONNPCConfigLoader) LoadFactionMap() (map[string]c.Faction, error) {
+	return loadJSONMap[c.Faction](filepath.Join(j.dir, factionDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadSpeciesMap() (map[string]model.Species, error) {
-	return loadJSONMap[model.Species](filepath.Join(j.dir, speciesDir))
+func (j *JSONNPCConfigLoader) LoadSpeciesMap() (map[string]c.Species, error) {
+	return loadJSONMap[c.Species](filepath.Join(j.dir, speciesDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadTraitMap() (map[string]model.Trait, error) {
-	return loadJSONMap[model.Trait](filepath.Join(j.dir, traitDir))
+func (j *JSONNPCConfigLoader) LoadTraitMap() (map[string]c.Trait, error) {
+	return loadJSONMap[c.Trait](filepath.Join(j.dir, traitDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNameMap() (map[string]model.NameData, error) {
-	return loadJSONMap[model.NameData](filepath.Join(j.dir, nameDir))
+func (j *JSONNPCConfigLoader) LoadNameMap() (map[string]c.NameData, error) {
+	return loadJSONMap[c.NameData](filepath.Join(j.dir, nameDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNpcCivilianSubtypeMap() (map[string]types.NPCSubtype, error) {
-	return loadJSONMap[types.NPCSubtype](filepath.Join(j.dir, npcCivilianSubtypeDir))
+func (j *JSONNPCConfigLoader) LoadNpcCivilianSubtypeMap() (map[string]c.NPCSubtype, error) {
+	return loadJSONMap[c.NPCSubtype](filepath.Join(j.dir, npcCivilianSubtypeDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap() (map[string]types.NPCSubtype, error) {
-	return loadJSONMap[types.NPCSubtype](filepath.Join(j.dir, npcMilitarySubtypeDir))
+func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap() (map[string]c.NPCSubtype, error) {
+	return loadJSONMap[c.NPCSubtype](filepath.Join(j.dir, npcMilitarySubtypeDir))
 }
 
 func loadJSONMap[T shared.Nameable](dir string) (map[string]T, error) {

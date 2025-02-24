@@ -32,9 +32,9 @@ func NewNPCService(loader shared.NPCStorage) *NPCService {
 
 // AddNPC adds a new NPC and immediately saves it.
 func (s *NPCService) AddNPC(npc model.NPC) {
-	s.npcs[npc.ID()] = npc
+	s.npcs[npc.ID] = npc
 	if err := s.loader.SaveNPC(npc); err != nil {
-		log.Printf("Error saving NPC (ID %s): %v", npc.ID(), err)
+		log.Printf("Error saving NPC (ID %s): %v", npc.ID, err)
 	}
 }
 
@@ -58,7 +58,7 @@ func (s *NPCService) GetNPCByID(id string) (model.NPC, error) {
 
 // UpdateNPC updates an existing NPC and saves it.
 func (s *NPCService) UpdateNPC(updatedNPC model.NPC) error {
-	id := updatedNPC.ID()
+	id := updatedNPC.ID
 	if _, found := s.npcs[id]; !found {
 		return fmt.Errorf("NPC with ID %s not found", id)
 	}

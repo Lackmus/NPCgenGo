@@ -2,6 +2,7 @@ package helper
 
 import (
 	"math/rand"
+	"strconv"
 
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
@@ -38,4 +39,9 @@ func GenerateID() string {
 		return id
 	}
 	return "fallback-id"
+}
+
+// RandomInt returns a random integer in the range [min, max] as string.
+func RandomInt(min, max int) string {
+	return strconv.Itoa(rand.Intn(max-min+1) + min)
 }

@@ -5,8 +5,8 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/lackmus/npcgengo/model"
-	"github.com/lackmus/npcgengo/model/types"
+	cp "github.com/lackmus/npcgengo/model/npc_components"
+	t "github.com/lackmus/npcgengo/model/npc_components/types"
 	"github.com/lackmus/npcgengo/shared"
 )
 
@@ -16,12 +16,12 @@ import (
 
 // CreationDataService provides access to the creation data for NPCs. It loads the data from the creation data file into maps.
 type CreationDataService struct {
-	factionMap                                            map[string]model.Faction
-	speciesMap                                            map[string]model.Species
-	traitMap                                              map[string]model.Trait
-	nameMap                                               map[string]model.NameData
-	npcTypeMap                                            map[string]types.NPCType
-	npcSubtypeMap, civilianSubtypeMap, militarySubtypeMap map[string]types.NPCSubtype
+	factionMap                                            map[string]cp.Faction
+	speciesMap                                            map[string]cp.Species
+	traitMap                                              map[string]cp.Trait
+	nameMap                                               map[string]cp.NameData
+	npcTypeMap                                            map[string]t.NPCType
+	npcSubtypeMap, civilianSubtypeMap, militarySubtypeMap map[string]cp.NPCSubtype
 	speciesNameMap                                        map[string]string
 	npcSubtypeForTypeMap                                  map[string][]string
 }
@@ -78,10 +78,10 @@ func (c *CreationDataService) buildSpeciesNameMap() map[string]string {
 	return snm
 }
 
-func (c *CreationDataService) loadNpcTypeMap() map[string]types.NPCType {
-	return map[string]types.NPCType{
-		"Civilian": types.GetCivilianInstance().NPCType, // dereference the embedded field
-		"Military": types.GetMilitaryInstance().NPCType,
+func (c *CreationDataService) loadNpcTypeMap() map[string]t.NPCType {
+	return map[string]t.NPCType{
+		"Civilian": t.GetCivilianInstance().NPCType, // dereference the embedded field
+		"Military": t.GetMilitaryInstance().NPCType,
 	}
 }
 
@@ -93,8 +93,8 @@ func (c *CreationDataService) buildNpcTypeNameMap() map[string][]string {
 }
 
 // refactor mergeNpcSubtypeMaps to use a variadic parameter
-func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeMaps ...map[string]types.NPCSubtype) map[string]types.NPCSubtype {
-	merged := make(map[string]types.NPCSubtype)
+func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeMaps ...map[string]cp.NPCSubtype) map[string]cp.NPCSubtype {
+	merged := make(map[string]cp.NPCSubtype)
 	for _, subtypeMap := range subtypeMaps {
 		for key, subtype := range subtypeMap {
 			merged[key] = subtype
@@ -103,7 +103,7 @@ func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeMaps ...map[string]type
 	return merged
 }
 
-func (c *CreationDataService) GetFactionData(key string) model.Faction {
+func (c *CreationDataService) GetFactionData(key string) cp.Faction {
 	faction, ok := c.factionMap[key]
 	if !ok {
 		panic(fmt.Sprintf("faction not found: %s", key))
@@ -111,7 +111,7 @@ func (c *CreationDataService) GetFactionData(key string) model.Faction {
 	return faction
 }
 
-func (c *CreationDataService) GetTraitData(key string) model.Trait {
+func (c *CreationDataService) GetTraitData(key string) cp.Trait {
 	trait, ok := c.traitMap[key]
 	if !ok {
 		panic(fmt.Sprintf("trait not found: %s", key))
@@ -119,7 +119,7 @@ func (c *CreationDataService) GetTraitData(key string) model.Trait {
 	return trait
 }
 
-func (c *CreationDataService) GetNameData(key string) model.NameData {
+func (c *CreationDataService) GetNameData(key string) cp.NameData {
 	nd, ok := c.nameMap[key]
 	if ok {
 		return nd
@@ -127,7 +127,7 @@ func (c *CreationDataService) GetNameData(key string) model.NameData {
 	panic(fmt.Sprintf("name not found: %s", key))
 }
 
-func (c *CreationDataService) GetSpeciesData(key string) model.Species {
+func (c *CreationDataService) GetSpeciesData(key string) cp.Species {
 	s, ok := c.speciesMap[key]
 	if ok {
 		return s
@@ -135,7 +135,7 @@ func (c *CreationDataService) GetSpeciesData(key string) model.Species {
 	panic(fmt.Sprintf("species not found: %s", key))
 }
 
-func (c *CreationDataService) GetNpcTypeData(key string) types.NPCType {
+func (c *CreationDataService) GetNpcTypeData(key string) t.NPCType {
 	nt, ok := c.npcTypeMap[key]
 	if ok {
 		return nt
@@ -143,7 +143,7 @@ func (c *CreationDataService) GetNpcTypeData(key string) types.NPCType {
 	panic(fmt.Sprintf("npc type not found: %s", key))
 }
 
-func (c *CreationDataService) GetNpcSubtypeData(key string) types.NPCSubtype {
+func (c *CreationDataService) GetNpcSubtypeData(key string) cp.NPCSubtype {
 	ns, ok := c.npcSubtypeMap[key]
 	if ok {
 		return ns
@@ -151,11 +151,11 @@ func (c *CreationDataService) GetNpcSubtypeData(key string) types.NPCSubtype {
 	panic(fmt.Sprintf("npc subtype not found: %s", key))
 }
 
-func (c *CreationDataService) GetFactionMap() map[string]model.Faction {
+func (c *CreationDataService) GetFactionMap() map[string]cp.Faction {
 	return maps.Clone(c.factionMap)
 }
 
-func (c *CreationDataService) GetSpeciesMap() map[string]model.Species {
+func (c *CreationDataService) GetSpeciesMap() map[string]cp.Species {
 	return maps.Clone(c.speciesMap)
 }
 
@@ -163,11 +163,11 @@ func (c *CreationDataService) GetNpcSubtypeForTypeMap() map[string][]string {
 	return maps.Clone(c.npcSubtypeForTypeMap)
 }
 
-func (c *CreationDataService) GetTraitMap() map[string]model.Trait {
+func (c *CreationDataService) GetTraitMap() map[string]cp.Trait {
 	return maps.Clone(c.traitMap)
 }
 
-func (c *CreationDataService) GetNpcTypeMap() map[string]types.NPCType {
+func (c *CreationDataService) GetNpcTypeMap() map[string]t.NPCType {
 	return maps.Clone(c.npcTypeMap)
 }
 

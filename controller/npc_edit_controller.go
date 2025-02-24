@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"log"
+	//"log"
 
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/service"
@@ -39,8 +39,8 @@ func NewNPCEditController(view shared.NPCEditViewer, creationSupplier *service.N
 	}
 }
 
-func (c *NPCEditController) EditNPC(npc model.NPC) {
-	// Implementation for editing NPC goes here.
+func (c *NPCEditController) EditNPC() model.NPC {
+	return c.npc
 }
 
 func (c *NPCEditController) RegisterObserver(o shared.NPCEditObserver) {
@@ -61,46 +61,18 @@ func (c *NPCEditController) NotifyObserversField(field string, value any) {
 
 func (c *NPCEditController) LoadNPC(npc model.NPC) {
 	c.npc = npc
-	c.npcBuilder = service.NewNPCBuilderFromNPC(npc)
 	c.NotifyObservers()
 }
 
 func (c *NPCEditController) SaveNPC() model.NPC {
-	c.npc = c.npcBuilder.BuildWithRandom(c.rand)
 	c.NotifyObservers()
 	return c.npc
 }
 
+/*
 // RandomizeField randomizes a specific field based on its type and saves the change.
 func (c *NPCEditController) RandomizeField(field string) {
-	var updatedValue any
-	// Determine the new value for the given field using the randomizer.
-	switch field {
-	case FieldName:
-		updatedValue = c.rand.GenerateName(c.npcBuilder.Species)
-	case FieldFaction:
-		updatedValue = c.rand.RandomFaction()
-	case FieldSpecies:
-		updatedValue = c.rand.RandomSpecies()
-	case FieldNPCType:
-		updatedValue = c.rand.RandomType()
-	case FieldNPCSubtype:
-		updatedValue = c.rand.RandomSubtype(c.npcBuilder.NPCType)
-	case FieldTrait:
-		updatedValue = c.rand.RandomTrait()
-	case FieldDrive:
-		// Uncomment and implement as needed:
-		// updatedValue = c.rand.GenerateDrive()
-	case FieldStats:
-		updatedValue = c.rand.ApplySubtypeStats(c.npcBuilder.NPCSubType)
-	case FieldItems:
-		updatedValue = c.rand.GenerateEquipment(c.npcBuilder.NPCSubType)
-	case FieldAbilities:
-		// Uncomment and implement as needed:
-		// updatedValue = c.rand.GenerateAbilities(c.npcBuilder.NPCSubtype)
-	default:
-		return // Field not recognized; do nothing.
-	}
+
 	c.SaveField(field, updatedValue)
 	c.NotifyObserversField(field, updatedValue)
 }
@@ -192,3 +164,4 @@ func (c *NPCEditController) GetFieldOptions(field string) []string {
 		return nil
 	}
 }
+*/

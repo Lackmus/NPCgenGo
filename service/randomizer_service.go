@@ -1,8 +1,6 @@
 package service
 
 import (
-	"math/rand"
-
 	"github.com/lackmus/npcgengo/helper"
 )
 
@@ -22,65 +20,30 @@ func NewRandomizerService(creationData *CreationDataService, npcCreationOptions 
 }
 
 func (r *RandomizerService) RandomTrait() string {
-	return helper.GetRandomElement(r.npcCreationOptions.Traits)
+	trait := helper.GetRandomElement(r.npcCreationOptions.Traits)
+	return trait
 }
 
 func (r *RandomizerService) RandomFaction() string {
-	return helper.GetRandomElement(r.npcCreationOptions.Factions)
+	faction := helper.GetRandomElement(r.npcCreationOptions.Factions)
+	return faction
 }
 
 func (r *RandomizerService) RandomSpecies() string {
-	return helper.GetRandomElement(r.npcCreationOptions.Species)
+	species := helper.GetRandomElement(r.npcCreationOptions.Species)
+	return species
 }
 
 func (r *RandomizerService) RandomType() string {
-	return helper.GetRandomElement(r.npcCreationOptions.NpcTypes)
+	npcType := helper.GetRandomElement(r.npcCreationOptions.NpcTypes)
+	return npcType
 }
 
 func (r *RandomizerService) RandomSubtype(npcType string) string {
-	subtypes := r.npcCreationOptions.NpcSubtypeForTypeMap[npcType]
-	return helper.GetRandomElement(subtypes)
+	subtype := helper.GetRandomElement(r.npcCreationOptions.NpcSubtypeForTypeMap[npcType])
+	return subtype
 }
 
-// abilities
-func (r *RandomizerService) RandomAbilities() map[string]int {
-	return nil
-}
-
-// generating random ID
 func (r *RandomizerService) GenerateID() string {
 	return helper.GenerateID()
-}
-
-// generate trait
-func (r *RandomizerService) GenerateTraitDescription() string {
-	return r.creationData.GetTraitData(r.RandomTrait()).String()
-
-}
-
-// generating random name
-func (r *RandomizerService) GenerateName(species string) string {
-	nameDataKey := r.creationData.GetSpeciesNameMap()[species]
-	nameData := r.creationData.GetNameData(nameDataKey)
-	forename := helper.GetRandomElement(nameData.Forenames)
-	surname := helper.GetRandomElement(nameData.Surnames)
-	return forename + " " + surname
-}
-
-func (r *RandomizerService) GenerateEquipment(npcSubtype string) map[string]string {
-	items := make(map[string]string)
-	subtype := r.creationData.GetNpcSubtypeData(npcSubtype)
-	for category, equipmentOptions := range subtype.EquipmentOptions {
-		items[category] = helper.GetRandomElement(equipmentOptions)
-	}
-	return items
-}
-
-func (r *RandomizerService) ApplySubtypeStats(npcSubtype string) map[string]int {
-	stats := make(map[string]int)
-	subtype := r.creationData.GetNpcSubtypeData(npcSubtype)
-	for _, stat := range subtype.Stats {
-		stats[stat] += rand.Intn(10) + 1
-	}
-	return stats
 }

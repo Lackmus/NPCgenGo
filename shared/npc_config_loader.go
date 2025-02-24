@@ -1,15 +1,14 @@
 package shared
 
 import (
-	"github.com/lackmus/npcgengo/model"
-	"github.com/lackmus/npcgengo/model/types"
+	c "github.com/lackmus/npcgengo/model/npc_components"
 )
 
 type NPCConfigLoader interface {
-	LoadFactionMap() (map[string]model.Faction, error)
-	LoadSpeciesMap() (map[string]model.Species, error)
-	LoadTraitMap() (map[string]model.Trait, error)
-	LoadNameMap() (map[string]model.NameData, error)
-	LoadNpcCivilianSubtypeMap() (map[string]types.NPCSubtype, error)
-	LoadNpcMilitarySubtypeMap() (map[string]types.NPCSubtype, error)
+	LoadFactionMap() (map[string]c.Faction, error)
+	LoadSpeciesMap() (map[string]c.Species, error)
+	LoadTraitMap() (map[string]c.Trait, error)
+	LoadNameMap() (map[string]c.NameData, error)
+	LoadNpcCivilianSubtypeMap() (map[string]c.NPCSubtype, error)
+	LoadNpcMilitarySubtypeMap() (map[string]c.NPCSubtype, error)
 }

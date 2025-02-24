@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/lackmus/npcgengo/model"
-	"github.com/lackmus/npcgengo/service"
 	"github.com/lackmus/npcgengo/shared"
 )
 
@@ -25,16 +24,16 @@ func NewJSONNPCStorage(dir string) shared.NPCStorage {
 func (j *JSONNPCStorage) LoadNPC(id string) (model.NPC, error) {
 	filename := filepath.Join(j.Dir, id+".json")
 	file, err := os.Open(filename)
+	npc := *model.NewNPC(id)
 	if err != nil {
 		return model.NPC{}, err
 	}
 	defer file.Close()
 
-	var data service.NPCBuilder
-	if err := json.NewDecoder(file).Decode(&data); err != nil {
+	if err := json.NewDecoder(file).Decode(&npc); err != nil {
 		return model.NPC{}, err
 	}
-	return data.Build(), nil
+	return npc, nil
 }
 
 // LoadAllNpc lädt alle NPCs aus dem Verzeichnis
@@ -68,8 +67,7 @@ func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 		return err
 	}
 
-	var data = service.NewNPCBuilderFromNPC(npc)
-	filename := filepath.Join(j.Dir, data.ID+".json")
+	filename := filepath.Join(j.Dir, npc.ID+".json")
 
 	// Datei öffnen mit O_WRONLY (schreiben), O_CREATE (erstellen, falls nicht existiert), O_TRUNC (alte Daten überschreiben)
 	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
@@ -80,7 +78,7 @@ func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
-	return encoder.Encode(data)
+	return encoder.Encode(npc)
 }
 
 // SaveAllNpc speichert alle NPCs aus einer Map

@@ -1,87 +1,68 @@
-// model/npc.go
 package model
 
 import (
 	"fmt"
 
-	"github.com/lackmus/npcgengo/helper"
+	cp "github.com/lackmus/npcgengo/model/npc_components"
 )
 
-// NPC represents an immutable non-player character.
+// NPC represents a non-player character built using a set of components.
 type NPC struct {
-	id, name, faction, species, npcType, npcSubtype, trait, drive, description string
-	stats                                                                      map[string]int
-	items, abilities                                                           map[string]string
+	ID         string
+	Components map[cp.CompEnum]string
 }
 
-// Getters to access the fields
-func (n NPC) ID() string                   { return n.id }
-func (n NPC) Name() string                 { return n.name }
-func (n NPC) Faction() string              { return n.faction }
-func (n NPC) Species() string              { return n.species }
-func (n NPC) NPCType() string              { return n.npcType }
-func (n NPC) NPCSubtype() string           { return n.npcSubtype }
-func (n NPC) Trait() string                { return n.trait }
-func (n NPC) Drive() string                { return n.drive }
-func (n NPC) Stats() map[string]int        { return helper.CopyMap(n.stats) }
-func (n NPC) Items() map[string]string     { return helper.CopyMap(n.items) }
-func (n NPC) Abilities() map[string]string { return helper.CopyMap(n.abilities) }
-func (n NPC) Description() string          { return n.description }
-
-// NewNPC is the constructor to create an immutable NPC.
-func NewNPC(
-	id, name, faction, species, npcType, npcSubtype, trait, drive, description string,
-	stats map[string]int,
-	items map[string]string,
-	abilities map[string]string,
-) NPC {
-	// Optionally perform deep copies of the maps here.
-	return NPC{
-		id:          id,
-		name:        name,
-		faction:     faction,
-		species:     species,
-		npcType:     npcType,
-		npcSubtype:  npcSubtype,
-		trait:       trait,
-		drive:       drive,
-		description: description,
-		stats:       helper.CopyMap(stats),
-		items:       helper.CopyMap(items),
-		abilities:   helper.CopyMap(abilities),
+// NewNPC creates a new NPC with the given ID.
+func NewNPC(id string) *NPC {
+	return &NPC{
+		ID:         id,
+		Components: make(map[cp.CompEnum]string),
 	}
 }
 
-// string returns a string representation of the NPC. with all the fields. \n are used to separate the fields.
-func (n NPC) String() string {
-	return "Name: " + n.name + "\n" +
-		"Faction: " + n.faction + "\n" +
-		"Species: " + n.species + "\n" +
-		"Type: " + n.npcType + "\n" +
-		"Subtype: " + n.npcSubtype + "\n" +
-		"Trait: [" + n.trait + "]\n" +
-		"Stats: " + n.PrintStats() + "\n" +
-		"Items: " + n.PrintItems() + "\n"
+// AddComponent attaches a new component to the NPC.
+func (n *NPC) AddComponent(c cp.Component) {
+	n.Components[c.Name] = c.Value
 }
 
-func (n NPC) PrintStats() string {
+// GetComponent retrieves a component by its name.
+// It returns the component and a boolean indicating whether it was found.
+func (n *NPC) GetComponent(name cp.CompEnum) (string, bool) {
+	comp, ok := n.Components[name]
+	return comp, ok
+}
+
+// RemoveComponent detaches a component from the NPC.
+func (n *NPC) RemoveComponent(name cp.CompEnum) {
+	delete(n.Components, name)
+}
+
+// String returns a string representation of the NPC and its components.
+func (n *NPC) String() string {
 	result := ""
-	if len(n.stats) == 0 {
-		return result
-	}
-	for k, v := range n.stats {
-		result += fmt.Sprintf("[%s: %d] ", k, v)
+	//for first 5 components of map print key and value. print all components in one line seperated by,trim last comma
+	for i := range cp.CompEnumValues() {
+		if comp, ok := n.Components[cp.CompEnum(i)]; ok {
+			result += fmt.Sprintf("\n  %s: [%s]", cp.CompEnum(i), comp)
+		}
 	}
 	return result
 }
 
-func (n NPC) PrintItems() string {
+// shortstring returns a string representation of the NPC and its components. It is shorter than the String() method. if comp = Name Type Subtype faction species
+func (n *NPC) ShortString() string {
 	result := ""
-	if len(n.items) == 0 {
-		return result
-	}
-	for k, v := range n.items {
-		result += fmt.Sprintf("[%s: %s] ", k, v)
+	//for first 5 components of map print key and value. print all components in one line seperated by,trim last comma
+	for i := 1; i < 6; i++ {
+		if comp, ok := n.Components[cp.CompEnum(i)]; ok {
+			result += fmt.Sprintf("%s: [%s] ", cp.CompEnum(i), comp)
+		}
 	}
 	return result
+}
+
+// Hascomponent returns true if the NPC has the component
+func (n *NPC) HasComponent(name cp.CompEnum) bool {
+	_, ok := n.Components[name]
+	return ok
 }
