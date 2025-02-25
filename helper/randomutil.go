@@ -45,3 +45,7 @@ func GenerateID() string {
 func RandomInt(min, max int) string {
 	return strconv.Itoa(rand.Intn(max-min+1) + min)
 }
+
+const (
+	Random = "random"
+)

@@ -30,22 +30,30 @@ func main() {
 	}
 
 	for range 5 {
-		npc := service.CreateNPCWithOptions(creationSupplier)
+		npc, err := service.CreateNPCWithOptions("", "", creationSupplier)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 		npcController.AddNpc(npc)
 	}
 
 	// edit a random NPC name
 	npc := npcController.GetAllNpcs()[0]
 	editController.LoadNPC(npc)
-	builder := service.NewNPCBuilderFromNPC(creationSupplier, npc)
+	builder := service.NewNPCBuilder(creationSupplier).WithNPC(npc)
 	fmt.Println("\nUpdate NPC with name: " + npc.GetComponent(cp.CompName))
-	builder.WithName().Build()
+	builder.WithRandomName().Build()
 	fmt.Println("for Name: " + npc.GetComponent(cp.CompName))
 	// get id
 	npcController.UpdateNpc(editController.SaveNPC())
 	npcController.DeleteAllNPC()
 
 	// add a new NPC
-	npc = service.CreateNPCWithOptions(creationSupplier)
+	npc, err := service.CreateNPCWithOptions("", "", creationSupplier)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	npcController.AddNpc(npc)
 }

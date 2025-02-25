@@ -44,8 +44,9 @@ func (n *NPC) String() string {
 	result := ""
 	//for first 5 components of map print key and value. print all components in one line seperated by,trim last comma
 	for i := range cp.CompEnumValues() {
-		if comp, ok := n.Components[cp.CompEnum(i)]; ok {
-			result += fmt.Sprintf("\n  %s: [%s]", cp.CompEnum(i), comp)
+		c := cp.CompEnum(i + 1)
+		if comp, ok := n.Components[c]; ok {
+			result += fmt.Sprintf("\n  %s: [%s]", c, comp)
 		}
 	}
 	return result

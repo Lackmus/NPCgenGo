@@ -27,7 +27,7 @@ func (n NPCSubtype) NewNPCSubtypeComponent() *Component {
 }
 
 // NewNPCSubtypeComponentWithStats creates a new component for the NPCSubtype with stats.
-func (n NPCSubtype) NewNPCSubtypeComponentWithStats() *Component {
+func (n NPCSubtype) NewNPCSubtypeStatsComponent() *Component {
 	// make stats string with random int value 1-10
 	statsString := ""
 	for _, v := range n.Stats {
@@ -40,7 +40,7 @@ func (n NPCSubtype) NewNPCSubtypeComponentWithStats() *Component {
 }
 
 // NewNPCSubtypeComponentWithEquipment creates a new component for the NPCSubtype with equipment.
-func (n NPCSubtype) NewNPCSubtypeComponentWithEquipment() *Component {
+func (n NPCSubtype) NewNPCSubtypeEquipmentComponent() *Component {
 	itemString := ""
 	for k, v := range n.EquipmentOptions {
 		itemString += k + ": " + helper.GetRandomElement(v) + ", "

@@ -1,153 +1,245 @@
 package service
 
 import (
-	"log"
+	"errors"
+	"fmt"
 
 	m "github.com/lackmus/npcgengo/model"
 	cp "github.com/lackmus/npcgengo/model/npc_components" // assumed package for component types/keys
 )
 
+const (
+	DEFAULT_NPC_TYPE = "default"
+)
+
 // NPCBuilder constructs an NPC step by step.
+// It holds an internal error field that accumulates errors encountered during the build process.
 type NPCBuilder struct {
 	npc     *m.NPC
 	c       *NPCCreationSupplier
 	subtype *cp.NPCSubtype
 	species *cp.Species
 	npctype string
+	err     error
 }
 
-// NewNPCBuilder creates a new NPCBuilder.
+// NewNPCBuilder creates a new NPCBuilder using the proper NPC constructor.
 func NewNPCBuilder(c *NPCCreationSupplier) *NPCBuilder {
 	return &NPCBuilder{
-		npc: m.NewNPC(c.RandomizerService.GenerateID()),
-		c:   c,
-	}
-}
-
-// build from npc
-func NewNPCBuilderFromNPC(c *NPCCreationSupplier, npc m.NPC) *NPCBuilder {
-	subtype := c.CreationDataService.GetNpcSubtypeData(npc.GetComponent(cp.CompSubtype))
-	species := c.CreationDataService.GetSpeciesData(npc.GetComponent(cp.CompSpecies))
-	return &NPCBuilder{
-		npc:     &npc,
+		npc:     m.NewNPC(c.RandomizerService.GenerateID()),
 		c:       c,
-		subtype: &subtype,
-		species: &species,
-		npctype: npc.GetComponent(cp.CompType),
+		npctype: DEFAULT_NPC_TYPE,
 	}
 }
 
-// WithRandomType sets a random type for the NPC.
+// WithNPC sets the NPC to the provided value and updates internal fields.
+func (b *NPCBuilder) WithNPC(npc m.NPC) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
+	b.npc = &npc
+	subtypeID := npc.GetComponent(cp.CompSubtype)
+	speciesID := npc.GetComponent(cp.CompSpecies)
+	if subtypeID == "" || speciesID == "" {
+		b.err = errors.New("provided NPC is missing subtype or species components")
+		return b
+	}
+	subtype := b.c.CreationDataService.GetNpcSubtypeData(subtypeID)
+	species := b.c.CreationDataService.GetSpeciesData(speciesID)
+	b.subtype = &subtype
+	b.species = &species
+	b.npctype = npc.GetComponent(cp.CompType)
+	return b
+}
+
+// ----- Type Methods -----
+
+// WithType sets the NPC's type to the provided value.
 func (b *NPCBuilder) WithType(npctype string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
 	data := b.c.CreationDataService.GetNpcTypeData(npctype)
 	b.npctype = npctype
 	b.npc.AddComponent(*data.NewNPCTypeComponent())
 	return b
 }
 
-// WithRandomType sets a random type for the NPC.
+// WithRandomType sets the NPC's type by selecting a random type.
 func (b *NPCBuilder) WithRandomType() *NPCBuilder {
-	npctype := b.c.RandomizerService.RandomType()
-	return b.WithType(npctype)
+	if b.err != nil {
+		return b
+	}
+	randomType := b.c.RandomizerService.RandomType()
+	return b.WithType(randomType)
 }
 
-// WithRandomSubtype sets a random subtype for the NPC.
+// ----- Subtype Methods -----
+
+// WithSubtype sets the NPC's subtype to the provided value.
 func (b *NPCBuilder) WithSubtype(subtype string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
 	data := b.c.CreationDataService.GetNpcSubtypeData(subtype)
 	b.subtype = &data
 	b.npc.AddComponent(*b.subtype.NewNPCSubtypeComponent())
 	return b
 }
 
-// WithRandomSubtype sets a random subtype for the NPC.
+// WithRandomSubtype sets the NPC's subtype by selecting a random subtype.
+// It requires that the NPC type is already set.
 func (b *NPCBuilder) WithRandomSubtype() *NPCBuilder {
-	if b.npctype == "" {
-		b.WithRandomType()
+	if b.err != nil {
+		return b
 	}
-	s := b.c.RandomizerService.RandomSubtype(b.npctype)
-	return b.WithSubtype(s)
+	if b.npctype == DEFAULT_NPC_TYPE {
+		b.err = errors.New("type must be set before subtype can be added")
+		return b
+	}
+	randomSubtype := b.c.RandomizerService.RandomSubtype(b.npctype)
+	return b.WithSubtype(randomSubtype)
 }
 
+// WithSubtypeStats sets the NPC's subtype stats from a provided string.
 func (b *NPCBuilder) WithSubtypeStats(stats string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
 	b.npc.AddComponent(cp.Component{Name: cp.CompStats, Value: stats})
 	return b
 }
 
-// WithRandomSubtypeStats sets random stats for the NPC subtype.
+// WithRandomSubtypeStats sets the NPC's subtype stats using a random generator.
+// Requires that a subtype has been set.
 func (b *NPCBuilder) WithRandomSubtypeStats() *NPCBuilder {
-	if b.subtype == nil {
-		log.Fatal("Subtype must be set before stats can be added.")
+	if b.err != nil {
+		return b
 	}
-	b.npc.AddComponent(*b.subtype.NewNPCSubtypeComponentWithStats())
+	if b.subtype == nil {
+		b.err = errors.New("subtype must be set before stats can be added")
+		return b
+	}
+	b.npc.AddComponent(*b.subtype.NewNPCSubtypeStatsComponent())
 	return b
 }
 
-// withsubtypeequipment
-func (b *NPCBuilder) WithSubtypeEquipment(ítems string) *NPCBuilder {
-	b.npc.AddComponent(cp.Component{Name: cp.CompItems, Value: ítems})
+// WithSubtypeEquipment sets the NPC's equipment with the provided string.
+func (b *NPCBuilder) WithSubtypeEquipment(items string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
+	b.npc.AddComponent(cp.Component{Name: cp.CompItems, Value: items})
 	return b
 }
 
-// WithRandomSubtypeEquipment sets random equipment for the NPC subtype.
+// WithRandomSubtypeEquipment sets the NPC's equipment using random generation.
+// Requires that a subtype has been set.
 func (b *NPCBuilder) WithRandomSubtypeEquipment() *NPCBuilder {
-	if b.subtype == nil {
-		log.Fatal("Subtype must be set before equipment can be added.")
+	if b.err != nil {
+		return b
 	}
-	b.npc.AddComponent(*b.subtype.NewNPCSubtypeComponentWithEquipment())
+	if b.subtype == nil {
+		b.err = errors.New("subtype must be set before equipment can be added")
+		return b
+	}
+	b.npc.AddComponent(*b.subtype.NewNPCSubtypeEquipmentComponent())
 	return b
 }
 
-// WithRandomSpeciesAndName sets a random species and name for the NPC.
+// ----- Species and Name Methods -----
+
+// WithSpecies sets the NPC's species to the provided value.
 func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
 	data := b.c.CreationDataService.GetSpeciesData(species)
 	b.species = &data
 	b.npc.AddComponent(*b.species.NewSpeciesComponent())
 	return b
 }
 
-// WithRandomSpeciesAndName sets a random species and name for the NPC.
+// WithRandomSpecies sets the NPC's species by selecting a random species.
 func (b *NPCBuilder) WithRandomSpecies() *NPCBuilder {
-	species := b.c.RandomizerService.RandomSpecies()
-	return b.WithSpecies(species)
+	if b.err != nil {
+		return b
+	}
+	randomSpecies := b.c.RandomizerService.RandomSpecies()
+	return b.WithSpecies(randomSpecies)
 }
 
-// WithRandomName sets a random name for the NPC.
-func (b *NPCBuilder) WithName() *NPCBuilder {
+// WithName sets the NPC's name to the provided value.
+func (b *NPCBuilder) WithName(name string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
+	b.npc.AddComponent(cp.Component{Name: cp.CompName, Value: name})
+	return b
+}
+
+// WithRandomName sets the NPC's name using random generation based on the current species.
+// Requires that a species has been set.
+func (b *NPCBuilder) WithRandomName() *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
 	if b.species == nil {
-		log.Fatal("Species must be set before name can be added.")
+		b.err = errors.New("species must be set before name can be added")
+		return b
 	}
 	data := b.c.CreationDataService.GetNameData(b.species.NameSource)
 	b.npc.AddComponent(*data.NewNameComponent())
 	return b
 }
 
-// WithRandomFaction sets a random faction for the NPC.
+// ----- Faction and Trait Methods -----
+
+// WithFaction sets the NPC's faction to the provided value.
 func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
 	data := b.c.CreationDataService.GetFactionData(faction)
 	b.npc.AddComponent(*data.NewFactionComponent())
 	return b
 }
 
-// WithRandomFaction sets a random faction for the NPC.
+// WithRandomFaction sets the NPC's faction by selecting a random faction.
 func (b *NPCBuilder) WithRandomFaction() *NPCBuilder {
-	faction := b.c.RandomizerService.RandomFaction()
-	return b.WithFaction(faction)
+	if b.err != nil {
+		return b
+	}
+	randomFaction := b.c.RandomizerService.RandomFaction()
+	return b.WithFaction(randomFaction)
 }
 
-// WithRandomTrait sets a random trait for the NPC.
+// WithTrait sets the NPC's trait to the provided value.
 func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
 	data := b.c.CreationDataService.GetTraitData(trait)
 	b.npc.AddComponent(*data.NewTraitComponent())
 	return b
 }
 
-// WithRandomTrait sets a random trait for the NPC.
+// WithRandomTrait sets the NPC's trait by selecting a random trait.
 func (b *NPCBuilder) WithRandomTrait() *NPCBuilder {
-	trait := b.c.RandomizerService.RandomTrait()
-	return b.WithTrait(trait)
+	if b.err != nil {
+		return b
+	}
+	randomTrait := b.c.RandomizerService.RandomTrait()
+	return b.WithTrait(randomTrait)
 }
 
-// Build constructs the NPC.
-func (b *NPCBuilder) Build() m.NPC {
-	return *b.npc
+// ----- Build Method -----
+
+// Build finalizes and returns the constructed NPC. If any error was encountered during the build process,
+// it returns the error.
+func (b *NPCBuilder) Build() (m.NPC, error) {
+	if b.err != nil {
+		return m.NPC{}, fmt.Errorf("failed to build NPC: %w", b.err)
+	}
+	return *b.npc, nil
 }
