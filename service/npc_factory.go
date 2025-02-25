@@ -1,8 +1,7 @@
 package service
 
 import (
-	"fmt"
-
+	h "github.com/lackmus/npcgengo/helper"
 	m "github.com/lackmus/npcgengo/model"
 )
 
@@ -12,20 +11,20 @@ func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier
 	builder := NewNPCBuilder(c)
 
 	// Use provided npctype if available; otherwise, use random.
-	if npctype == "" {
+	if npctype == h.Random {
 		builder = builder.WithRandomType()
 	} else {
 		builder = builder.WithType(npctype)
 	}
 
 	// Use provided faction if available; otherwise, use random.
-	if faction == "" {
+	if faction == h.Random {
 		builder = builder.WithRandomFaction()
 	} else {
 		builder = builder.WithFaction(faction)
 	}
 
-	npc, err := builder.
+	return builder.
 		WithRandomSubtype().
 		WithRandomSubtypeStats().
 		WithRandomSubtypeEquipment().
@@ -33,8 +32,4 @@ func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier
 		WithRandomName().
 		WithRandomTrait().
 		Build()
-	if err != nil {
-		return m.NPC{}, fmt.Errorf("error creating NPC: %w", err)
-	}
-	return npc, nil
 }

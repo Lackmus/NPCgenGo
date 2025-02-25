@@ -27,11 +27,13 @@ func NewNPCListController(storage shared.NPCStorage, creationSupplier *service.N
 
 // InitEditController initializes the NPC edit controller.
 func (c *NPCListController) InitEditController(editView shared.NPCEditViewer) *NPCEditController {
+	log.Println("Initializing edit controller...")
 	return NewNPCEditController(editView, c.creationSupplier)
 }
 
 // InitView notifies observers to initialize the view.
 func (c *NPCListController) InitView() {
+	log.Println("Initializing view...")
 	c.NotifyObservers()
 }
 

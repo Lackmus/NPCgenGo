@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/lackmus/npcgengo/controller"
+	h "github.com/lackmus/npcgengo/helper"
 	"github.com/lackmus/npcgengo/loader"
 	cp "github.com/lackmus/npcgengo/model/npc_components"
 	"github.com/lackmus/npcgengo/service"
@@ -30,7 +31,7 @@ func main() {
 	}
 
 	for range 5 {
-		npc, err := service.CreateNPCWithOptions("", "", creationSupplier)
+		npc, err := service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -50,7 +51,7 @@ func main() {
 	npcController.DeleteAllNPC()
 
 	// add a new NPC
-	npc, err := service.CreateNPCWithOptions("", "", creationSupplier)
+	npc, err := service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
 	if err != nil {
 		fmt.Println(err)
 		return
