@@ -7,9 +7,9 @@ import (
 func CreateNPCWithOptions(c *NPCCreationSupplier) m.NPC {
 	return NewNPCBuilder(c).
 		WithRandomType().
-		WithRandomSubtype().    // Base subtype component.
-		WithSubtypeStats().     // Separate stats component.
-		WithSubtypeEquipment(). // Separate equipment component.
+		WithRandomSubtype().          // Base subtype component.
+		WithRandomSubtypeStats().     // Separate stats component.
+		WithRandomSubtypeEquipment(). // Separate equipment component.
 		WithRandomSpecies().
 		WithName().
 		WithRandomFaction().

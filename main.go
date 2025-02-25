@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/lackmus/npcgengo/controller"
 	"github.com/lackmus/npcgengo/loader"
 	cp "github.com/lackmus/npcgengo/model/npc_components"
@@ -35,17 +37,12 @@ func main() {
 	// edit a random NPC name
 	npc := npcController.GetAllNpcs()[0]
 	editController.LoadNPC(npc)
-	editController.EditNPC().Components[cp.CompName] = "New Name"
+	builder := service.NewNPCBuilderFromNPC(creationSupplier, npc)
+	fmt.Println("\nUpdate NPC with name: " + npc.GetComponent(cp.CompName))
+	builder.WithName().Build()
+	fmt.Println("for Name: " + npc.GetComponent(cp.CompName))
+	// get id
 	npcController.UpdateNpc(editController.SaveNPC())
-
-	/*
-		for _, npc := range npcController.GetAllNpcs() {
-			editController.LoadNPC(npc)
-			editController.RandomizeField("name")
-			npcController.UpdateNpc(editController.SaveNPC())
-		}
-	*/
-
 	npcController.DeleteAllNPC()
 
 	// add a new NPC

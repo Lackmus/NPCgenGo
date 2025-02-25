@@ -27,9 +27,11 @@ func (n *NPC) AddComponent(c cp.Component) {
 
 // GetComponent retrieves a component by its name.
 // It returns the component and a boolean indicating whether it was found.
-func (n *NPC) GetComponent(name cp.CompEnum) (string, bool) {
-	comp, ok := n.Components[name]
-	return comp, ok
+func (n *NPC) GetComponent(name cp.CompEnum) string {
+	if n.HasComponent(name) {
+		return n.Components[name]
+	}
+	return ""
 }
 
 // RemoveComponent detaches a component from the NPC.

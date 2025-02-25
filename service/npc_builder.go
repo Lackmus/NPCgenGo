@@ -24,23 +24,36 @@ func NewNPCBuilder(c *NPCCreationSupplier) *NPCBuilder {
 	}
 }
 
+// build from npc
+func NewNPCBuilderFromNPC(c *NPCCreationSupplier, npc m.NPC) *NPCBuilder {
+	subtype := c.CreationDataService.GetNpcSubtypeData(npc.GetComponent(cp.CompSubtype))
+	species := c.CreationDataService.GetSpeciesData(npc.GetComponent(cp.CompSpecies))
+	return &NPCBuilder{
+		npc:     &npc,
+		c:       c,
+		subtype: &subtype,
+		species: &species,
+		npctype: npc.GetComponent(cp.CompType),
+	}
+}
+
 // WithRandomType sets a random type for the NPC.
-func (b *NPCBuilder) WithType(t string) *NPCBuilder {
-	data := b.c.CreationDataService.GetNpcTypeData(t)
-	b.npctype = t
+func (b *NPCBuilder) WithType(npctype string) *NPCBuilder {
+	data := b.c.CreationDataService.GetNpcTypeData(npctype)
+	b.npctype = npctype
 	b.npc.AddComponent(*data.NewNPCTypeComponent())
 	return b
 }
 
 // WithRandomType sets a random type for the NPC.
 func (b *NPCBuilder) WithRandomType() *NPCBuilder {
-	t := b.c.RandomizerService.RandomType()
-	return b.WithType(t)
+	npctype := b.c.RandomizerService.RandomType()
+	return b.WithType(npctype)
 }
 
 // WithRandomSubtype sets a random subtype for the NPC.
-func (b *NPCBuilder) WithSubtype(t string) *NPCBuilder {
-	data := b.c.CreationDataService.GetNpcSubtypeData(t)
+func (b *NPCBuilder) WithSubtype(subtype string) *NPCBuilder {
+	data := b.c.CreationDataService.GetNpcSubtypeData(subtype)
 	b.subtype = &data
 	b.npc.AddComponent(*b.subtype.NewNPCSubtypeComponent())
 	return b
@@ -55,8 +68,13 @@ func (b *NPCBuilder) WithRandomSubtype() *NPCBuilder {
 	return b.WithSubtype(s)
 }
 
+func (b *NPCBuilder) WithSubtypeStats(stats string) *NPCBuilder {
+	b.npc.AddComponent(cp.Component{Name: cp.CompStats, Value: stats})
+	return b
+}
+
 // WithRandomSubtypeStats sets random stats for the NPC subtype.
-func (b *NPCBuilder) WithSubtypeStats() *NPCBuilder {
+func (b *NPCBuilder) WithRandomSubtypeStats() *NPCBuilder {
 	if b.subtype == nil {
 		log.Fatal("Subtype must be set before stats can be added.")
 	}
@@ -64,8 +82,14 @@ func (b *NPCBuilder) WithSubtypeStats() *NPCBuilder {
 	return b
 }
 
+// withsubtypeequipment
+func (b *NPCBuilder) WithSubtypeEquipment(ítems string) *NPCBuilder {
+	b.npc.AddComponent(cp.Component{Name: cp.CompItems, Value: ítems})
+	return b
+}
+
 // WithRandomSubtypeEquipment sets random equipment for the NPC subtype.
-func (b *NPCBuilder) WithSubtypeEquipment() *NPCBuilder {
+func (b *NPCBuilder) WithRandomSubtypeEquipment() *NPCBuilder {
 	if b.subtype == nil {
 		log.Fatal("Subtype must be set before equipment can be added.")
 	}
@@ -83,8 +107,8 @@ func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder {
 
 // WithRandomSpeciesAndName sets a random species and name for the NPC.
 func (b *NPCBuilder) WithRandomSpecies() *NPCBuilder {
-	s := b.c.RandomizerService.RandomSpecies()
-	return b.WithSpecies(s)
+	species := b.c.RandomizerService.RandomSpecies()
+	return b.WithSpecies(species)
 }
 
 // WithRandomName sets a random name for the NPC.
@@ -98,29 +122,29 @@ func (b *NPCBuilder) WithName() *NPCBuilder {
 }
 
 // WithRandomFaction sets a random faction for the NPC.
-func (b *NPCBuilder) WithFaction(f string) *NPCBuilder {
-	data := b.c.CreationDataService.GetFactionData(f)
+func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder {
+	data := b.c.CreationDataService.GetFactionData(faction)
 	b.npc.AddComponent(*data.NewFactionComponent())
 	return b
 }
 
 // WithRandomFaction sets a random faction for the NPC.
 func (b *NPCBuilder) WithRandomFaction() *NPCBuilder {
-	f := b.c.RandomizerService.RandomFaction()
-	return b.WithFaction(f)
+	faction := b.c.RandomizerService.RandomFaction()
+	return b.WithFaction(faction)
 }
 
 // WithRandomTrait sets a random trait for the NPC.
-func (b *NPCBuilder) WithTrait(t string) *NPCBuilder {
-	data := b.c.CreationDataService.GetTraitData(t)
+func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder {
+	data := b.c.CreationDataService.GetTraitData(trait)
 	b.npc.AddComponent(*data.NewTraitComponent())
 	return b
 }
 
 // WithRandomTrait sets a random trait for the NPC.
 func (b *NPCBuilder) WithRandomTrait() *NPCBuilder {
-	t := b.c.RandomizerService.RandomTrait()
-	return b.WithTrait(t)
+	trait := b.c.RandomizerService.RandomTrait()
+	return b.WithTrait(trait)
 }
 
 // Build constructs the NPC.
