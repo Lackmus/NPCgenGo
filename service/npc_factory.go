@@ -31,5 +31,6 @@ func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier
 		WithRandomSpecies().
 		WithRandomName().
 		WithRandomTrait().
+		WithRandomDescription().
 		Build()
 }

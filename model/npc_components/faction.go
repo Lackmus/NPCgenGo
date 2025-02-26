@@ -11,8 +11,8 @@ func (f Faction) GetName() string {
 	return f.Name
 }
 
-func (f Faction) NewFactionComponent() *Component {
-	return &Component{
+func (f Faction) NewFactionComponent() *NPCComponent {
+	return &NPCComponent{
 		Name:  CompFaction,
 		Value: f.Name,
 	}

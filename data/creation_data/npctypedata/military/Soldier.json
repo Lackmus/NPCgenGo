@@ -26,5 +26,11 @@
             "Cloak",
             "Scabbard"
         ]
-    }
+    },
+    "description": [
+        "A soldier who fights for their faction.",
+        "A soldier who protects the kingdom from threats.",
+        "A soldier who serves in the army to defend the realm.",
+        "A soldier who trains to be the best warrior they can be."
+    ]
 }

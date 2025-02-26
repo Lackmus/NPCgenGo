@@ -21,7 +21,7 @@ func NewNPC(id string) *NPC {
 }
 
 // AddComponent attaches a new component to the NPC.
-func (n *NPC) AddComponent(c cp.Component) {
+func (n *NPC) AddComponent(c cp.NPCComponent) {
 	n.Components[c.Name] = c.Value
 }
 

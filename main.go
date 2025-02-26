@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/lackmus/npcgengo/controller"
 	h "github.com/lackmus/npcgengo/helper"
@@ -57,4 +59,23 @@ func main() {
 		return
 	}
 	npcController.AddNpc(npc)
+
+	rootDir := "." // Change this to your app’s root directory if needed
+	fmt.Println(rootDir)
+	//printDirStructure(rootDir, "")
+}
+
+func printDirStructure(root string, indent string) {
+	entries, err := os.ReadDir(root)
+	if err != nil {
+		fmt.Println("Error reading directory:", err)
+		return
+	}
+
+	for _, entry := range entries {
+		fmt.Println(indent + "|-- " + entry.Name())
+		if entry.IsDir() {
+			printDirStructure(filepath.Join(root, entry.Name()), indent+"    ")
+		}
+	}
 }

@@ -17,10 +17,10 @@ func (n NameData) GetName() string {
 }
 
 // NewNameComponent : Create a new component for the name
-func (n NameData) NewNameComponent() *Component {
+func (n NameData) NewNameComponent() *NPCComponent {
 	forname := helper.GetRandomElement(n.Forenames)
 	surname := helper.GetRandomElement(n.Surnames)
-	return &Component{
+	return &NPCComponent{
 		Name:  CompName,
 		Value: forname + " " + surname,
 	}

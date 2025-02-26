@@ -15,20 +15,23 @@ const (
 // NPCBuilder constructs an NPC step by step.
 // It holds an internal error field that accumulates errors encountered during the build process.
 type NPCBuilder struct {
-	npc     *m.NPC
-	c       *NPCCreationSupplier
-	subtype *cp.NPCSubtype
-	species *cp.Species
-	npctype string
-	err     error
+	npc         *m.NPC
+	c           *NPCCreationSupplier
+	subtype     *cp.NPCSubtype
+	species     *cp.Species
+	npctype     string
+	Description string
+	err         error
 }
 
 // NewNPCBuilder creates a new NPCBuilder using the proper NPC constructor.
 func NewNPCBuilder(c *NPCCreationSupplier) *NPCBuilder {
 	return &NPCBuilder{
-		npc:     m.NewNPC(c.RandomizerService.GenerateID()),
-		c:       c,
-		npctype: DEFAULT_NPC_TYPE,
+		npc:         m.NewNPC(c.RandomizerService.GenerateID()),
+		c:           c,
+		npctype:     DEFAULT_NPC_TYPE,
+		Description: "",
+		err:         nil,
 	}
 }
 
@@ -106,7 +109,7 @@ func (b *NPCBuilder) WithSubtypeStats(stats string) *NPCBuilder {
 	if b.err != nil {
 		return b
 	}
-	b.npc.AddComponent(cp.Component{Name: cp.CompStats, Value: stats})
+	b.npc.AddComponent(cp.NPCComponent{Name: cp.CompStats, Value: stats})
 	return b
 }
 
@@ -129,7 +132,7 @@ func (b *NPCBuilder) WithSubtypeEquipment(items string) *NPCBuilder {
 	if b.err != nil {
 		return b
 	}
-	b.npc.AddComponent(cp.Component{Name: cp.CompItems, Value: items})
+	b.npc.AddComponent(cp.NPCComponent{Name: cp.CompItems, Value: items})
 	return b
 }
 
@@ -174,7 +177,7 @@ func (b *NPCBuilder) WithName(name string) *NPCBuilder {
 	if b.err != nil {
 		return b
 	}
-	b.npc.AddComponent(cp.Component{Name: cp.CompName, Value: name})
+	b.npc.AddComponent(cp.NPCComponent{Name: cp.CompName, Value: name})
 	return b
 }
 
@@ -231,6 +234,39 @@ func (b *NPCBuilder) WithRandomTrait() *NPCBuilder {
 	}
 	randomTrait := b.c.RandomizerService.RandomTrait()
 	return b.WithTrait(randomTrait)
+}
+
+// ----- Description Methods -----
+
+// WithDescription sets the NPC's description to the provided value.
+func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
+	// Wrap the current description component with additional info.
+	b.Description = description
+	return b
+}
+
+// WithRandomDescription sets the NPC's description using random generation.
+// It combines multiple sources of description data.
+func (b *NPCBuilder) WithRandomDescription() *NPCBuilder {
+	if b.err != nil {
+		return b
+	}
+	// You might want to combine multiple description sources.
+	if b.subtype != nil {
+		b.Description = b.subtype.GetDescription() + " "
+	}
+	if b.species != nil {
+		b.Description += b.species.GetDescription() + " "
+	}
+	// Only add the component if a description exists.
+	if b.Description != "" {
+
+		b.npc.AddComponent(cp.NPCComponent{Name: cp.CompDescription, Value: b.Description[0 : len(b.Description)-1]})
+	}
+	return b
 }
 
 // ----- Build Method -----

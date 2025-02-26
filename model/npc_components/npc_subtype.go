@@ -8,7 +8,7 @@ import (
 type NPCSubtype struct {
 	Name             string
 	NpcTypeName      string
-	Description      string
+	Description      []string
 	Stats            []string
 	EquipmentOptions map[string][]string
 }
@@ -19,36 +19,38 @@ func (n NPCSubtype) GetName() string {
 }
 
 // NewNPCSubtypeComponent creates a new component for the NPCSubtype.
-func (n NPCSubtype) NewNPCSubtypeComponent() *Component {
-	return &Component{
+func (n NPCSubtype) NewNPCSubtypeComponent() *NPCComponent {
+	return &NPCComponent{
 		Name:  CompSubtype,
 		Value: n.Name,
 	}
 }
 
 // NewNPCSubtypeComponentWithStats creates a new component for the NPCSubtype with stats.
-func (n NPCSubtype) NewNPCSubtypeStatsComponent() *Component {
-	// make stats string with random int value 1-10
+func (n NPCSubtype) NewNPCSubtypeStatsComponent() *NPCComponent {
 	statsString := ""
 	for _, v := range n.Stats {
 		statsString += v + ": " + helper.RandomInt(1, 10) + ", "
 	}
-	return &Component{
+	return &NPCComponent{
 		Name:  CompStats,
 		Value: statsString[:len(statsString)-2],
 	}
 }
 
 // NewNPCSubtypeComponentWithEquipment creates a new component for the NPCSubtype with equipment.
-func (n NPCSubtype) NewNPCSubtypeEquipmentComponent() *Component {
+func (n NPCSubtype) NewNPCSubtypeEquipmentComponent() *NPCComponent {
 	itemString := ""
 	for k, v := range n.EquipmentOptions {
 		itemString += k + ": " + helper.GetRandomElement(v) + ", "
 	}
-	return &Component{
-		Name: CompItems,
-		// helper.randomElement
-
+	return &NPCComponent{
+		Name:  CompItems,
 		Value: itemString[:len(itemString)-2],
 	}
+}
+
+// NewSubtypeDescription returns the description component of the NPCSubtype.
+func (n NPCSubtype) GetDescription() string {
+	return helper.GetRandomElement(n.Description)
 }

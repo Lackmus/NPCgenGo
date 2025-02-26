@@ -13,8 +13,8 @@ func (t Trait) GetName() string {
 }
 
 // NewTraitComponent creates a new component for the trait
-func (t Trait) NewTraitComponent() *Component {
-	return &Component{
+func (t Trait) NewTraitComponent() *NPCComponent {
+	return &NPCComponent{
 		Name:  CompTrait,
 		Value: t.Name + ": " + t.Description + " Opposes: " + t.Opposes,
 	}
