@@ -4,8 +4,6 @@ package helper
 import (
 	"math/rand"
 	"strconv"
-
-	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
 // GetRandomElement returns a random element from a non-empty slice.
@@ -31,17 +29,6 @@ func NewRandomMapKeySelector[K comparable, V any](m map[K]V) func() K {
 	return func() K {
 		return GetRandomElement(keys)
 	}
-}
-
-// GenerateID tries to create a unique ID, falling back to an incrementing counter.
-// It returns a unique ID as a string.
-// Note: This function is not guaranteed to return a unique ID.
-func GenerateID() string {
-	id, err := gonanoid.New(6)
-	if err == nil {
-		return id
-	}
-	return "fallback-id"
 }
 
 // RandomInt returns a random integer in the range [min, max].

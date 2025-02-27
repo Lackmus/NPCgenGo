@@ -45,7 +45,3 @@ func (r *RandomizerService) RandomSubtype(npcType string) string {
 	subtype := helper.GetRandomElement(r.npcCreationOptions.NpcSubtypeForTypeMap[npcType])
 	return subtype
 }
-
-func (r *RandomizerService) GenerateID() string {
-	return helper.GenerateID()
-}
