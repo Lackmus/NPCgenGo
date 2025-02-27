@@ -63,6 +63,24 @@ func main() {
 	rootDir := "." // Change this to your app’s root directory if needed
 	fmt.Println(rootDir)
 	//printDirStructure(rootDir, "")
+	//add and delete a few NPCs, leave 5 NPCs in the list
+	for i := 0; i < 5; i++ {
+		npc, err := service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		npcController.AddNpc(npc)
+	}
+	// delete one NPC
+	npcController.DeleteNPC(npcController.GetAllNpcs()[0].ID)
+	// add a new NPC
+	npc, err = service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	npcController.AddNpc(npc)
 }
 
 func printDirStructure(root string, indent string) {

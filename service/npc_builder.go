@@ -28,7 +28,7 @@ type NPCBuilder struct {
 // NewNPCBuilder creates a new NPCBuilder using the proper NPC constructor.
 func NewNPCBuilder(supplier *NPCCreationSupplier) *NPCBuilder {
 	return &NPCBuilder{
-		npc:      m.NewNPC(supplier.RandomizerService.GenerateID()),
+		npc:      m.NewNPC(),
 		supplier: supplier,
 		err:      nil,
 	}

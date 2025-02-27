@@ -16,9 +16,8 @@ type NPC struct {
 
 // NewNPC creates a new NPC with the given ID.
 // It returns a pointer to the new NPC.
-func NewNPC(id string) *NPC {
+func NewNPC() *NPC {
 	return &NPC{
-		ID:         id,
 		Components: make(map[cp.CompEnum]string),
 	}
 }

@@ -4,6 +4,8 @@ package service
 import (
 	"fmt"
 	"log"
+	"sort"
+	"strconv"
 
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/shared"
@@ -14,18 +16,25 @@ import (
 type NPCService struct {
 	loader shared.NPCStorage
 	npcs   map[string]model.NPC // Using a map for faster lookup instead of a slice.
+	// idCounter is the next new ID to use if no free IDs are available.
+	idCounter int
+	// freeIDs holds IDs (as integers) that became available when NPCs were deleted.
+	freeIDs []int
 }
 
 // NewNPCService creates a new NPCService with the provided NPC storage.
 // It initializes the service with the NPCs from the storage.
 func NewNPCService(loader shared.NPCStorage) *NPCService {
-	n := &NPCService{loader: loader}
-	n.initNPCService(loader)
-	return n
+	s := &NPCService{
+		loader: loader,
+		npcs:   make(map[string]model.NPC),
+	}
+	s.initNPCService(loader)
+	return s
 }
 
 // initNPCService initializes the NPCService with NPCs from the storage.
-// It is called during the creation of the NPCService.
+// It also scans the loaded NPCs to set the idCounter to one greater than the highest existing ID.
 func (s *NPCService) initNPCService(loader shared.NPCStorage) {
 	var err error
 	s.npcs, err = loader.LoadAllNPC()
@@ -33,11 +42,47 @@ func (s *NPCService) initNPCService(loader shared.NPCStorage) {
 		log.Printf("Error loading NPCs: %v", err)
 		s.npcs = make(map[string]model.NPC)
 	}
+
+	s.idCounter = 0
+	s.freeIDs = []int{}
+
+	// Iterate over the loaded NPCs to determine the highest used numeric ID.
+	for idStr := range s.npcs {
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			// If an ID is non-numeric, skip it (or handle it differently).
+			log.Printf("Non-numeric NPC ID %q found; skipping for counter purposes", idStr)
+			continue
+		}
+		if id >= s.idCounter {
+			s.idCounter = id + 1
+		}
+	}
+}
+
+// generateNewID returns a new unique ID as a string.
+// It reuses IDs from freeIDs if available; otherwise, it uses idCounter.
+func (s *NPCService) generateNewID() string {
+	var id int
+	if len(s.freeIDs) > 0 {
+		// Use the smallest available ID from freeIDs.
+		id = s.freeIDs[0]
+		// Remove the used ID from freeIDs.
+		s.freeIDs = s.freeIDs[1:]
+	} else {
+		id = s.idCounter
+		s.idCounter++
+	}
+	return strconv.Itoa(id)
 }
 
 // AddNPC adds a new NPC to the service and saves it.
-// It is safe for concurrent use.
+// If the NPC does not already have an ID, it generates one.
 func (s *NPCService) AddNPC(npc model.NPC) {
+	// If npc.ID is empty, assign a new ID.
+	if npc.ID == "" {
+		npc.ID = s.generateNewID()
+	}
 	s.npcs[npc.ID] = npc
 	if err := s.loader.SaveNPC(npc); err != nil {
 		log.Printf("Error saving NPC (ID %s): %v", npc.ID, err)
@@ -81,22 +126,30 @@ func (s *NPCService) UpdateNPC(updatedNPC model.NPC) error {
 }
 
 // DeleteNPC removes an NPC from the map and deletes it from the storage.
-// It returns an error if the NPC with the specified ID is not found.
+// It reclaims the NPC's ID for reuse.
 func (s *NPCService) DeleteNPC(id string) error {
 	if _, found := s.npcs[id]; !found {
 		return fmt.Errorf("NPC with ID %s not found", id)
 	}
 	delete(s.npcs, id)
+	// Try to parse the ID as an int and add it to freeIDs for reuse.
+	if num, err := strconv.Atoi(id); err == nil {
+		s.freeIDs = append(s.freeIDs, num)
+		// Optional: sort freeIDs so that the smallest available ID is used first.
+		sort.Ints(s.freeIDs)
+	}
 	return s.loader.DeleteNPC(id)
 }
 
 // DeleteAllNPC deletes all NPCs from the storage and clears the map.
-// It returns an error if the deletion fails.
+// It also resets the ID counter and freeIDs.
 func (s *NPCService) DeleteAllNPC() {
 	if err := s.loader.DeleteAllNPC(); err != nil {
 		log.Printf("Error deleting all NPCs: %v", err)
 	}
 	s.npcs = make(map[string]model.NPC)
+	s.idCounter = 0
+	s.freeIDs = []int{}
 }
 
 // CountNPC returns the number of NPCs.

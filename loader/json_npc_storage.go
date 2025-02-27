@@ -27,7 +27,8 @@ func NewJSONNPCStorage(dir string) shared.NPCStorage {
 func (j *JSONNPCStorage) LoadNPC(id string) (model.NPC, error) {
 	filename := filepath.Join(j.Dir, id+".json")
 	file, err := os.Open(filename)
-	npc := *model.NewNPC(id)
+	npc := *model.NewNPC()
+	npc.ID = id
 	if err != nil {
 		return model.NPC{}, err
 	}
