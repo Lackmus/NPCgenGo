@@ -1,3 +1,5 @@
+// Description: This file contains the NPCCreationSupplier struct, which encapsulates the services required for NPC creation.
+// The NPCCreationSupplier struct provides the services required for NPC creation.
 package service
 
 import (
@@ -7,25 +9,29 @@ import (
 )
 
 // NPCCreationSupplier encapsulates the services required for NPC creation.
+// It provides the services required for NPC creation.
 type NPCCreationSupplier struct {
 	CreationDataService *CreationDataService
 	CreationOptions     *NPCCreationOptions
 	RandomizerService   *RandomizerService
 }
 
-// NewNPCCreationSupplier initializes an NPCCreationSupplier, logging an error if initialization fails.
+// NewNPCCreationSupplier creates a new NPCCreationSupplier.
+// It returns an error if the data cannot be loaded.
 func NewNPCCreationSupplier(loader shared.NPCConfigLoader) *NPCCreationSupplier {
-	creationDataService, err := NewCreationDataService(loader)
+	c := &NPCCreationSupplier{}
+	c.initCreationSupplier(loader)
+	return c
+}
+
+// initCreationSupplier initializes the services required for NPC creation.
+// It panics if the data cannot be loaded.
+func (c *NPCCreationSupplier) initCreationSupplier(loader shared.NPCConfigLoader) {
+	var err error
+	c.CreationDataService, err = NewCreationDataService(loader)
 	if err != nil {
-		log.Fatalf("Failed to create NPCCreationSupplier: %v", err)
+		log.Fatalf("Failed to initialize CreationDataService: %v", err)
 	}
-
-	creationOptions := NewNPCCreationOptions(creationDataService)
-	randomizerService := NewRandomizerService(creationDataService, creationOptions)
-
-	return &NPCCreationSupplier{
-		CreationDataService: creationDataService,
-		CreationOptions:     creationOptions,
-		RandomizerService:   randomizerService,
-	}
+	c.CreationOptions = NewNPCCreationOptions(c.CreationDataService)
+	c.RandomizerService = NewRandomizerService(c.CreationDataService, c.CreationOptions)
 }
