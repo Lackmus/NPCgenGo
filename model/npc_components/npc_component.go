@@ -5,6 +5,13 @@ type NPCComponent struct {
 	Value string
 }
 
+func NewComponent(name CompEnum, value string) NPCComponent {
+	return NPCComponent{
+		Name:  name,
+		Value: value,
+	}
+}
+
 type CompEnum int
 
 const (

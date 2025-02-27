@@ -7,15 +7,12 @@ type Trait struct {
 	Opposes     string
 }
 
-// Name returns the name of the trait
+// Name returns the name of sthe trait
 func (t Trait) GetName() string {
-	return t.Name
+	return t.Name + "\n  - Opposes: " + t.Opposes
 }
 
-// NewTraitComponent creates a new component for the trait
-func (t Trait) NewTraitComponent() *NPCComponent {
-	return &NPCComponent{
-		Name:  CompTrait,
-		Value: t.Name + ": " + t.Description + " Opposes: " + t.Opposes,
-	}
+// GetDescription returns the description of the trait
+func (t Trait) GetDescription() string {
+	return t.Description
 }

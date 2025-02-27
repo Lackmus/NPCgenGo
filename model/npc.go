@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"strings"
 
 	cp "github.com/lackmus/npcgengo/model/npc_components"
 )
@@ -22,6 +23,9 @@ func NewNPC(id string) *NPC {
 
 // AddComponent attaches a new component to the NPC.
 func (n *NPC) AddComponent(c cp.NPCComponent) {
+	if n.Components == nil {
+		n.Components = make(map[cp.CompEnum]string)
+	}
 	n.Components[c.Name] = c.Value
 }
 
@@ -41,27 +45,28 @@ func (n *NPC) RemoveComponent(name cp.CompEnum) {
 
 // String returns a string representation of the NPC and its components.
 func (n *NPC) String() string {
-	result := ""
-	//for first 5 components of map print key and value. print all components in one line seperated by,trim last comma
+	var sb strings.Builder
+	// for each component, append the name and value
 	for i := range cp.CompEnumValues() {
 		c := cp.CompEnum(i + 1)
 		if comp, ok := n.Components[c]; ok {
-			result += fmt.Sprintf("\n  %s: [%s]", c, comp)
+			sb.WriteString(fmt.Sprintf("\n  %s: %s", c, comp))
 		}
 	}
-	return result
+	return sb.String()
 }
 
 // shortstring returns a string representation of the NPC and its components. It is shorter than the String() method. if comp = Name Type Subtype faction species
 func (n *NPC) ShortString() string {
-	result := ""
-	//for first 5 components of map print key and value. print all components in one line seperated by,trim last comma
-	for i := 1; i < 6; i++ {
-		if comp, ok := n.Components[cp.CompEnum(i)]; ok {
-			result += fmt.Sprintf("%s: [%s] ", cp.CompEnum(i), comp)
+	var sb strings.Builder
+	// for each component, append the name and value
+	for i := range 5 {
+		c := cp.CompEnum(i + 1)
+		if comp, ok := n.Components[c]; ok {
+			sb.WriteString(fmt.Sprintf("%s: [%s] ", c, comp))
 		}
 	}
-	return result
+	return sb.String()
 }
 
 // Hascomponent returns true if the NPC has the component

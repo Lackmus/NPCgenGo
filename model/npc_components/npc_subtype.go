@@ -1,6 +1,8 @@
 package npc_components
 
 import (
+	"strings"
+
 	"github.com/lackmus/npcgengo/helper"
 )
 
@@ -18,36 +20,22 @@ func (n NPCSubtype) GetName() string {
 	return n.Name
 }
 
-// NewNPCSubtypeComponent creates a new component for the NPCSubtype.
-func (n NPCSubtype) NewNPCSubtypeComponent() *NPCComponent {
-	return &NPCComponent{
-		Name:  CompSubtype,
-		Value: n.Name,
-	}
-}
-
 // NewNPCSubtypeComponentWithStats creates a new component for the NPCSubtype with stats.
-func (n NPCSubtype) NewNPCSubtypeStatsComponent() *NPCComponent {
-	statsString := ""
+func (n NPCSubtype) GetStats() string {
+	var sb strings.Builder
 	for _, v := range n.Stats {
-		statsString += v + ": " + helper.RandomInt(1, 10) + ", "
+		sb.WriteString("\n  - " + v + ": " + helper.RandomInt(1, 10))
 	}
-	return &NPCComponent{
-		Name:  CompStats,
-		Value: statsString[:len(statsString)-2],
-	}
+	return sb.String()
 }
 
 // NewNPCSubtypeComponentWithEquipment creates a new component for the NPCSubtype with equipment.
-func (n NPCSubtype) NewNPCSubtypeEquipmentComponent() *NPCComponent {
-	itemString := ""
+func (n NPCSubtype) GetEquipment() string {
+	var sb strings.Builder
 	for k, v := range n.EquipmentOptions {
-		itemString += k + ": " + helper.GetRandomElement(v) + ", "
+		sb.WriteString("\n  - " + k + ": " + helper.GetRandomElement(v))
 	}
-	return &NPCComponent{
-		Name:  CompItems,
-		Value: itemString[:len(itemString)-2],
-	}
+	return sb.String()
 }
 
 // NewSubtypeDescription returns the description component of the NPCSubtype.

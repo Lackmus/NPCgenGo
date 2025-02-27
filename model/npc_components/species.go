@@ -16,13 +16,6 @@ func (s Species) GetName() string {
 	return s.Name
 }
 
-func (s Species) NewSpeciesComponent() *NPCComponent {
-	return &NPCComponent{
-		Name:  CompSpecies,
-		Value: s.Name,
-	}
-}
-
 // GetDescription : Return the description of the Species
 func (s Species) GetDescription() string {
 	return helper.GetRandomElement(s.Description)

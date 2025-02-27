@@ -26,9 +26,9 @@ const (
 type NPCEditController struct {
 	creationSupplier *service.NPCCreationSupplier
 	rand             *service.RandomizerService
-	//npcBuilder       *service.NPCBuilder
-	npc       model.NPC
-	observers []shared.NPCEditObserver
+	npcBuilder       *service.NPCBuilder
+	npc              model.NPC
+	observers        []shared.NPCEditObserver
 }
 
 func NewNPCEditController(view shared.NPCEditViewer, creationSupplier *service.NPCCreationSupplier) *NPCEditController {
