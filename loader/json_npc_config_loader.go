@@ -21,7 +21,8 @@ const (
 	npcMilitarySubtypeDir = "npctypedata/military"
 )
 
-// JSONNPCConfigLoader loads the NPC configuration data from JSON files.
+// JSONNPCConfigLoader loads NPC configuration data from JSON files
+// in a directory.
 type JSONNPCConfigLoader struct {
 	dir string
 }
@@ -32,10 +33,14 @@ func NewJSONNPCConfigLoader(dir string) shared.NPCConfigLoader {
 	}
 }
 
+// LoadFactionMap loads the faction data from the JSON files in the factiondata directory.
+// It returns a map of faction IDs to faction data.
 func (j *JSONNPCConfigLoader) LoadFactionMap() (map[string]c.Faction, error) {
 	return loadJSONMap[c.Faction](filepath.Join(j.dir, factionDir))
 }
 
+// LoadSpeciesMap loads the species data from the JSON files in the speciesdata directory.
+// It returns a map of species IDs to species data.
 func (j *JSONNPCConfigLoader) LoadSpeciesMap() (map[string]c.Species, error) {
 	return loadJSONMap[c.Species](filepath.Join(j.dir, speciesDir))
 }

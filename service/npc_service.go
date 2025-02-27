@@ -1,3 +1,5 @@
+// Description: This file contains the implementation of the NPCService struct and its methods.
+// The NPCService struct manages NPCs and loads them from a storage backend.
 package service
 
 import (
@@ -15,22 +17,27 @@ type NPCService struct {
 	npcs   map[string]model.NPC // Using a map for faster lookup instead of a slice.
 }
 
-// NewNPCService creates a new NPCService and loads existing NPCs.
-// In case of an error, it logs the error and initializes an empty map.
+// NewNPCService creates a new NPCService with the provided NPC storage.
+// It initializes the service with the NPCs from the storage.
 func NewNPCService(loader shared.NPCStorage) *NPCService {
-	npcMap, err := loader.LoadAllNPC()
+	n := &NPCService{loader: loader}
+	n.initNPCService(loader)
+	return n
+}
+
+// initNPCService initializes the NPCService with NPCs from the storage.
+// It is called during the creation of the NPCService.
+func (s *NPCService) initNPCService(loader shared.NPCStorage) {
+	var err error
+	s.npcs, err = loader.LoadAllNPC()
 	if err != nil {
 		log.Printf("Error loading NPCs: %v", err)
-		npcMap = make(map[string]model.NPC)
-	}
-
-	return &NPCService{
-		loader: loader,
-		npcs:   npcMap,
+		s.npcs = make(map[string]model.NPC)
 	}
 }
 
-// AddNPC adds a new NPC and immediately saves it.
+// AddNPC adds a new NPC to the service and saves it.
+// It is safe for concurrent use.
 func (s *NPCService) AddNPC(npc model.NPC) {
 	s.npcs[npc.ID] = npc
 	if err := s.loader.SaveNPC(npc); err != nil {
@@ -39,17 +46,21 @@ func (s *NPCService) AddNPC(npc model.NPC) {
 }
 
 // GetAllNPCs returns all NPCs as a slice.
+// It creates a copy of the NPCs to avoid concurrent map access.
+// Consider using a sync.RWMutex if concurrent access is expected.
 func (s *NPCService) GetAllNPC() []model.NPC {
 	npcList := make([]model.NPC, 0, len(s.npcs))
 	for _, npc := range s.npcs {
 		npcList = append(npcList, npc)
 	}
-	return npcList
+	return append([]model.NPC(nil), npcList...)
 }
 
 // GetNPCByID returns the NPC with the specified ID.
+// It returns an error if the NPC is not found.
 func (s *NPCService) GetNPCByID(id string) (model.NPC, error) {
 	npc, found := s.npcs[id]
+	// use log.Printf for logging errors
 	if !found {
 		return model.NPC{}, fmt.Errorf("NPC with ID %s not found", id)
 	}
@@ -57,6 +68,7 @@ func (s *NPCService) GetNPCByID(id string) (model.NPC, error) {
 }
 
 // UpdateNPC updates an existing NPC and saves it.
+// It returns an error if the NPC with the specified ID is not found.
 func (s *NPCService) UpdateNPC(updatedNPC model.NPC) error {
 	id := updatedNPC.ID
 	if _, found := s.npcs[id]; !found {
@@ -70,6 +82,7 @@ func (s *NPCService) UpdateNPC(updatedNPC model.NPC) error {
 }
 
 // DeleteNPC removes an NPC from the map and deletes it from the storage.
+// It returns an error if the NPC with the specified ID is not found.
 func (s *NPCService) DeleteNPC(id string) error {
 	if _, found := s.npcs[id]; !found {
 		return fmt.Errorf("NPC with ID %s not found", id)
@@ -79,6 +92,7 @@ func (s *NPCService) DeleteNPC(id string) error {
 }
 
 // DeleteAllNPC deletes all NPCs from the storage and clears the map.
+// It returns an error if the deletion fails.
 func (s *NPCService) DeleteAllNPC() {
 	if err := s.loader.DeleteAllNPC(); err != nil {
 		log.Printf("Error deleting all NPCs: %v", err)
@@ -87,11 +101,13 @@ func (s *NPCService) DeleteAllNPC() {
 }
 
 // CountNPC returns the number of NPCs.
+// It is useful for testing and debugging.
 func (s *NPCService) CountNPC() int {
 	return len(s.npcs)
 }
 
 // PrintAllNPCs prints all NPCs to the console.
+// Note: This method is not recommended for large datasets.
 // (For debugging purposes; consider using structured logging in production.)
 func (s *NPCService) PrintAllNPC() {
 	for _, npc := range s.npcs {

@@ -1,3 +1,5 @@
+// Description: This file contains the CreateNPCWithOptions function, which creates an NPC using the provided type and faction values. If npctype or faction is empty, the function uses a random value.
+// The CreateNPCWithOptions function creates an NPC using the provided type and faction values.
 package service
 
 import (

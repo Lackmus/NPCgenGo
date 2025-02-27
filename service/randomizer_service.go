@@ -1,17 +1,20 @@
+// Description: This file contains the RandomizerService struct and its methods. The RandomizerService struct provides randomization services for NPC creation.
+// The RandomizerService struct provides randomization services for NPC creation.
 package service
 
 import (
 	"github.com/lackmus/npcgengo/helper"
 )
 
-// RandomTrait returns a random trait from the provided options.
-// struct
-
+// RandomizerService provides randomization services for NPC creation.
+// It provides randomization services for NPC creation.
 type RandomizerService struct {
 	creationData       *CreationDataService
 	npcCreationOptions *NPCCreationOptions
 }
 
+// NewRandomizerService creates a new RandomizerService.
+// It returns a new RandomizerService.
 func NewRandomizerService(creationData *CreationDataService, npcCreationOptions *NPCCreationOptions) *RandomizerService {
 	return &RandomizerService{
 		creationData:       creationData,
