@@ -1,3 +1,4 @@
+// Description: This file contains the controller for the list of NPCs.
 package controller
 
 import (
@@ -26,6 +27,7 @@ func NewNPCListController(storage shared.NPCStorage, creationSupplier *service.N
 }
 
 // InitEditController initializes the NPC edit controller.
+// It returns a new NPCEditController.
 func (c *NPCListController) InitEditController(editView shared.NPCEditViewer) *NPCEditController {
 	log.Println("Initializing edit controller...")
 	return NewNPCEditController(editView, c.creationSupplier)
