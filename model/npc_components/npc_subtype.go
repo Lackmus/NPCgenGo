@@ -1,3 +1,4 @@
+// Description: This file contains the NPCSubtype struct and its methods.
 package npc_components
 
 import (
@@ -6,7 +7,8 @@ import (
 	"github.com/lackmus/npcgengo/helper"
 )
 
-// NpcSubtype is a type of npc.
+// NPCSubtype : Represents a subtype of NPC
+// It represents a subtype of NPC
 type NPCSubtype struct {
 	Name             string
 	NpcTypeName      string
@@ -15,12 +17,14 @@ type NPCSubtype struct {
 	EquipmentOptions map[string][]string
 }
 
-// GetName returns the name of the NPCSubtype.
+// GetName : Returns the name of the NPCSubtype
+// Returns the name of the NPCSubtype
 func (n NPCSubtype) GetName() string {
 	return n.Name
 }
 
-// NewNPCSubtypeComponentWithStats creates a new component for the NPCSubtype with stats.
+// GetStats : Returns the stats of the NPCSubtype
+// Returns the stats of the NPCSubtype
 func (n NPCSubtype) GetStats() string {
 	var sb strings.Builder
 	for _, v := range n.Stats {
@@ -29,7 +33,8 @@ func (n NPCSubtype) GetStats() string {
 	return sb.String()
 }
 
-// NewNPCSubtypeComponentWithEquipment creates a new component for the NPCSubtype with equipment.
+// GetEquipment : Returns the equipment of the NPCSubtype
+// Returns the equipment of the NPCSubtype
 func (n NPCSubtype) GetEquipment() string {
 	var sb strings.Builder
 	for k, v := range n.EquipmentOptions {
@@ -38,7 +43,8 @@ func (n NPCSubtype) GetEquipment() string {
 	return sb.String()
 }
 
-// NewSubtypeDescription returns the description component of the NPCSubtype.
+// GetDescription : Returns the description of the NPCSubtype
+// Returns the description of the NPCSubtype
 func (n NPCSubtype) GetDescription() string {
 	return helper.GetRandomElement(n.Description)
 }

@@ -1,5 +1,4 @@
 // Description: This file contains the implementation of the NPCService struct and its methods.
-// The NPCService struct manages NPCs and loads them from a storage backend.
 package service
 
 import (

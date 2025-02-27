@@ -1,8 +1,10 @@
+// Description: Helper functions for validation and error handling.
 package helper
 
 import "reflect"
 
-// IsNilOrEmpty checks if a given value is nil (for pointers/interfaces) or empty (for strings, slices, maps).
+// IsNilOrEmpty checks if a value is nil or empty.
+// It returns true if the value is nil, an empty string, or a zero value.
 func IsNilOrEmpty[T any](t T) bool {
 	// Handle nil values (pointers, interfaces)
 	if reflect.ValueOf(t).IsZero() {

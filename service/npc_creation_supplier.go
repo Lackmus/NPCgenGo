@@ -1,5 +1,4 @@
 // Description: This file contains the NPCCreationSupplier struct, which encapsulates the services required for NPC creation.
-// The NPCCreationSupplier struct provides the services required for NPC creation.
 package service
 
 import (

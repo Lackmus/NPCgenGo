@@ -1,3 +1,4 @@
+// Description: This file contains helper functions for generating random values.
 package helper
 
 import (
@@ -33,6 +34,8 @@ func NewRandomMapKeySelector[K comparable, V any](m map[K]V) func() K {
 }
 
 // GenerateID tries to create a unique ID, falling back to an incrementing counter.
+// It returns a unique ID as a string.
+// Note: This function is not guaranteed to return a unique ID.
 func GenerateID() string {
 	id, err := gonanoid.New(6)
 	if err == nil {
@@ -41,7 +44,8 @@ func GenerateID() string {
 	return "fallback-id"
 }
 
-// RandomInt returns a random integer in the range [min, max] as string.
+// RandomInt returns a random integer in the range [min, max].
+// It returns a random integer as a string.
 func RandomInt(min, max int) string {
 	return strconv.Itoa(rand.Intn(max-min+1) + min)
 }

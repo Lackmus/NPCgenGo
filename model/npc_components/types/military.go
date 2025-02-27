@@ -1,3 +1,4 @@
+// Description: Defines the Military type of npc.
 package types
 
 //"github.com/lackmus/npcgengo/movementstrategy"

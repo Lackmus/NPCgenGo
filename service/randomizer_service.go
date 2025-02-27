@@ -1,5 +1,4 @@
 // Description: This file contains the RandomizerService struct and its methods. The RandomizerService struct provides randomization services for NPC creation.
-// The RandomizerService struct provides randomization services for NPC creation.
 package service
 
 import (

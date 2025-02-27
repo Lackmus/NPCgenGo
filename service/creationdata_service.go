@@ -1,3 +1,4 @@
+// Description: This file contains the CreationDataService struct and its methods. The CreationDataService struct provides access to the creation data for NPCs. It is used to load the data from the creation data file into maps.
 package service
 
 import (
@@ -10,11 +11,8 @@ import (
 	"github.com/lackmus/npcgengo/shared"
 )
 
-// ==========================================
-// CreationDataService
-// ==========================================
-
-// CreationDataService provides access to the creation data for NPCs. It loads the data from the creation data file into maps.
+// CreationDataService provides access to the creation data for NPCs.
+// It is used to load the data from the creation data file into maps.
 type CreationDataService struct {
 	factionMap                                            map[string]cp.Faction
 	speciesMap                                            map[string]cp.Species

@@ -1,5 +1,4 @@
-// Package service provides functionality for constructing and managing NPCs.
-// It includes a builder pattern for step-by-step NPC creation.
+// Description: This file contains the NPCBuilder struct and methods for constructing an NPC step by step.
 package service
 
 import (

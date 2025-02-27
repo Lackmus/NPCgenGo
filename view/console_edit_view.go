@@ -1,3 +1,4 @@
+// Description: This file contains the ConsoleEditView struct and its methods. This struct is used to display an NPC in the console.
 package view
 
 import (
@@ -7,15 +8,10 @@ import (
 	"github.com/lackmus/npcgengo/shared"
 )
 
-// =============================================================================
-// DefaultNpcView
-// =============================================================================
-
 // DefaultNpcView is a view that displays an NPC.
 type ConsoleEditView struct {
 }
 
-// NewDefaultNpcView creates a new instance of DefaultNpcView.
 func NewConsoleEditView() shared.NPCEditViewer {
 	return &ConsoleEditView{}
 }

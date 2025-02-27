@@ -1,3 +1,4 @@
+// Description: JSON NPC storage loader implementation.
 package loader
 
 import (
@@ -10,17 +11,19 @@ import (
 	"github.com/lackmus/npcgengo/shared"
 )
 
-// JsonDatabaseLoader speichert den Pfad zum JSON-Ordner
+// JSONNPCStorage is a JSON file-based storage for NPCs.
+// It implements the shared.NPCStorage interface.
 type JSONNPCStorage struct {
 	Dir string
 }
 
-// NewJsonDatabaseLoader erstellt eine neue Instanz
+// NewJSONNPCStorage creates a new JSONNPCStorage.
 func NewJSONNPCStorage(dir string) shared.NPCStorage {
 	return &JSONNPCStorage{Dir: dir}
 }
 
-// LoadNpc lädt einen NPC aus einer JSON-Datei
+// LoadNPC loads an NPC from a JSON file.
+// It returns an error if the file cannot be opened or decoded.
 func (j *JSONNPCStorage) LoadNPC(id string) (model.NPC, error) {
 	filename := filepath.Join(j.Dir, id+".json")
 	file, err := os.Open(filename)
@@ -36,7 +39,8 @@ func (j *JSONNPCStorage) LoadNPC(id string) (model.NPC, error) {
 	return npc, nil
 }
 
-// LoadAllNpc lädt alle NPCs aus dem Verzeichnis
+// LoadAllNPC loads all NPCs from JSON files in the directory.
+// It returns a map of NPC IDs to NPCs.
 func (j *JSONNPCStorage) LoadAllNPC() (map[string]model.NPC, error) {
 	dataMap := make(map[string]model.NPC)
 
@@ -50,7 +54,7 @@ func (j *JSONNPCStorage) LoadAllNPC() (map[string]model.NPC, error) {
 			continue
 		}
 
-		id := file.Name()[:len(file.Name())-5] // ".json" entfernen
+		id := file.Name()[:len(file.Name())-5]
 		data, err := j.LoadNPC(id)
 		if err != nil {
 			log.Printf("Error loading NPC %s: %v", id, err)
@@ -61,7 +65,8 @@ func (j *JSONNPCStorage) LoadAllNPC() (map[string]model.NPC, error) {
 	return dataMap, nil
 }
 
-// SaveNpc speichert einen NPC in eine JSON-Datei
+// SaveNPC saves an NPC to a JSON file.
+// It returns an error if the file cannot be created or encoded.
 func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 	if err := os.MkdirAll(j.Dir, os.ModePerm); err != nil {
 		return err
@@ -69,7 +74,6 @@ func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 
 	filename := filepath.Join(j.Dir, npc.ID+".json")
 
-	// Datei öffnen mit O_WRONLY (schreiben), O_CREATE (erstellen, falls nicht existiert), O_TRUNC (alte Daten überschreiben)
 	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -81,7 +85,8 @@ func (j *JSONNPCStorage) SaveNPC(npc model.NPC) error {
 	return encoder.Encode(npc)
 }
 
-// SaveAllNpc speichert alle NPCs aus einer Map
+// SaveAllNPC saves all NPCs to JSON files.
+// It returns an error if any NPC cannot be saved.
 func (j *JSONNPCStorage) SaveAllNPC(dataMap map[string]model.NPC) error {
 	for _, data := range dataMap {
 		if err := j.SaveNPC(data); err != nil {
@@ -91,7 +96,8 @@ func (j *JSONNPCStorage) SaveAllNPC(dataMap map[string]model.NPC) error {
 	return nil
 }
 
-// DeleteNpc löscht eine NPC-Datei
+// DeleteNPC deletes an NPC JSON file.
+// It returns an error if the file cannot be deleted.
 func (j *JSONNPCStorage) DeleteNPC(id string) error {
 	filename := filepath.Join(j.Dir, id+".json")
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -101,7 +107,8 @@ func (j *JSONNPCStorage) DeleteNPC(id string) error {
 	return os.Remove(filename)
 }
 
-// DeleteAllNpc löscht das gesamte Verzeichnis (vorsichtig nutzen!)
+// DeleteAllNPC deletes all NPC JSON files.
+// It returns an error if any file cannot be deleted.
 func (j *JSONNPCStorage) DeleteAllNPC() error {
 	dir, err := os.ReadDir(j.Dir)
 	if err != nil {

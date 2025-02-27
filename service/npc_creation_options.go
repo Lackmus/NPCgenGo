@@ -1,5 +1,4 @@
 // Description: This file contains the NPCCreationOptions struct and the NewNPCCreationOptions function.
-// The NPCCreationOptions struct provides the options for creating an NPC.
 package service
 
 import (
