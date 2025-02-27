@@ -1,0 +1,14 @@
+{
+  "ID": "kkhMWl",
+  "Components": {
+    "1": "Nugget Clucklesworth",
+    "10": "\n  - tools: Pitchfork\n  - clothing: Raincoat\n  - accessories: Gloves",
+    "11": "\n  - A farmer who grows crops and raises animals.\n  - Scrappy, determined, and always watchful.\n  - Able to accept or tolerate delays, problems, or suffering without becoming annoyed or anxious.\n",
+    "2": "Civilian",
+    "3": "Farmer",
+    "4": "Chicken",
+    "5": "Neutral",
+    "6": "Patient\n  - Opposes: Impatient",
+    "8": "\n  - farming: 6\n  - strength: 5"
+  }
+}
