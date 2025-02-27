@@ -81,6 +81,17 @@ func main() {
 		return
 	}
 	npcController.AddNpc(npc)
+	// delete one NPC
+	npcController.DeleteNPC(npcController.GetAllNpcs()[3].ID)
+	npcController.DeleteNPC(npcController.GetAllNpcs()[1].ID)
+	// add a new NPC
+	npc, err = service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	npcController.AddNpc(npc)
+
 }
 
 func printDirStructure(root string, indent string) {

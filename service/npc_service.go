@@ -54,6 +54,7 @@ func (s *NPCService) initNPCService(loader shared.NPCStorage) {
 			log.Printf("Non-numeric NPC ID %q found; skipping for counter purposes", idStr)
 			continue
 		}
+		// Update idCounter if the current ID is greater.
 		if id >= s.idCounter {
 			s.idCounter = id + 1
 		}
