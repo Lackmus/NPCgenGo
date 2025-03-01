@@ -44,12 +44,8 @@ func main() {
 	// edit a random NPC name
 	npc := npcController.GetAllNpcs()[0]
 	editController.LoadNPC(npc)
-	builder := service.NewNPCBuilder(creationSupplier).WithNPC(npc)
-	fmt.Println("\nUpdate NPC with name: " + npc.GetComponent(cp.CompName))
-	builder.WithRandomName().Build()
-	fmt.Println("for Name: " + npc.GetComponent(cp.CompName))
-	// get id
-	npcController.UpdateNpc(editController.SaveNPC())
+	editController.RandomizeField(cp.CompName)
+	editController.SaveNPC()
 	npcController.DeleteAllNPC()
 
 	// add a new NPC

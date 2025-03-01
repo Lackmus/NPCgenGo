@@ -1,0 +1,14 @@
+{
+  "ID": "1",
+  "Components": {
+    "1": "Tails Shadowfang",
+    "10": "\n  - tools: Wheelbarrow\n  - clothing: Overalls\n  - accessories: Tool Belt",
+    "11": "\n  - A farmer who works hard to provide for their family.\n  - Cunning and resourceful, a true survivor.\n  - Avoids risks and acts carefully to prevent potential problems.\n",
+    "2": "Civilian",
+    "3": "Farmer",
+    "4": "Fox",
+    "5": "Eyrie Dynasties",
+    "6": "Cautious\n  - Opposes: Reckless",
+    "8": "\n  - farming: 9\n  - strength: 3"
+  }
+}

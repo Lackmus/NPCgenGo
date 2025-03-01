@@ -1,0 +1,14 @@
+{
+  "ID": "0",
+  "Components": {
+    "1": "Scarlet Daggerfang",
+    "10": "\n  - weapons: Dagger\n  - armor: Plate Armor\n  - accessories: Shield",
+    "11": "\n  - A soldier who protects the kingdom from threats.\n  - Slips through the shadows, unseen and untamed.\n  - Guilty of or involving betrayal or deception.\n",
+    "2": "Military",
+    "3": "Soldier",
+    "4": "Fox",
+    "5": "Marquise de Cat",
+    "6": "Treacherous\n  - Opposes: Loyal",
+    "8": "\n  - combat: 6\n  - strength: 1\n  - defense: 3"
+  }
+}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/lackmus/npcgengo/model"
+	cp "github.com/lackmus/npcgengo/model/npc_components"
 	"github.com/lackmus/npcgengo/shared"
 )
 
@@ -29,6 +30,11 @@ func (v *ConsoleEditView) Render() {
 }
 
 // uodate field
-func (v *ConsoleEditView) UpdateField(field string, value any) {
+func (v *ConsoleEditView) UpdateField(field cp.CompEnum, value any) {
 	fmt.Println("Field: ", field, " Value: ", value)
+}
+
+// OnNPCEditError reports an error to the user.
+func (v *ConsoleEditView) OnNPCEditError(err error) {
+	fmt.Println("Error: ", err)
 }

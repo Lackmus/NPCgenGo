@@ -17,8 +17,8 @@ type NPCListController struct {
 }
 
 // NewNPCListController creates a new NPCListController.
-func NewNPCListController(storage shared.NPCStorage, creationSupplier *service.NPCCreationSupplier, view shared.NPCViewer) *NPCListController {
-	npcService := service.NewNPCService(storage)
+func NewNPCListController(loader shared.NPCStorage, creationSupplier *service.NPCCreationSupplier, view shared.NPCViewer) *NPCListController {
+	npcService := service.NewNPCService(loader)
 	return &NPCListController{
 		npcService:       npcService,
 		creationSupplier: creationSupplier,
@@ -30,7 +30,7 @@ func NewNPCListController(storage shared.NPCStorage, creationSupplier *service.N
 // It returns a new NPCEditController.
 func (c *NPCListController) InitEditController(editView shared.NPCEditViewer) *NPCEditController {
 	log.Println("Initializing edit controller...")
-	return NewNPCEditController(editView, c.creationSupplier)
+	return NewNPCEditController(editView, c.creationSupplier, c)
 }
 
 // InitView notifies observers to initialize the view.
