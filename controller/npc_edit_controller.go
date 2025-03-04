@@ -22,13 +22,13 @@ type NPCEditController struct {
 }
 
 // NewNPCEditController creates a new NPCEditController with the provided view, creation supplier, and list controller.
-func NewNPCEditController(view shared.NPCEditViewer, creationSupplier *service.NPCCreationSupplier, controller *NPCListController) *NPCEditController {
+func NewNPCEditController(creationSupplier *service.NPCCreationSupplier, controller *NPCListController) *NPCEditController {
 	return &NPCEditController{
 		creationSupplier:  creationSupplier,
 		rand:              creationSupplier.RandomizerService,
 		npcBuilder:        service.NewNPCBuilder(creationSupplier),
 		npcListController: controller,
-		observers:         []shared.NPCEditObserver{view},
+		observers:         []shared.NPCEditObserver{},
 		errors:            []error{},
 	}
 }
@@ -112,7 +112,7 @@ func (c *NPCEditController) SaveField(field cp.CompEnum, value string) error {
 		return err
 	}
 
-	c.NotifyObserversField(field, value)
+	//	c.NotifyObserversField(field, value)
 	return nil
 }
 
@@ -145,7 +145,6 @@ func (c *NPCEditController) RandomizeField(field cp.CompEnum) string {
 	// lookup c.npcBuilder.Errors() and do something with it
 	c.handleErrors("RandomizeField", field.String())
 
-	c.NotifyObserversField(field, value)
 	return value
 }
 
@@ -160,7 +159,6 @@ func (c *NPCEditController) GetFieldOptions(field cp.CompEnum) []string {
 	case cp.CompSpecies:
 		return options.Species
 	case cp.CompSubtype:
-		// Get the current NPC type from the builder (adjust method name if needed).
 		npcType := c.npcBuilder.GetNPCType()
 		if subtypes, ok := options.NpcSubtypeForTypeMap[npcType]; ok {
 			return subtypes

@@ -354,17 +354,7 @@ func (b *NPCBuilder) addErrorWithContext(context string, err error) {
 // It returns an error if the builder is in an invalid state.
 func (b *NPCBuilder) Build() (m.NPC, error) {
 	if b.HasErrors() {
-		// If using Go 1.20+:
 		return m.NPC{}, fmt.Errorf("cannot build NPC: %w", errors.Join(b.errors...))
-		// Otherwise, you might join manually:
-		// joined := strings.Join(func() []string {
-		//     msgs := make([]string, len(b.errors))
-		//     for i, err := range b.errors {
-		//         msgs[i] = err.Error()
-		//     }
-		//     return msgs
-		// }(), "; ")
-		// return m.NPC{}, fmt.Errorf("cannot build NPC: %s", joined)
 	}
 	if err := b.Validate(); err != nil {
 		return m.NPC{}, err

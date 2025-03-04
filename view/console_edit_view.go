@@ -25,7 +25,7 @@ func (v *ConsoleEditView) UpdateNPC(npc model.NPC) {
 }
 
 // Render manually displays an NPC (e.g., for an initial view)
-func (v *ConsoleEditView) Render() {
+func (v *ConsoleEditView) Run() {
 
 }
 

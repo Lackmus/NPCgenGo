@@ -1,7 +1,7 @@
 package shared
 
 // ViewPlugin defines the interface for UI plugins
-type NPCViewer interface {
+type NPCListViewer interface {
 	NPCObserver
-	Render()
+	Run()
 }

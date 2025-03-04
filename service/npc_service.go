@@ -80,11 +80,13 @@ func (s *NPCService) generateNewID() string {
 // AddNPC adds a new NPC to the service and saves it.
 // If the NPC does not already have an ID, it generates one.
 func (s *NPCService) AddNPC(npc model.NPC) {
-	// If npc.ID is empty, assign a new ID.
 	if npc.ID == "" {
-		npc.ID = s.generateNewID()
+		npc.ID = s.generateNewID() // Generate a new ID if missing
 	}
+
+	// Use the updated NPC ID as the key
 	s.npcs[npc.ID] = npc
+
 	if err := s.loader.SaveNPC(npc); err != nil {
 		log.Printf("Error saving NPC (ID %s): %v", npc.ID, err)
 	}
@@ -110,20 +112,6 @@ func (s *NPCService) GetNPCByID(id string) (model.NPC, error) {
 		return model.NPC{}, fmt.Errorf("NPC with ID %s not found", id)
 	}
 	return npc, nil
-}
-
-// UpdateNPC updates an existing NPC and saves it.
-// It returns an error if the NPC with the specified ID is not found.
-func (s *NPCService) UpdateNPC(updatedNPC model.NPC) error {
-	id := updatedNPC.ID
-	if _, found := s.npcs[id]; !found {
-		return fmt.Errorf("NPC with ID %s not found", id)
-	}
-	s.npcs[id] = updatedNPC
-	if err := s.loader.SaveNPC(updatedNPC); err != nil {
-		return fmt.Errorf("failed to save updated NPC: %w", err)
-	}
-	return nil
 }
 
 // DeleteNPC removes an NPC from the map and deletes it from the storage.

@@ -8,7 +8,6 @@ import (
 	"github.com/lackmus/npcgengo/controller"
 	h "github.com/lackmus/npcgengo/helper"
 	"github.com/lackmus/npcgengo/loader"
-	cp "github.com/lackmus/npcgengo/model/npc_components"
 	"github.com/lackmus/npcgengo/service"
 	"github.com/lackmus/npcgengo/view"
 )
@@ -19,13 +18,8 @@ func main() {
 	npcController := controller.NewNPCListController(
 		loader.NewJSONNPCStorage("data/npc_database"),
 		creationSupplier,
-		view.NewConsoleView(),
 	)
-
-	npcController.InitView()
-
-	editView := view.NewConsoleEditView()
-	editController := npcController.InitEditController(editView)
+	fyneView := view.NewFyneListView(npcController)
 
 	// delete one NPC if there are any
 	if len(npcController.GetAllNpcs()) > 0 {
@@ -41,53 +35,15 @@ func main() {
 		npcController.AddNpc(npc)
 	}
 
-	// edit a random NPC name
-	npc := npcController.GetAllNpcs()[0]
-	editController.LoadNPC(npc)
-	editController.RandomizeField(cp.CompName)
-	editController.SaveNPC()
+	fyneView.Run()
+	tidyUp()
+	// delete all NPCs
 	npcController.DeleteAllNPC()
 
-	// add a new NPC
-	npc, err := service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	npcController.AddNpc(npc)
+}
 
-	rootDir := "." // Change this to your app’s root directory if needed
-	fmt.Println(rootDir)
-	//printDirStructure(rootDir, "")
-	//add and delete a few NPCs, leave 5 NPCs in the list
-	for i := 0; i < 5; i++ {
-		npc, err := service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		npcController.AddNpc(npc)
-	}
-	// delete one NPC
-	npcController.DeleteNPC(npcController.GetAllNpcs()[0].ID)
-	// add a new NPC
-	npc, err = service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	npcController.AddNpc(npc)
-	// delete one NPC
-	npcController.DeleteNPC(npcController.GetAllNpcs()[3].ID)
-	npcController.DeleteNPC(npcController.GetAllNpcs()[1].ID)
-	// add a new NPC
-	npc, err = service.CreateNPCWithOptions(h.Random, h.Random, creationSupplier)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	npcController.AddNpc(npc)
-
+func tidyUp() {
+	fmt.Println("Exited")
 }
 
 func printDirStructure(root string, indent string) {

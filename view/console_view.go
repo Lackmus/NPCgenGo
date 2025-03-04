@@ -12,7 +12,7 @@ type ConsoleView struct {
 }
 
 // NewConsoleView creates a ConsoleView and registers it as an observer
-func NewConsoleView() shared.NPCViewer {
+func NewConsoleView() shared.NPCListViewer {
 	return &ConsoleView{}
 }
 
@@ -31,5 +31,5 @@ func (v *ConsoleView) Update(npcs []model.NPC) {
 }
 
 // Render manually displays NPCs (e.g., for an initial view)
-func (v *ConsoleView) Render() {
+func (v *ConsoleView) Run() {
 }
