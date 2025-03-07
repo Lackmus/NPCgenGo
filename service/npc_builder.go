@@ -307,6 +307,10 @@ func (b *NPCBuilder) WithRandomDescription() *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
+	if h.IsNilOrEmpty(b.subtypeData) || h.IsNilOrEmpty(b.speciesData) || h.IsNilOrEmpty(b.traitData) {
+		b.addErrorWithContext("WithRandomDescription", errors.New("subtype, species, and trait must be set before description can be added"))
+		return b
+	}
 	desc := formatDescription(b.subtypeData.GetDescription(), b.speciesData.GetDescription(), b.traitData.GetDescription())
 	b.description = desc
 	if !h.IsNilOrEmpty(desc) {
