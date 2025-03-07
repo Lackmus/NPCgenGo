@@ -20,17 +20,26 @@ type FyneEditView struct {
 	speciesSel  *widget.Select
 	factionSel  *widget.Select
 	traitSel    *widget.Select
+	statsEntry  *widget.Entry
+	itemsEntry  *widget.Entry
+	description *widget.Entry
 	saveBtn     *widget.Button
 	cancelBtn   *widget.Button
 	rndmNameBtn *widget.Button
+	statsBtn    *widget.Button
+	itemsBtn    *widget.Button
+	descBtn     *widget.Button
 }
 
 // NewNPCEditView creates an NPC edit view.
 func NewFyneEditView(editCtrl *controller.NPCEditController) shared.NPCEditViewer {
 	view := &FyneEditView{
-		editCtrl:  editCtrl,
-		window:    fyne.CurrentApp().NewWindow("Edit NPC"),
-		nameEntry: widget.NewEntry(),
+		editCtrl:    editCtrl,
+		window:      fyne.CurrentApp().NewWindow("Edit NPC"),
+		nameEntry:   widget.NewEntry(),
+		statsEntry:  widget.NewMultiLineEntry(),
+		itemsEntry:  widget.NewMultiLineEntry(),
+		description: widget.NewMultiLineEntry(),
 	}
 
 	// NPC Type dropdown
@@ -48,19 +57,22 @@ func NewFyneEditView(editCtrl *controller.NPCEditController) shared.NPCEditViewe
 		view.subtypeSel.Refresh()
 	})
 
-	//empty subtype dropdown
+	// Subtype dropdown (initially empty)
 	view.subtypeSel = widget.NewSelect([]string{}, func(selected string) {
 		editCtrl.SaveField(cp.CompSubtype, selected)
 	})
 
+	// Species dropdown
 	view.speciesSel = widget.NewSelect(editCtrl.GetFieldOptions(cp.CompSpecies), func(selected string) {
 		editCtrl.SaveField(cp.CompSpecies, selected)
 	})
 
+	// Faction dropdown
 	view.factionSel = widget.NewSelect(editCtrl.GetFieldOptions(cp.CompFaction), func(selected string) {
 		editCtrl.SaveField(cp.CompFaction, selected)
 	})
 
+	// Trait dropdown
 	view.traitSel = widget.NewSelect(editCtrl.GetFieldOptions(cp.CompTrait), func(selected string) {
 		editCtrl.SaveField(cp.CompTrait, selected)
 	})
@@ -83,6 +95,27 @@ func NewFyneEditView(editCtrl *controller.NPCEditController) shared.NPCEditViewe
 		}
 	})
 
+	//random stats button if subtype is selected
+	view.statsBtn = widget.NewButton("Random Stats", func() {
+		if view.subtypeSel.Selected != "" {
+			view.statsEntry.SetText(editCtrl.RandomizeField(cp.CompStats))
+		}
+	})
+
+	//random items button if subtype is selected
+	view.itemsBtn = widget.NewButton("Random Items", func() {
+		if view.subtypeSel.Selected != "" {
+			view.itemsEntry.SetText(editCtrl.RandomizeField(cp.CompItems))
+		}
+	})
+
+	//random description button if subtype is selected
+	view.descBtn = widget.NewButton("Random Description", func() {
+		if view.subtypeSel.Selected != "" {
+			view.description.SetText(editCtrl.RandomizeField(cp.CompDescription))
+		}
+	})
+
 	// Layout
 	form := container.NewVBox(
 		widget.NewLabel("NPC Name"), view.nameEntry,
@@ -91,7 +124,10 @@ func NewFyneEditView(editCtrl *controller.NPCEditController) shared.NPCEditViewe
 		widget.NewLabel("Species"), view.speciesSel,
 		widget.NewLabel("Faction"), view.factionSel,
 		widget.NewLabel("Trait"), view.traitSel,
-		container.NewHBox(view.saveBtn, view.cancelBtn, view.rndmNameBtn),
+		widget.NewLabel("Stats"), view.statsEntry,
+		widget.NewLabel("Items"), view.itemsEntry,
+		widget.NewLabel("Description"), view.description,
+		container.NewHBox(view.saveBtn, view.cancelBtn, view.rndmNameBtn, view.statsBtn, view.itemsBtn, view.descBtn),
 	)
 
 	view.window.SetContent(form)
@@ -103,6 +139,13 @@ func NewFyneEditView(editCtrl *controller.NPCEditController) shared.NPCEditViewe
 func (v *FyneEditView) UpdateNPC(npc model.NPC) {
 	v.nameEntry.SetText(npc.GetComponent(cp.CompName))
 	v.typeSelect.SetSelected(npc.GetComponent(cp.CompType))
+	v.subtypeSel.SetSelected(npc.GetComponent(cp.CompSubtype))
+	v.speciesSel.SetSelected(npc.GetComponent(cp.CompSpecies))
+	v.factionSel.SetSelected(npc.GetComponent(cp.CompFaction))
+	v.traitSel.SetSelected(npc.GetComponent(cp.CompTrait))
+	v.statsEntry.SetText(npc.GetComponent(cp.CompStats))
+	v.itemsEntry.SetText(npc.GetComponent(cp.CompItems))
+	v.description.SetText(npc.GetComponent(cp.CompDescription))
 }
 
 // UpdateField updates a field in the view.

@@ -103,6 +103,8 @@ func (c *NPCEditController) SaveField(field cp.CompEnum, value string) error {
 		c.npcBuilder.WithSubtypeStats(value)
 	case cp.CompItems:
 		c.npcBuilder.WithSubtypeEquipment(value)
+	case cp.CompDescription:
+		c.npcBuilder.WithDescription(value)
 	default:
 		log.Printf("SaveField: unrecognized field %v (%s)", field, field.String())
 		return nil
@@ -137,6 +139,8 @@ func (c *NPCEditController) RandomizeField(field cp.CompEnum) string {
 		value = c.npcBuilder.WithRandomSubtypeStats().GetNPC().GetComponent(cp.CompStats)
 	case cp.CompItems:
 		value = c.npcBuilder.WithRandomSubtypeEquipment().GetNPC().GetComponent(cp.CompItems)
+	case cp.CompDescription:
+		value = c.npcBuilder.WithRandomDescription().GetNPC().GetComponent(cp.CompDescription)
 	default:
 		log.Printf("RandomizeField: unrecognized field %v (%s)", field, field.String())
 		return ""
