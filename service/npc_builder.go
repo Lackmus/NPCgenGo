@@ -289,15 +289,14 @@ func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
 // It returns a formatted string with each part separated by a newline.
 func formatDescription(subtype, species, trait string) string {
 	var sb strings.Builder
-	sb.WriteString("\n")
 	if trimmed := strings.TrimSpace(subtype); trimmed != "" {
-		sb.WriteString("  - " + trimmed + "\n")
+		sb.WriteString(trimmed + "\n")
 	}
 	if trimmed := strings.TrimSpace(species); trimmed != "" {
-		sb.WriteString("  - " + trimmed + "\n")
+		sb.WriteString(trimmed + "\n")
 	}
 	if trimmed := strings.TrimSpace(trait); trimmed != "" {
-		sb.WriteString("  - " + trimmed + "\n")
+		sb.WriteString(trimmed)
 	}
 	return sb.String()
 }

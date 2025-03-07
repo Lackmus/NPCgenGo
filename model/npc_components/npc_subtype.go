@@ -28,7 +28,11 @@ func (n NPCSubtype) GetName() string {
 func (n NPCSubtype) GetStats() string {
 	var sb strings.Builder
 	for _, v := range n.Stats {
-		sb.WriteString("\n  - " + v + ": " + helper.RandomInt(1, 10))
+		// new line but not for the first one
+		if sb.Len() > 0 {
+			sb.WriteString("\n")
+		}
+		sb.WriteString(v + ": " + helper.RandomInt(1, 10))
 	}
 	return sb.String()
 }
@@ -38,7 +42,10 @@ func (n NPCSubtype) GetStats() string {
 func (n NPCSubtype) GetEquipment() string {
 	var sb strings.Builder
 	for k, v := range n.EquipmentOptions {
-		sb.WriteString("\n  - " + k + ": " + helper.GetRandomElement(v))
+		if sb.Len() > 0 {
+			sb.WriteString("\n")
+		}
+		sb.WriteString(k + ": " + helper.GetRandomElement(v))
 	}
 	return sb.String()
 }

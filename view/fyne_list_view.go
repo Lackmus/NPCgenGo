@@ -2,6 +2,8 @@
 package view
 
 import (
+	"fmt"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -49,7 +51,7 @@ type FyneListView struct {
 	controller  *controller.NPCListController
 	npcs        []model.NPC
 	table       *widget.Table
-	detailLabel *widget.Label
+	detailLabel *fyne.Container
 	deleteBtn   *widget.Button
 	editBtn     *widget.Button
 	createBtn   *widget.Button
@@ -73,7 +75,7 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 	view.window.Resize(fyne.NewSize(1500, 400))
 
 	// Initialize detail label
-	view.detailLabel = widget.NewLabel("Select an NPC")
+	view.detailLabel = container.NewVBox(widget.NewLabel("Select an NPC"))
 
 	// Create header row with fixed column widths.
 	// These widths should match the table's column widths.
@@ -143,7 +145,8 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 		if id.Row >= 0 && id.Row < len(view.npcs) {
 			selectedRow = id.Row // Store the selected row index
 			view.selectedID = view.npcs[id.Row].ID
-			view.detailLabel.SetText(view.npcs[id.Row].String())
+			view.detailLabel.Objects = makeNPCStringFyne(view.npcs[id.Row])
+			view.detailLabel.Refresh()
 			view.table.Refresh() // Refresh the table to apply highlighting
 		}
 	}
@@ -160,7 +163,7 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 			view.controller.DeleteNPC(view.selectedID)
 			view.table.UnselectAll()
 			view.selectedID = ""
-			view.detailLabel.SetText("Select an NPC")
+			view.detailLabel.Objects = []fyne.CanvasObject{}
 		}
 	})
 
@@ -168,7 +171,8 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 		if view.selectedID != "" {
 			selectedNPC, err := controller.GetNpcByID(view.selectedID)
 			if err != nil {
-				view.detailLabel.SetText("Error: " + err.Error())
+				view.detailLabel.Objects = []fyne.CanvasObject{widget.NewLabel("Error: NPC not found")}
+				view.detailLabel.Refresh()
 				return
 			}
 			editCtrl := view.controller.InitEditController()
@@ -216,4 +220,21 @@ func (v *FyneListView) Content() fyne.CanvasObject {
 // Run starts the GUI loop.
 func (v *FyneListView) Run() {
 	v.window.ShowAndRun()
+}
+
+// makeNPCStringFyne returns a slice of widget.Label to be used in a container for display.
+func makeNPCStringFyne(npc model.NPC) []fyne.CanvasObject {
+	var labels []fyne.CanvasObject
+	for i := range cp.CompEnumValues() {
+		c := cp.CompEnum(i + 1)
+		if comp, ok := npc.Components[c]; ok {
+			// Create a label for the component name (bold)
+			compNameLabel := widget.NewLabelWithStyle(fmt.Sprintf("%s:", c), fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+			// Create a label for the component value (normal)
+			compValueLabel := widget.NewLabel(comp)
+			// Add the labels to the list of labels
+			labels = append(labels, compNameLabel, compValueLabel)
+		}
+	}
+	return labels
 }

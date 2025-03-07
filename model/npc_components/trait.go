@@ -12,7 +12,7 @@ type Trait struct {
 // GetName returns the name of the trait
 // It returns the name of the trait
 func (t Trait) GetName() string {
-	return t.Name + "\n  - Opposes: " + t.Opposes
+	return t.Name + "\nOpposes: " + t.Opposes
 }
 
 // GetDescription returns the description of the trait
