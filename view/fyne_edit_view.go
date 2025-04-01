@@ -115,20 +115,30 @@ func NewFyneEditView(editCtrl *controller.NPCEditController) shared.NPCEditViewe
 			view.description.SetText(editCtrl.RandomizeField(cp.CompDescription))
 		}
 	})
+	// Create a form layout
+	formItems := []fyne.CanvasObject{}
+	selections := []fyne.CanvasObject{
+		view.nameEntry,
+		view.typeSelect,
+		view.subtypeSel,
+		view.speciesSel,
+		view.factionSel,
+		view.traitSel,
+		view.statsEntry,
+		view.itemsEntry,
+		view.description,
+	}
+	// Add labels and selection widgets to the form
+	for i := range 9 {
+		label := widget.NewLabelWithStyle(cp.CompEnum(i+1).String(), fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+		formItems = append(formItems, label, selections[i])
+	}
 
-	// Layout
-	form := container.NewVBox(
-		widget.NewLabel("NPC Name"), view.nameEntry,
-		widget.NewLabel("Type"), view.typeSelect,
-		widget.NewLabel("Subtype"), view.subtypeSel,
-		widget.NewLabel("Species"), view.speciesSel,
-		widget.NewLabel("Faction"), view.factionSel,
-		widget.NewLabel("Trait"), view.traitSel,
-		widget.NewLabel("Stats"), view.statsEntry,
-		widget.NewLabel("Items"), view.itemsEntry,
-		widget.NewLabel("Description"), view.description,
-		container.NewHBox(view.saveBtn, view.cancelBtn, view.rndmNameBtn, view.statsBtn, view.itemsBtn, view.descBtn),
-	)
+	// Add buttons to the form
+	formItems = append(formItems, container.NewHBox(view.saveBtn, view.cancelBtn, view.rndmNameBtn, view.statsBtn, view.itemsBtn, view.descBtn))
+
+	// Create the form
+	form := container.NewVBox(formItems...)
 
 	view.window.SetContent(form)
 	view.window.Show()

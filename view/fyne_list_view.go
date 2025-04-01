@@ -72,21 +72,20 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 
 	// Create window
 	view.window = view.app.NewWindow("NPC Manager")
-	view.window.Resize(fyne.NewSize(1500, 400))
+	view.window.Resize(fyne.NewSize(1600, 400))
 
 	// Initialize detail label
 	view.detailLabel = container.NewVBox(widget.NewLabel("Select an NPC"))
 
 	// Create header row with fixed column widths.
 	// These widths should match the table's column widths.
-	headerWidths := []float32{200, 120, 150, 150, 150}
-	header := container.New(&rowLayout{widths: headerWidths},
-		widget.NewLabelWithStyle("Name", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Type", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Subtype", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Species", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewLabelWithStyle("Faction", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-	)
+	headerWidths := []float32{200, 130, 130, 130, 150}
+	var headerLabels []fyne.CanvasObject
+	// i <6 make bold
+	for i := range 5 {
+		headerLabels = append(headerLabels, widget.NewLabelWithStyle(cp.CompEnum(i+1).String(), fyne.TextAlignLeading, fyne.TextStyle{Bold: true}))
+	}
+	header := container.New(&rowLayout{widths: headerWidths}, headerLabels...)
 
 	// Initialize selected row index.
 	var selectedRow int = -1

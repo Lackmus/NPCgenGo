@@ -26,11 +26,9 @@ const (
 	CompSpecies     CompEnum = 4
 	CompFaction     CompEnum = 5
 	CompTrait       CompEnum = 6
-	CompDrive       CompEnum = 7
-	CompStats       CompEnum = 8
-	CompAbilities   CompEnum = 9
-	CompItems       CompEnum = 10
-	CompDescription CompEnum = 11
+	CompStats       CompEnum = 7
+	CompItems       CompEnum = 8
+	CompDescription CompEnum = 9
 )
 
 // CompEnumValues returns a slice of all the CompEnum values.
@@ -43,9 +41,7 @@ func CompEnumValues() []CompEnum {
 		CompSpecies,
 		CompFaction,
 		CompTrait,
-		CompDrive,
 		CompStats,
-		CompAbilities,
 		CompItems,
 		CompDescription,
 	}
@@ -67,12 +63,8 @@ func (c CompEnum) String() string {
 		return "Faction"
 	case CompTrait:
 		return "Trait"
-	case CompDrive:
-		return "Drive"
 	case CompStats:
 		return "Stats"
-	case CompAbilities:
-		return "Abilities"
 	case CompItems:
 		return "Items"
 	case CompDescription:

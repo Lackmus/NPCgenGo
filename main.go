@@ -13,7 +13,6 @@ import (
 )
 
 func main() {
-
 	creationSupplier := service.NewNPCCreationSupplier(loader.NewJSONNPCConfigLoader("data/creation_data"))
 	npcController := controller.NewNPCListController(
 		loader.NewJSONNPCStorage("data/npc_database"),
