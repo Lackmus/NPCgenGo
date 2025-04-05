@@ -70,7 +70,11 @@ func (c *NPCListController) RegisterObserver(o shared.NPCObserver) {
 
 // NotifyObservers notifies all observers with the current list of NPCs.
 func (c *NPCListController) NotifyObservers() {
-	npcs := c.npcService.GetAllNPC()
+	npcs := c.npcService.GetNPCByLocation(c.LocationID)
+	if len(npcs) == 0 {
+		log.Println("No NPCs found in the current location.")
+		return
+	}
 	for _, o := range c.observers {
 		o.Update(npcs)
 	}
