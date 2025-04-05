@@ -8,8 +8,8 @@ import (
 
 // CreateNPCWithOptions creates an NPC using the provided type and faction values.
 // If npctype or faction is empty, the function uses a random value.
-func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier) (m.NPC, error) {
-	builder := NewNPCBuilder(c)
+func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier, locationID string) (m.NPC, error) {
+	builder := NewNPCBuilder(c, locationID)
 
 	// Use provided npctype if available; otherwise, use random.
 	if npctype == h.Random {

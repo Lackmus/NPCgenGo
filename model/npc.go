@@ -11,6 +11,7 @@ import (
 // NPC represents a non-player character built using a set of components.
 type NPC struct {
 	ID         string
+	LocationID string
 	Components map[cp.CompEnum]string
 }
 

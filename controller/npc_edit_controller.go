@@ -22,11 +22,11 @@ type NPCEditController struct {
 }
 
 // NewNPCEditController creates a new NPCEditController with the provided view, creation supplier, and list controller.
-func NewNPCEditController(creationSupplier *service.NPCCreationSupplier, controller *NPCListController) *NPCEditController {
+func NewNPCEditController(creationSupplier *service.NPCCreationSupplier, controller *NPCListController, locationID string) *NPCEditController {
 	return &NPCEditController{
 		creationSupplier:  creationSupplier,
 		rand:              creationSupplier.RandomizerService,
-		npcBuilder:        service.NewNPCBuilder(creationSupplier),
+		npcBuilder:        service.NewNPCBuilder(creationSupplier, locationID),
 		npcListController: controller,
 		observers:         []shared.NPCEditObserver{},
 		errors:            []error{},

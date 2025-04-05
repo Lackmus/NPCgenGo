@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strconv"
 
+	"slices"
+
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/shared"
 )
@@ -29,15 +31,15 @@ func NewNPCService(loader shared.NPCStorage) *NPCService {
 		loader: loader,
 		npcs:   make(map[string]model.NPC),
 	}
-	s.initNPCService(loader)
+	s.initNPCService()
 	return s
 }
 
 // initNPCService initializes the NPCService with NPCs from the storage.
 // It also scans the loaded NPCs to set the idCounter to one greater than the highest existing ID.
-func (s *NPCService) initNPCService(loader shared.NPCStorage) {
+func (s *NPCService) initNPCService() {
 	var err error
-	s.npcs, err = loader.LoadAllNPC()
+	s.npcs, err = s.loader.LoadAllNPC()
 	if err != nil {
 		log.Printf("Error loading NPCs: %v", err)
 		s.npcs = make(map[string]model.NPC)
@@ -100,7 +102,19 @@ func (s *NPCService) GetAllNPC() []model.NPC {
 	for _, npc := range s.npcs {
 		npcList = append(npcList, npc)
 	}
-	return append([]model.NPC(nil), npcList...)
+	return slices.Clone(npcList)
+}
+
+// GetNPCByLovcation returns all NPCs that match the specified location.
+// It returns an empty slice if no NPCs are found.
+func (s *NPCService) GetNPCByLocation(locationID string) []model.NPC {
+	var result []model.NPC
+	for _, npc := range s.npcs {
+		if npc.LocationID == locationID {
+			result = append(result, npc)
+		}
+	}
+	return result
 }
 
 // GetNPCByID returns the NPC with the specified ID.

@@ -68,7 +68,6 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 		app:        app.New(),
 		controller: controller,
 	}
-	controller.RegisterObserver(view)
 
 	// Create window
 	view.window = view.app.NewWindow("NPC Manager")
@@ -201,6 +200,8 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 
 	// Combine left panel and detail label in a horizontal split.
 	view.window.SetContent(container.NewHSplit(leftPanel, view.detailLabel))
+
+	controller.InitView(view)
 
 	return view
 }

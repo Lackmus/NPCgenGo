@@ -15,21 +15,27 @@ type NPCListController struct {
 	npcService       *service.NPCService
 	creationSupplier *service.NPCCreationSupplier
 	observers        []shared.NPCObserver
+	LocationID       string
+}
+
+func (c *NPCListController) GetNPCs() []model.NPC {
+	return c.npcService.GetAllNPC()
 }
 
 // NewNPCListController creates a new NPCListController.
-func NewNPCListController(loader shared.NPCStorage, creationSupplier *service.NPCCreationSupplier) *NPCListController {
-	npcService := service.NewNPCService(loader)
+func NewNPCListController(creationSupplier *service.NPCCreationSupplier, npcService *service.NPCService, locationID string) *NPCListController {
+	log.Println("Creating NPCListController...")
 	return &NPCListController{
 		npcService:       npcService,
 		creationSupplier: creationSupplier,
+		LocationID:       locationID,
 		observers:        []shared.NPCObserver{},
 	}
 }
 
 // creaTE random NPC
 func (c *NPCListController) CreateRandomNPC() {
-	npc, err := service.CreateNPCWithOptions(h.Random, h.Random, c.creationSupplier)
+	npc, err := service.CreateNPCWithOptions(h.Random, h.Random, c.creationSupplier, c.LocationID)
 	if err != nil {
 		log.Printf("Error creating NPC: %v", err)
 		return
@@ -41,7 +47,7 @@ func (c *NPCListController) CreateRandomNPC() {
 // It returns a new NPCEditController.
 func (c *NPCListController) InitEditController() *NPCEditController {
 	log.Println("Initializing edit controller...")
-	return NewNPCEditController(c.creationSupplier, c)
+	return NewNPCEditController(c.creationSupplier, c, c.LocationID)
 }
 
 // InitView notifies observers to initialize the view.
