@@ -35,3 +35,20 @@ func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier
 		WithRandomDescription().
 		Build()
 }
+
+// create npcgroupobject and cast it to npc
+func CreateNPCGroupWithOptions(npctype string, faction string, c *NPCCreationSupplier, locationID string) (m.NPCGroup, error) {
+	group := m.NewNPCGroup()
+
+	npc, err := CreateNPCWithOptions(npctype, faction, c, locationID)
+	if err != nil {
+		return m.NPCGroup{}, err
+	}
+	group.ID = npc.ID
+	group.LocationID = npc.LocationID
+	group.Components = npc.Components
+
+	group.AddNPC(npc.ID)
+
+	return *group, nil
+}

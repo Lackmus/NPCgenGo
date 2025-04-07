@@ -48,25 +48,25 @@ func (r *rowLayout) MinSize(objects []fyne.CanvasObject) fyne.Size {
 
 // FyneListView is a view that displays an NPC list and details.
 type FyneListView struct {
-	controller  *controller.NPCListController
-	npcs        []model.NPC
-	table       *widget.Table
-	detailLabel *fyne.Container
-	deleteBtn   *widget.Button
-	editBtn     *widget.Button
-	createBtn   *widget.Button
-	rndmBtn     *widget.Button
-	window      fyne.Window
-	app         fyne.App
-	selectedID  string
+	listcontroller *controller.NPCListController
+	npcs           []model.NPC
+	table          *widget.Table
+	detailLabel    *fyne.Container
+	deleteBtn      *widget.Button
+	editBtn        *widget.Button
+	createBtn      *widget.Button
+	rndmBtn        *widget.Button
+	window         fyne.Window
+	app            fyne.App
+	selectedID     string
 }
 
 // NewFyneListView creates and initializes the NPC list view.
-func NewFyneListView(controller *controller.NPCListController) shared.NPCListViewer {
+func NewFyneListView(listcontroller *controller.NPCListController) shared.NPCListViewer {
 	view := &FyneListView{
-		npcs:       []model.NPC{},
-		app:        app.New(),
-		controller: controller,
+		npcs:           []model.NPC{},
+		app:            app.New(),
+		listcontroller: listcontroller,
 	}
 
 	// Create window
@@ -158,7 +158,7 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 	// Create buttons.
 	view.deleteBtn = widget.NewButton("Delete NPC", func() {
 		if view.selectedID != "" {
-			view.controller.DeleteNPC(view.selectedID)
+			view.listcontroller.DeleteNPC(view.selectedID)
 			view.table.UnselectAll()
 			view.selectedID = ""
 			view.detailLabel.Objects = []fyne.CanvasObject{}
@@ -167,13 +167,13 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 
 	view.editBtn = widget.NewButton("Edit NPC", func() {
 		if view.selectedID != "" {
-			selectedNPC, err := controller.GetNpcByID(view.selectedID)
+			selectedNPC, err := listcontroller.GetNpcByID(view.selectedID)
 			if err != nil {
 				view.detailLabel.Objects = []fyne.CanvasObject{widget.NewLabel("Error: NPC not found")}
 				view.detailLabel.Refresh()
 				return
 			}
-			editCtrl := view.controller.InitEditController()
+			editCtrl := view.listcontroller.InitEditController()
 			editView := NewFyneEditView(editCtrl)
 			editCtrl.RegisterObserver(editView)
 			editCtrl.LoadNPC(selectedNPC)
@@ -182,14 +182,19 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 	})
 
 	view.createBtn = widget.NewButton("Create NPC", func() {
-		editCtrl := view.controller.InitEditController()
+		editCtrl := view.listcontroller.InitEditController()
 		editView := NewFyneEditView(editCtrl)
 		editCtrl.RegisterObserver(editView)
 		editView.Run()
 	})
 
 	view.rndmBtn = widget.NewButton("Random NPC", func() {
-		controller.CreateRandomNPC()
+		listcontroller.CreateRandomNPC()
+	})
+
+	// create group button and use npclistconroller and fynelistview to create group
+	view.createBtn = widget.NewButton("Create Group", func() {
+
 	})
 
 	// Layout for buttons.
@@ -201,7 +206,7 @@ func NewFyneListView(controller *controller.NPCListController) shared.NPCListVie
 	// Combine left panel and detail label in a horizontal split.
 	view.window.SetContent(container.NewHSplit(leftPanel, view.detailLabel))
 
-	controller.InitView(view)
+	listcontroller.InitView(view)
 
 	return view
 }
