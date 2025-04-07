@@ -29,12 +29,14 @@ func (v *ConsoleEditView) Run() {
 
 }
 
-// uodate field
+// UpdateField updates the field of the NPC with the given value.
+// It takes a field of type cp.CompEnum and a value of any type as parameters and returns nothing.
 func (v *ConsoleEditView) UpdateField(field cp.CompEnum, value any) {
 	fmt.Println("Field: ", field, " Value: ", value)
 }
 
-// OnNPCEditError reports an error to the user.
+// OnNPCEditError is a new method for error reporting
+// It takes an error as a parameter and returns nothing.
 func (v *ConsoleEditView) OnNPCEditError(err error) {
 	fmt.Println("Error: ", err)
 }
