@@ -40,7 +40,8 @@ func NewNPCGen() *NPCGen {
 // New Controller and view instance
 func (n *NPCGen) InitNPCListView(locationID string) {
 	npcListController := controller.NewNPCListController(n.creationSupplier, n.npcService, locationID)
-	npcListView := view.NewFyneListView(npcListController)
+	npcListView := view.NewConsoleView(npcListController)
+	npcListController.InitView(npcListView)
 	npcListView.Run()
 }
 
