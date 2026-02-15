@@ -14,11 +14,12 @@ const (
 	creationDataPath  = "data/creation_data"
 )
 
-func main() {
-	n := NewNPCGen()
-	n.InitNPCListView(defaultLocationID)
-}
-
+/*
+	func main() {
+		n := NewNPCGen()
+		n.InitNPCListView(defaultLocationID)
+	}
+*/
 type NPCGen struct {
 	creationSupplier *service.NPCCreationSupplier
 	npcService       *service.NPCService

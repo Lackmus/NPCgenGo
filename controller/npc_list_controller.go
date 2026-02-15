@@ -27,13 +27,14 @@ func NewNPCListController(creationSupplier *service.NPCCreationSupplier, npcServ
 	}
 }
 
-func (c *NPCListController) CreateRandomNPC() {
+func (c *NPCListController) CreateRandomNPC() (model.NPC, error) {
 	npc, err := service.CreateNPCWithOptions(h.Random, h.Random, c.CreationSupplier, c.LocationID)
 	if err != nil {
 		log.Printf("Error creating NPC: %v", err)
-		return
+		return model.NPC{}, err
 	}
 	c.AddNpc(npc)
+	return npc, nil
 }
 
 func (c *NPCListController) InitEditController() *NPCEditController {

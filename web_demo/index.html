@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NPCGen Demo (IndexedDB)</title>
+  <style>
+    body { font-family: system-ui, Arial; max-width: 900px; margin: 2rem; }
+    button { margin: .25rem; }
+    .npc { border: 1px solid #ddd; padding: .5rem; margin: .5rem 0; }
+    .traits { color: #444; font-size: .9rem }
+  </style>
+</head>
+<body>
+  <h1>NPCGen — Browser Demo (IndexedDB)</h1>
+  <p>This demo uses your Go backend to generate and store NPCs. It expects these endpoints:
+  <code>POST /api/generate</code> (create NPC server-side), <code>GET /api/npcs</code>, <code>DELETE /api/npcs/:id</code>.</p>
+
+  <div>
+    <button id="btnGenerate">Generate NPC (server)</button>
+    <button id="btnRefresh">Refresh List</button>
+    <button id="btnClear">Delete All</button>
+  </div>
+
+  <h2>Stored NPCs</h2>
+  <div id="list"></div>
+
+  <h2>NPC Details / Edit</h2>
+  <div id="detail">
+    <form id="npcForm">
+      <div><label>ID: <input id="f_id" name="id" readonly></label></div>
+      <div><label>Name: <input id="f_name" name="name"></label></div>
+      <div><label>Type: <input id="f_type" name="type"></label></div>
+      <div><label>Subtype: <input id="f_subtype" name="subtype"></label></div>
+      <div><label>Species: <input id="f_species" name="species"></label></div>
+      <div><label>Faction: <input id="f_faction" name="faction"></label></div>
+      <div><label>Traits (comma): <input id="f_traits" name="traits"></label></div>
+      <div><label>Stats: <input id="f_stats" name="stats"></label></div>
+      <div><label>Items: <input id="f_items" name="items"></label></div>
+      <div><label>Description: <input id="f_description" name="description"></label></div>
+      <div><label>LocationID: <input id="f_location" name="location"></label></div>
+      <div>
+        <button type="button" id="btnSave">Save</button>
+        <button type="button" id="btnCreate">Create New</button>
+        <button type="button" id="btnClose">Close</button>
+      </div>
+    </form>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
