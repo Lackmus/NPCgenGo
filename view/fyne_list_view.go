@@ -3,7 +3,6 @@ package view
 
 import (
 	"fmt"
-	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -253,15 +252,4 @@ func makeNPCStringFyne(npc model.NPC) []fyne.CanvasObject {
 		}
 	}
 	return labels
-}
-
-// UpdateGroups implements the NPCGroupObserver interface.
-func (v *FyneListView) UpdateGroups(groups []model.NPCGroup) {
-	// For now, we'll just log the update
-	log.Printf("Updated with %d groups", len(groups))
-
-	// In a more complete implementation, you would:
-	// 1. Update a tab or section showing NPC groups
-
-	// 2. Allow selecting groups to see member NPCs
 }
