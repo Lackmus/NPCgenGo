@@ -1,63 +1,46 @@
 package model
 
-import (
-	"slices"
-	"strings"
+import "slices"
 
-	cp "github.com/lackmus/npcgengo/model/npc_components"
-)
-
+// NPCGroup represents a collection of related NPCs
 type NPCGroup struct {
-	NPC
-	NPCs []string
+	Name        string
+	LocationID  string
+	NPCIDs      []string
+	Description string
 }
 
-// NewNPCGroup creates a new NPCGroup with the given ID and location ID.
-// It returns a pointer to the new NPCGroup.
-func NewNPCGroup() *NPCGroup {
+// NewNPCGroup creates a new empty NPC group
+func NewNPCGroup(name string) *NPCGroup {
 	return &NPCGroup{
-		NPC: NPC{
-			Components: make(map[cp.CompEnum]string),
-		},
-		NPCs: []string{},
+		Name:        name,
+		NPCIDs:      []string{},
+		Description: "",
 	}
 }
 
-// AddNPC adds an NPC to the group.
+// AddNPC adds an NPC to the group if not already present
 func (g *NPCGroup) AddNPC(npcID string) {
-	g.NPCs = append(g.NPCs, npcID)
+	// Check if NPC is already in the group
+	for _, id := range g.NPCIDs {
+		if id == npcID {
+			return // NPC already in group
+		}
+	}
+	g.NPCIDs = append(g.NPCIDs, npcID)
 }
 
-// RemoveNPC removes an NPC from the group.
+// RemoveNPC removes an NPC from the group
 func (g *NPCGroup) RemoveNPC(npcID string) {
-	for i, npc := range g.NPCs {
-		if npc == npcID {
-			g.NPCs = slices.Delete(g.NPCs, i, i+1)
-			break
+	for i, id := range g.NPCIDs {
+		if id == npcID {
+			// Remove the NPC ID from the slice
+			g.NPCIDs = slices.Delete(g.NPCIDs, i, i+1)
+			return
 		}
 	}
 }
 
-// String returns a string representation of the NPCGroup and its components.
-// It returns a string representation of the NPCGroup and its components.
-func (g *NPCGroup) String() string {
-	var sb strings.Builder
-	sb.WriteString(g.NPC.String())
-	sb.WriteString("\n  NPCs:")
-	for _, npc := range g.NPCs {
-		sb.WriteString("\n    " + npc)
-	}
-	return sb.String()
-}
-
-// ShortString returns a short string representation of the NPCGroup and its components.
-// It returns a short string representation of the NPCGroup and its components.
-func (g *NPCGroup) ShortString() string {
-	var sb strings.Builder
-	sb.WriteString(g.NPC.ShortString())
-	sb.WriteString("\n  NPCs:")
-	for _, npc := range g.NPCs {
-		sb.WriteString("\n    " + npc)
-	}
-	return sb.String()
+func (g *NPCGroup) ContainsNPC(npcID string) bool {
+	return slices.Contains(g.NPCIDs, npcID)
 }

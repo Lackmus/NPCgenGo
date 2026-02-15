@@ -159,7 +159,7 @@ func (v *FyneEditView) UpdateNPC(npc model.NPC) {
 }
 
 // UpdateField updates a field in the view.
-func (v *FyneEditView) UpdateField(field cp.CompEnum, value interface{}) {
+func (v *FyneEditView) UpdateField(field cp.CompEnum, value any) {
 	switch field {
 	case cp.CompType:
 		v.typeSelect.SetSelected(value.(string))

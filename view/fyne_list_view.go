@@ -3,6 +3,7 @@ package view
 
 import (
 	"fmt"
+	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -13,6 +14,8 @@ import (
 	cp "github.com/lackmus/npcgengo/model/npc_components"
 	"github.com/lackmus/npcgengo/shared"
 )
+
+const emptySelectionLabel = "Select a NPC"
 
 // rowLayout is a custom layout that positions children in a row.
 type rowLayout struct {
@@ -50,15 +53,21 @@ func (r *rowLayout) MinSize(objects []fyne.CanvasObject) fyne.Size {
 type FyneListView struct {
 	listcontroller *controller.NPCListController
 	npcs           []model.NPC
-	table          *widget.Table
+	npcListTable   *widget.Table
 	detailLabel    *fyne.Container
 	deleteBtn      *widget.Button
 	editBtn        *widget.Button
 	createBtn      *widget.Button
 	rndmBtn        *widget.Button
+	groupBtn       *widget.Button
 	window         fyne.Window
 	app            fyne.App
 	selectedID     string
+}
+
+// function for empty detail label that returns a slice with a label
+func getEmptyDetailLabel() []fyne.CanvasObject {
+	return []fyne.CanvasObject{widget.NewLabel(emptySelectionLabel)}
 }
 
 // NewFyneListView creates and initializes the NPC list view.
@@ -72,9 +81,8 @@ func NewFyneListView(listcontroller *controller.NPCListController) shared.NPCLis
 	// Create window
 	view.window = view.app.NewWindow("NPC Manager")
 	view.window.Resize(fyne.NewSize(1600, 400))
-
 	// Initialize detail label
-	view.detailLabel = container.NewVBox(widget.NewLabel("Select an NPC"))
+	view.detailLabel = container.NewVBox(widget.NewLabel(emptySelectionLabel))
 
 	// Create header row with fixed column widths.
 	// These widths should match the table's column widths.
@@ -90,7 +98,7 @@ func NewFyneListView(listcontroller *controller.NPCListController) shared.NPCLis
 	var selectedRow int = -1
 
 	// Create NPC table.
-	view.table = widget.NewTable(
+	view.npcListTable = widget.NewTable(
 		// Provide the number of rows and columns.
 		func() (int, int) { return len(view.npcs), 5 }, // rows, columns
 		// Provide the content of the header row.
@@ -132,37 +140,34 @@ func NewFyneListView(listcontroller *controller.NPCListController) shared.NPCLis
 	)
 
 	// Set fixed column widths for the table (must match header widths).
-	view.table.SetColumnWidth(0, headerWidths[0])
-	view.table.SetColumnWidth(1, headerWidths[1])
-	view.table.SetColumnWidth(2, headerWidths[2])
-	view.table.SetColumnWidth(3, headerWidths[3])
-	view.table.SetColumnWidth(4, headerWidths[4])
+	view.npcListTable.SetColumnWidth(0, headerWidths[0])
+	view.npcListTable.SetColumnWidth(1, headerWidths[1])
+	view.npcListTable.SetColumnWidth(2, headerWidths[2])
+	view.npcListTable.SetColumnWidth(3, headerWidths[3])
+	view.npcListTable.SetColumnWidth(4, headerWidths[4])
 
 	// Set the table's selection behavior.
-	view.table.OnSelected = func(id widget.TableCellID) {
+	view.npcListTable.OnSelected = func(id widget.TableCellID) {
 		if id.Row >= 0 && id.Row < len(view.npcs) {
 			selectedRow = id.Row // Store the selected row index
 			view.selectedID = view.npcs[id.Row].ID
 			view.detailLabel.Objects = makeNPCStringFyne(view.npcs[id.Row])
 			view.detailLabel.Refresh()
-			view.table.Refresh() // Refresh the table to apply highlighting
+			view.npcListTable.Refresh() // Refresh the table to apply highlighting
 		}
 	}
 
 	// Unselect the row when it is deselected.
-	view.table.OnUnselected = func(id widget.TableCellID) {
-		selectedRow = -1 // Reset selection when unselected
-		view.table.Refresh()
+	view.npcListTable.OnUnselected = func(id widget.TableCellID) {
+		view.selectedID = ""
+		view.detailLabel.Objects = getEmptyDetailLabel()
+		view.detailLabel.Refresh()
+		view.npcListTable.Refresh()
 	}
 
 	// Create buttons.
 	view.deleteBtn = widget.NewButton("Delete NPC", func() {
-		if view.selectedID != "" {
-			view.listcontroller.DeleteNPC(view.selectedID)
-			view.table.UnselectAll()
-			view.selectedID = ""
-			view.detailLabel.Objects = []fyne.CanvasObject{}
-		}
+		view.listcontroller.DeleteNPC(view.selectedID)
 	})
 
 	view.editBtn = widget.NewButton("Edit NPC", func() {
@@ -192,16 +197,15 @@ func NewFyneListView(listcontroller *controller.NPCListController) shared.NPCLis
 		listcontroller.CreateRandomNPC()
 	})
 
-	// create group button and use npclistconroller and fynelistview to create group
-	view.createBtn = widget.NewButton("Create Group", func() {
+	view.groupBtn = widget.NewButton("Create Group", func() {
 
 	})
 
 	// Layout for buttons.
-	buttons := container.NewHBox(view.rndmBtn, view.createBtn, view.editBtn, view.deleteBtn)
+	buttons := container.NewHBox(view.rndmBtn, view.createBtn, view.groupBtn, view.editBtn, view.deleteBtn)
 
 	// Assemble the left panel with fixed header on top, buttons at bottom, and table in the center.
-	leftPanel := container.NewBorder(header, buttons, nil, nil, view.table)
+	leftPanel := container.NewBorder(header, buttons, nil, nil, view.npcListTable)
 
 	// Combine left panel and detail label in a horizontal split.
 	view.window.SetContent(container.NewHSplit(leftPanel, view.detailLabel))
@@ -214,7 +218,14 @@ func NewFyneListView(listcontroller *controller.NPCListController) shared.NPCLis
 // Update refreshes the NPC list when notified by the controller.
 func (v *FyneListView) Update(npcs []model.NPC) {
 	v.npcs = npcs
-	v.table.Refresh()
+	if len(npcs) > 0 {
+		v.npcListTable.UnselectAll() // Clear selection when updating
+		v.selectedID = ""            // Reset selected ID
+	} else {
+		v.detailLabel.Objects = getEmptyDetailLabel() // Reset detail label if no NPCs
+	}
+	v.npcListTable.Refresh()
+
 }
 
 // Content returns the main Fyne UI container.
@@ -242,4 +253,15 @@ func makeNPCStringFyne(npc model.NPC) []fyne.CanvasObject {
 		}
 	}
 	return labels
+}
+
+// UpdateGroups implements the NPCGroupObserver interface.
+func (v *FyneListView) UpdateGroups(groups []model.NPCGroup) {
+	// For now, we'll just log the update
+	log.Printf("Updated with %d groups", len(groups))
+
+	// In a more complete implementation, you would:
+	// 1. Update a tab or section showing NPC groups
+
+	// 2. Allow selecting groups to see member NPCs
 }

@@ -10,7 +10,6 @@ import (
 	"github.com/lackmus/npcgengo/shared"
 )
 
-// NPCListController manages the list of NPCs.
 type NPCListController struct {
 	NpcService       *service.NPCService
 	CreationSupplier *service.NPCCreationSupplier
@@ -18,7 +17,6 @@ type NPCListController struct {
 	LocationID       string
 }
 
-// NewNPCListController creates a new NPCListController.
 func NewNPCListController(creationSupplier *service.NPCCreationSupplier, npcService *service.NPCService, locationID string) *NPCListController {
 	log.Println("Creating NPCListController...")
 	return &NPCListController{
@@ -29,7 +27,6 @@ func NewNPCListController(creationSupplier *service.NPCCreationSupplier, npcServ
 	}
 }
 
-// creaTE random NPC
 func (c *NPCListController) CreateRandomNPC() {
 	npc, err := service.CreateNPCWithOptions(h.Random, h.Random, c.CreationSupplier, c.LocationID)
 	if err != nil {
@@ -39,32 +36,25 @@ func (c *NPCListController) CreateRandomNPC() {
 	c.AddNpc(npc)
 }
 
-// InitEditController initializes the NPC edit controller.
-// It returns a new NPCEditController.
 func (c *NPCListController) InitEditController() *NPCEditController {
 	log.Println("Initializing edit controller...")
 	return NewNPCEditController(c.CreationSupplier, c, c.LocationID)
 }
 
-// InitView notifies observers to initialize the view.
 func (c *NPCListController) InitView(view shared.NPCListViewer) {
 	log.Println("Initializing view...")
 	c.RegisterObserver(view)
 	c.NotifyObservers()
 }
 
-// UpdateNpc updates an NPC in the service and notifies observers.
 func (c *NPCListController) UpdateNpc(npc model.NPC) {
 	c.AddNpc(npc)
-	c.NotifyObservers()
 }
 
-// RegisterObserver adds an observer to the list.
 func (c *NPCListController) RegisterObserver(o shared.NPCObserver) {
 	c.observers = append(c.observers, o)
 }
 
-// NotifyObservers notifies all observers with the current list of NPCs.
 func (c *NPCListController) NotifyObservers() {
 	npcs := c.NpcService.GetNPCByLocation(c.LocationID)
 	if len(npcs) == 0 {
@@ -75,23 +65,19 @@ func (c *NPCListController) NotifyObservers() {
 	}
 }
 
-// GetAllNpcs returns all NPCs from the service.
 func (c *NPCListController) GetAllNpcs() []model.NPC {
 	return c.NpcService.GetAllNPC()
 }
 
-// getNpcByID returns an NPC by id from the service.
 func (c *NPCListController) GetNpcByID(id string) (model.NPC, error) {
 	return c.NpcService.GetNPCByID(id)
 }
 
-// AddNpc adds a new NPC to the service and notifies observers.
 func (c *NPCListController) AddNpc(npc model.NPC) {
 	c.NpcService.AddNPC(npc)
 	c.NotifyObservers()
 }
 
-// DeleteNPC deletes an NPC by id and notifies observers.
 func (c *NPCListController) DeleteNPC(id string) {
 	if err := c.NpcService.DeleteNPC(id); err != nil {
 		log.Printf("Error deleting NPC: %v", err)
@@ -99,8 +85,15 @@ func (c *NPCListController) DeleteNPC(id string) {
 	c.NotifyObservers()
 }
 
-// DeleteAllNPC deletes all NPCs and notifies observers.
 func (c *NPCListController) DeleteAllNPC() {
 	c.NpcService.DeleteAllNPC()
 	c.NotifyObservers()
+}
+
+func (c *NPCListController) GetNPCByLocation() []model.NPC {
+	return c.NpcService.GetNPCByLocation(c.LocationID)
+}
+
+func (c *NPCListController) CreateNPCGroup() {
+	// Implementation will be in the view that uses this controller
 }
