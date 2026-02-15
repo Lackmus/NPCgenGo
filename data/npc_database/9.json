@@ -1,0 +1,15 @@
+{
+  "ID": "9",
+  "LocationID": "default",
+  "Components": {
+    "1": "Cloud Dapplepelt",
+    "2": "Military",
+    "3": "Soldier",
+    "4": "Skunk",
+    "5": "Eyrie Dynasties",
+    "6": "Loyal\nOpposes: Treacherous",
+    "7": "combat: 5\nstrength: 8\ndefense: 6",
+    "8": "weapons: Warhammer\narmor: Gambeson\naccessories: Scabbard",
+    "9": "A soldier who trains to be the best warrior they can be.\nFiercely independent and unafraid.\nGives or shows firm and constant support or allegiance to a person or institution."
+  }
+}

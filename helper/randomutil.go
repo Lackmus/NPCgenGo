@@ -6,8 +6,6 @@ import (
 	"strconv"
 )
 
-// GetRandomElement returns a random element from a non-empty slice.
-// If the slice is empty, it returns the zero value of T.
 func GetRandomElement[T any](elements []T) T {
 	if len(elements) == 0 {
 		var zero T
@@ -31,8 +29,6 @@ func NewRandomMapKeySelector[K comparable, V any](m map[K]V) func() K {
 	}
 }
 
-// RandomInt returns a random integer in the range [min, max].
-// It returns a random integer as a string.
 func RandomInt(min, max int) string {
 	return strconv.Itoa(rand.Intn(max-min+1) + min)
 }

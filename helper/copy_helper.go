@@ -1,9 +1,6 @@
 // Description: Helper functions for copying maps and slices
 package helper
 
-// CopySlice : Copy a slice
-// Note: This function only works for slices of basic types or slices of maps or slices.
-// It does not work for slices of structs or slices of slices.
 func CopyMap[K comparable, V any](src map[K]V) map[K]V {
 	dst := make(map[K]V, len(src))
 	for k, v := range src {
@@ -12,9 +9,6 @@ func CopyMap[K comparable, V any](src map[K]V) map[K]V {
 	return dst
 }
 
-// DeepCopySlice : Deep copy a slice
-// Note: This function only works for slices of basic types or slices of maps or slices.
-// It does not work for slices of structs or slices of slices.
 func DeepCopyMap[K comparable, V any](src map[K]V) map[K]V {
 	dst := make(map[K]V, len(src))
 	for k, v := range src {

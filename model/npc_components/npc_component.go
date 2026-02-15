@@ -1,15 +1,11 @@
 // Description: This file contains the NPCComponent struct and its methods.
 package npc_components
 
-// NPCComponent represents a component of an NPC.
-// It represents a component of an NPC.
 type NPCComponent struct {
 	Name  CompEnum
 	Value string
 }
 
-// NewComponent creates a new NPCComponent.
-// It returns a new NPCComponent with the given name and value.
 func NewComponent(name CompEnum, value string) NPCComponent {
 	return NPCComponent{
 		Name:  name,
@@ -31,8 +27,6 @@ const (
 	CompDescription CompEnum = 9
 )
 
-// CompEnumValues returns a slice of all the CompEnum values.
-// It returns a slice of all the CompEnum values.
 func CompEnumValues() []CompEnum {
 	return []CompEnum{
 		CompName,
@@ -47,8 +41,6 @@ func CompEnumValues() []CompEnum {
 	}
 }
 
-// String returns the string representation of the CompEnum.
-// It returns the string representation of the CompEnum.
 func (c CompEnum) String() string {
 	switch c {
 	case CompName:

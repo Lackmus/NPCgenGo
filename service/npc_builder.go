@@ -182,8 +182,6 @@ func (b *NPCBuilder) WithRandomSubtypeEquipment() *NPCBuilder {
 
 // ----- Species and Name Methods -----
 
-// WithSpecies sets the NPC's species to the provided value.
-// It requires that the species exists in the data service.
 func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -194,8 +192,6 @@ func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder {
 	return b
 }
 
-// WithRandomSpecies sets the NPC's species by selecting a random species.
-// It requires that the NPC type is already set.
 func (b *NPCBuilder) WithRandomSpecies() *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -204,8 +200,6 @@ func (b *NPCBuilder) WithRandomSpecies() *NPCBuilder {
 	return b.WithSpecies(randomSpecies)
 }
 
-// WithName sets the NPC's name to the provided value.
-// It requires that the name is not empty.
 func (b *NPCBuilder) WithName(name string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -214,8 +208,6 @@ func (b *NPCBuilder) WithName(name string) *NPCBuilder {
 	return b
 }
 
-// WithRandomName sets the NPC's name using random generation based on the current species.
-// Requires that a species has been set.
 func (b *NPCBuilder) WithRandomName() *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -231,8 +223,6 @@ func (b *NPCBuilder) WithRandomName() *NPCBuilder {
 
 // ----- Faction and Trait Methods -----
 
-// WithFaction sets the NPC's faction to the provided value.
-// It requires that the faction exists in the data service.
 func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -241,8 +231,6 @@ func (b *NPCBuilder) WithFaction(faction string) *NPCBuilder {
 	return b
 }
 
-// WithRandomFaction sets the NPC's faction by selecting a random faction.
-// It requires that the NPC type is already set.
 func (b *NPCBuilder) WithRandomFaction() *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -251,8 +239,6 @@ func (b *NPCBuilder) WithRandomFaction() *NPCBuilder {
 	return b.WithFaction(randomFaction)
 }
 
-// WithTrait sets the NPC's trait to the provided value.
-// It requires that the trait exists in the data service.
 func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -263,8 +249,6 @@ func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder {
 	return b
 }
 
-// WithRandomTrait sets the NPC's trait by selecting a random trait.
-// It requires that the NPC type is already set.
 func (b *NPCBuilder) WithRandomTrait() *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -275,20 +259,15 @@ func (b *NPCBuilder) WithRandomTrait() *NPCBuilder {
 
 // ----- Description Methods -----
 
-// WithDescription sets the NPC's description to the provided value.
-// It requires that the description is not empty.
 func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
-	// Wrap the current description component with additional info.
 	b.description = description
 	b.updateComponent(cp.CompDescription, description)
 	return b
 }
 
-// formatDescription combines the subtype, species, and trait into a single string.
-// It returns a formatted string with each part separated by a newline.
 func formatDescription(subtype, species, trait string) string {
 	var sb strings.Builder
 	if trimmed := strings.TrimSpace(subtype); trimmed != "" {
@@ -303,8 +282,6 @@ func formatDescription(subtype, species, trait string) string {
 	return sb.String()
 }
 
-// WithRandomDescription sets the NPC's description using the subtype, species, and trait.
-// It requires that the subtype, species, and trait have been set.
 func (b *NPCBuilder) WithRandomDescription() *NPCBuilder {
 	if b.HasErrors() {
 		return b
@@ -323,8 +300,6 @@ func (b *NPCBuilder) WithRandomDescription() *NPCBuilder {
 
 // ----- Build Method -----
 
-// Validate checks if the NPCBuilder is in a valid state to build an NPC.
-// It returns an error if the NPC type, subtype, species, or trait are not set.
 func (b *NPCBuilder) Validate() error {
 	if h.IsNilOrEmpty(b.npctypeData) {
 		return errors.New("NPC type is not set")
@@ -338,7 +313,6 @@ func (b *NPCBuilder) Validate() error {
 	if h.IsNilOrEmpty(b.traitData) {
 		return errors.New("NPC trait is not set")
 	}
-	// Add further validations as needed.
 	return nil
 }
 
@@ -350,13 +324,10 @@ func (b *NPCBuilder) Errors() []error {
 	return b.errors
 }
 
-// addErrorWithContext appends an error with additional context.
 func (b *NPCBuilder) addErrorWithContext(context string, err error) {
 	b.errors = append(b.errors, fmt.Errorf("%s: %w", context, err))
 }
 
-// Build constructs the NPC from the current state of the builder.
-// It returns an error if the builder is in an invalid state.
 func (b *NPCBuilder) Build() (m.NPC, error) {
 	if b.HasErrors() {
 		return m.NPC{}, fmt.Errorf("cannot build NPC: %w", errors.Join(b.errors...))
