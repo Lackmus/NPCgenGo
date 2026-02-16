@@ -20,6 +20,14 @@ const (
 		n.InitNPCListView(defaultLocationID)
 	}
 */
+
+func main() {
+	n := NewNPCGen()
+	npcController := controller.NewNPCListController(n.creationSupplier, n.npcService, defaultLocationID)
+	srv := controller.NewServer(npcController)
+	srv.Routes()
+}
+
 type NPCGen struct {
 	creationSupplier *service.NPCCreationSupplier
 	npcService       *service.NPCService

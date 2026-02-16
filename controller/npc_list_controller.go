@@ -58,20 +58,25 @@ func (c *NPCListController) RegisterObserver(o shared.NPCObserver) {
 
 func (c *NPCListController) NotifyObservers() {
 	npcs := c.NpcService.GetNPCByLocation(c.LocationID)
-	if len(npcs) == 0 {
-		log.Println("No NPCs found in the current location.")
-	}
 	for _, o := range c.observers {
 		o.Update(npcs)
 	}
 }
 
 func (c *NPCListController) GetAllNpcs() []model.NPC {
-	return c.NpcService.GetAllNPC()
+	npcs := c.NpcService.GetAllNPC()
+	if len(npcs) == 0 {
+		log.Println("No NPCs found in the current location.")
+	}
+	return npcs
 }
 
 func (c *NPCListController) GetNpcByID(id string) (model.NPC, error) {
-	return c.NpcService.GetNPCByID(id)
+	npc, err := c.NpcService.GetNPCByID(id)
+	if err != nil {
+		return model.NPC{}, err
+	}
+	return npc, nil
 }
 
 func (c *NPCListController) AddNpc(npc model.NPC) {

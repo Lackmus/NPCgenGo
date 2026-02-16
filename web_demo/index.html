@@ -8,7 +8,15 @@
     body { font-family: system-ui, Arial; max-width: 900px; margin: 2rem; }
     button { margin: .25rem; }
     .npc { border: 1px solid #ddd; padding: .5rem; margin: .5rem 0; }
-    .traits { color: #444; font-size: .9rem }
+    .type, .subtype, .faction { color: #444; font-size: 1.0rem }
+    .columns { display: flex; gap: 1rem; align-items: flex-start; }
+    .left { flex: 1; min-width: 0; }
+    .right { width: 360px; flex-shrink: 0; }
+    #detail { border: 1px solid #eee; padding: .5rem; background: #fafafa; }
+    @media (max-width: 760px) {
+      .columns { flex-direction: column; }
+      .right { width: auto; }
+    }
   </style>
 </head>
 <body>
@@ -22,29 +30,34 @@
     <button id="btnClear">Delete All</button>
   </div>
 
-  <h2>Stored NPCs</h2>
-  <div id="list"></div>
-
-  <h2>NPC Details / Edit</h2>
-  <div id="detail">
-    <form id="npcForm">
-      <div><label>ID: <input id="f_id" name="id" readonly></label></div>
-      <div><label>Name: <input id="f_name" name="name"></label></div>
-      <div><label>Type: <input id="f_type" name="type"></label></div>
-      <div><label>Subtype: <input id="f_subtype" name="subtype"></label></div>
-      <div><label>Species: <input id="f_species" name="species"></label></div>
-      <div><label>Faction: <input id="f_faction" name="faction"></label></div>
-      <div><label>Traits (comma): <input id="f_traits" name="traits"></label></div>
-      <div><label>Stats: <input id="f_stats" name="stats"></label></div>
-      <div><label>Items: <input id="f_items" name="items"></label></div>
-      <div><label>Description: <input id="f_description" name="description"></label></div>
-      <div><label>LocationID: <input id="f_location" name="location"></label></div>
-      <div>
-        <button type="button" id="btnSave">Save</button>
-        <button type="button" id="btnCreate">Create New</button>
-        <button type="button" id="btnClose">Close</button>
+  <div class="columns">
+    <div class="left">
+      <h2>Stored NPCs</h2>
+      <div id="list"></div>
+    </div>
+    <div class="right">
+      <h2>NPC Details / Edit</h2>
+      <div id="detail">
+        <form id="npcForm">
+          <div><label>ID: <input id="f_id" name="id" readonly></label></div>
+          <div><label>Name: <input id="f_name" name="name"></label></div>
+          <div><label>Type: <input id="f_type" name="type"></label></div>
+          <div><label>Subtype: <input id="f_subtype" name="subtype"></label></div>
+          <div><label>Species: <input id="f_species" name="species"></label></div>
+          <div><label>Faction: <input id="f_faction" name="faction"></label></div>
+          <div><label>Traits (comma): <input id="f_traits" name="traits"></label></div>
+          <div><label>Stats: <input id="f_stats" name="stats"></label></div>
+          <div><label>Items: <input id="f_items" name="items"></label></div>
+          <div><label>Description: <input id="f_description" name="description"></label></div>
+          <div><label>LocationID: <input id="f_location" name="location"></label></div>
+          <div>
+            <button type="button" id="btnSave">Save</button>
+            <button type="button" id="btnCreate">Create New</button>
+            <button type="button" id="btnClose">Close</button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   </div>
 
   <script type="module" src="app.js"></script>

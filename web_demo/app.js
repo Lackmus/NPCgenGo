@@ -34,14 +34,18 @@ function makeItemDiv(it) {
   const id = it.ID || it.id;
   const name = (it.Components && it.Components['1']) || it.name || '';
   const species = (it.Components && it.Components['4']) || it.species || '';
-  const traits = (it.Components && it.Components['6']) ? it.Components['6'].split(',').map(s=>s.trim()) : (it.traits||[]);
+  const type = (it.Components && it.Components['2']) || '';
+  const subtype = (it.Components && it.Components['3']) || '';
+  const faction = (it.Components && it.Components['5']) || '';
   const created = it.createdAt || '';
   const div = document.createElement('div');
   div.className = 'npc';
   div.innerHTML = `
     <strong class="npc-name">${name}</strong> — <em>${species}</em> <button data-id="${id}">Delete</button>
-    <div class="traits">Traits: ${traits.join(', ')}</div>
-    <div style="font-size:.85rem;color:#666">${created}</div>
+    <div class="type">Type:${type}</div> 
+    <div class="subtype">Subtype: ${subtype}</div>
+    <div class="faction">Faction: ${faction}</div>
+   
   `;
   const btn = div.querySelector('button');
   btn.addEventListener('click', () => deleteNPC(id));
