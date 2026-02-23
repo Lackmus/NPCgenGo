@@ -4,7 +4,7 @@ package npc_components
 import (
 	"strings"
 
-	"github.com/lackmus/npcgengo/helper"
+	helper "github.com/lackmus/npcgengo/internal/helpers"
 )
 
 type NPCSubtype struct {

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/lackmus/npcgengo/controller"
 	"github.com/lackmus/npcgengo/loader"
 	"github.com/lackmus/npcgengo/service"
@@ -14,41 +17,36 @@ const (
 	creationDataPath  = "data/creation_data"
 )
 
-/*
-	func main() {
-		n := NewNPCGen()
-		n.InitNPCListView(defaultLocationID)
-	}
-*/
-
-func main() {
-	n := NewNPCGen()
-	npcController := controller.NewNPCListController(n.creationSupplier, n.npcService, defaultLocationID)
-	srv := controller.NewServer(npcController)
-	srv.Routes()
-}
-
 type NPCGen struct {
-	creationSupplier *service.NPCCreationSupplier
-	npcService       *service.NPCService
+	CreationSupplier  *service.NPCCreationSupplier
+	NpcService        *service.NPCService
+	NPCListController *controller.NPCListController
 }
 
 // NewNPCGen initializes a new NPCGen instance with the provided parameters.
 // It creates a new NPCCreationSupplier and NPCListController, and sets up the Fyne view.
-func NewNPCGen() *NPCGen {
-	// Create the supplier once and reuse it
-	creationSupplier := service.NewNPCCreationSupplier(loader.NewJSONNPCConfigLoader(creationDataPath))
-	npcService := service.NewNPCService(loader.NewJSONNPCStorage(npcDatabasePath))
+func NewNPCGen() (*NPCGen, error) {
+	creationSupplier, err := service.NewNPCCreationSupplier(loader.NewJSONNPCConfigLoader(creationDataPath))
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize NPCCreationSupplier: %w", err)
+	}
+	npcService, err := service.NewNPCService(context.Background(), loader.NewJSONNPCStorage(npcDatabasePath))
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize NPCService: %w", err)
+	}
+
+	npcListController := controller.NewNPCListController(creationSupplier, npcService, defaultLocationID)
 
 	return &NPCGen{
-		creationSupplier: creationSupplier, // This assumes supplier implements the interface
-		npcService:       npcService,
-	}
+		CreationSupplier:  creationSupplier,
+		NpcService:        npcService,
+		NPCListController: npcListController,
+	}, nil
 }
 
 // New Controller and view instance
 func (n *NPCGen) InitNPCListView(locationID string) {
-	npcListController := controller.NewNPCListController(n.creationSupplier, n.npcService, locationID)
+	npcListController := controller.NewNPCListController(n.CreationSupplier, n.NpcService, locationID)
 	npcListView := view.NewConsoleView(npcListController)
 	npcListController.InitView(npcListView)
 	npcListView.Run()
@@ -56,5 +54,5 @@ func (n *NPCGen) InitNPCListView(locationID string) {
 
 // GetCreationOptions returns the creation options from the supplier.
 func (n *NPCGen) GetFactions() []string {
-	return n.creationSupplier.CreationOptions.Factions
+	return n.CreationSupplier.CreationOptions.Factions
 }

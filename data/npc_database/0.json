@@ -1,0 +1,15 @@
+{
+  "ID": "0",
+  "LocationID": "default",
+  "Components": {
+    "1": "Moss Pondwhisper",
+    "2": "Military",
+    "3": "Soldier",
+    "4": "Turtle",
+    "5": "Neutral",
+    "6": "Reckless\nOpposes: Cautious",
+    "7": "combat: 7\nstrength: 9\ndefense: 6",
+    "8": "accessories: Gauntlets\nweapons: Flail\narmor: Plate Armor",
+    "9": "A soldier who trains to be the best warrior they can be.\nA steady shell against the storm.\nActs without thinking or caring about the consequences of an action."
+  }
+}

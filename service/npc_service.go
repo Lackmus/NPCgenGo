@@ -2,6 +2,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"sort"
@@ -20,23 +21,32 @@ type NPCService struct {
 	freeIDs   []int
 }
 
-func NewNPCService(loader shared.NPCStorage) *NPCService {
+// NewNPCService creates an NPCService and attempts to load existing NPCs from storage.
+// It returns the service instance and any error encountered while loading existing NPCs.
+// Partial loads are preserved: the returned error may be non-nil while the service
+// contains any successfully loaded NPCs.
+func NewNPCService(ctx context.Context, loader shared.NPCStorage) (*NPCService, error) {
 	s := &NPCService{
 		loader: loader,
 		npcs:   make(map[string]model.NPC),
 	}
-	s.initNPCService()
-	return s
-}
 
-func (s *NPCService) initNPCService() {
-	var err error
-	s.npcs, err = s.loader.LoadAllNPC()
+	data, err := s.loader.LoadAllNPC(ctx)
+	if data != nil {
+		s.npcs = data
+	}
 	if err != nil {
-		log.Printf("Error loading NPCs: %v", err)
-		s.npcs = make(map[string]model.NPC)
+		// return service with partial data and the initialization error
+		// caller may choose to log/fail depending on context
+		s.initializeCounters()
+		return s, err
 	}
 
+	s.initializeCounters()
+	return s, nil
+}
+
+func (s *NPCService) initializeCounters() {
 	s.idCounter = 0
 	s.freeIDs = []int{}
 
@@ -71,7 +81,7 @@ func (s *NPCService) AddNPC(npc model.NPC) {
 
 	s.npcs[npc.ID] = npc
 
-	if err := s.loader.SaveNPC(npc); err != nil {
+	if err := s.loader.SaveNPC(context.Background(), npc); err != nil {
 		log.Printf("Error saving NPC (ID %s): %v", npc.ID, err)
 	}
 }
@@ -111,11 +121,11 @@ func (s *NPCService) DeleteNPC(id string) error {
 		s.freeIDs = append(s.freeIDs, num)
 		sort.Ints(s.freeIDs)
 	}
-	return s.loader.DeleteNPC(id)
+	return s.loader.DeleteNPC(context.Background(), id)
 }
 
 func (s *NPCService) DeleteAllNPC() {
-	if err := s.loader.DeleteAllNPC(); err != nil {
+	if err := s.loader.DeleteAllNPC(context.Background()); err != nil {
 		log.Printf("Error deleting all NPCs: %v", err)
 	}
 	s.npcs = make(map[string]model.NPC)
@@ -129,6 +139,6 @@ func (s *NPCService) CountNPC() int {
 
 func (s *NPCService) PrintAllNPC() {
 	for _, npc := range s.npcs {
-		fmt.Println(npc)
+		log.Printf("%+v", npc)
 	}
 }

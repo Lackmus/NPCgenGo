@@ -2,7 +2,8 @@
 package service
 
 import (
-	"log"
+	"context"
+	"fmt"
 
 	"github.com/lackmus/npcgengo/shared"
 )
@@ -13,18 +14,22 @@ type NPCCreationSupplier struct {
 	RandomizerService   *RandomizerService
 }
 
-func NewNPCCreationSupplier(loader shared.NPCConfigLoader) *NPCCreationSupplier {
+func NewNPCCreationSupplier(loader shared.NPCConfigLoader) (*NPCCreationSupplier, error) {
 	c := &NPCCreationSupplier{}
-	c.initCreationSupplier(loader)
-	return c
+	if err := c.initCreationSupplier(loader); err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
-func (c *NPCCreationSupplier) initCreationSupplier(loader shared.NPCConfigLoader) {
+func (c *NPCCreationSupplier) initCreationSupplier(loader shared.NPCConfigLoader) error {
 	var err error
-	c.CreationDataService, err = NewCreationDataService(loader)
+	// use background context for initialization; callers may opt to initialize differently
+	c.CreationDataService, err = NewCreationDataService(context.Background(), loader)
 	if err != nil {
-		log.Fatalf("Failed to initialize CreationDataService: %v", err)
+		return fmt.Errorf("failed to initialize CreationDataService: %w", err)
 	}
 	c.CreationOptions = NewNPCCreationOptions(c.CreationDataService)
 	c.RandomizerService = NewRandomizerService(c.CreationDataService, c.CreationOptions)
+	return nil
 }

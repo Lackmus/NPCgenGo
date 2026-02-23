@@ -2,7 +2,7 @@
 package service
 
 import (
-	h "github.com/lackmus/npcgengo/helper"
+	h "github.com/lackmus/npcgengo/internal/helpers"
 	m "github.com/lackmus/npcgengo/model"
 )
 

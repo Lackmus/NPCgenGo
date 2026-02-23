@@ -2,7 +2,7 @@
 package npc_components
 
 import (
-	h "github.com/lackmus/npcgengo/helper"
+	h "github.com/lackmus/npcgengo/internal/helpers"
 )
 
 type NameData struct {

@@ -1,0 +1,15 @@
+{
+  "ID": "2",
+  "LocationID": "default",
+  "Components": {
+    "1": "Zephyr Stormwing",
+    "2": "Military",
+    "3": "Soldier",
+    "4": "Wren",
+    "5": "Eyrie Dynasties",
+    "6": "Indifferent\nOpposes: Curious",
+    "7": "combat: 3\nstrength: 9\ndefense: 10",
+    "8": "weapons: Warhammer\narmor: Plate Armor\naccessories: Scabbard",
+    "9": "A soldier who serves in the army to defend the realm.\nFast, fierce, and full of spirit.\nLacking interest, concern, or sympathy; uninterested."
+  }
+}

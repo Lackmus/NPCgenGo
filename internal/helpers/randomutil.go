@@ -4,14 +4,41 @@ package helper
 import (
 	"math/rand"
 	"strconv"
+	"sync"
+	"time"
 )
+
+var (
+	rndMu sync.Mutex
+	rnd   = rand.New(rand.NewSource(time.Now().UnixNano()))
+)
+
+// SetSeed replaces the RNG with a new source seeded by `seed`.
+// Useful for making tests deterministic.
+func SetSeed(seed int64) {
+	rndMu.Lock()
+	defer rndMu.Unlock()
+	rnd = rand.New(rand.NewSource(seed))
+}
+
+// SetRand injects a custom *rand.Rand. Use for advanced testing.
+func SetRand(r *rand.Rand) {
+	rndMu.Lock()
+	defer rndMu.Unlock()
+	if r != nil {
+		rnd = r
+	}
+}
 
 func GetRandomElement[T any](elements []T) T {
 	if len(elements) == 0 {
 		var zero T
 		return zero
 	}
-	return elements[rand.Intn(len(elements))]
+	rndMu.Lock()
+	idx := rnd.Intn(len(elements))
+	rndMu.Unlock()
+	return elements[idx]
 }
 
 // NewRandomMapKeySelector returns a function that, when called,
@@ -30,7 +57,10 @@ func NewRandomMapKeySelector[K comparable, V any](m map[K]V) func() K {
 }
 
 func RandomInt(min, max int) string {
-	return strconv.Itoa(rand.Intn(max-min+1) + min)
+	rndMu.Lock()
+	n := rnd.Intn(max-min+1) + min
+	rndMu.Unlock()
+	return strconv.Itoa(n)
 }
 
 const (

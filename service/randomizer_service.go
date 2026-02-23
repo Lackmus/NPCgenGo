@@ -2,7 +2,7 @@
 package service
 
 import (
-	"github.com/lackmus/npcgengo/helper"
+	helper "github.com/lackmus/npcgengo/internal/helpers"
 )
 
 type RandomizerService struct {

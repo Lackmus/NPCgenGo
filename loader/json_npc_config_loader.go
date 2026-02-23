@@ -2,6 +2,7 @@
 package loader
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -31,39 +32,44 @@ func NewJSONNPCConfigLoader(dir string) shared.NPCConfigLoader {
 		dir: dir,
 	}
 }
-
-func (j *JSONNPCConfigLoader) LoadFactionMap() (map[string]c.Faction, error) {
-	return loadJSONMap[c.Faction](filepath.Join(j.dir, factionDir))
+func (j *JSONNPCConfigLoader) LoadFactionMap(ctx context.Context) (map[string]c.Faction, error) {
+	return loadJSONMap[c.Faction](ctx, filepath.Join(j.dir, factionDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadSpeciesMap() (map[string]c.Species, error) {
-	return loadJSONMap[c.Species](filepath.Join(j.dir, speciesDir))
+func (j *JSONNPCConfigLoader) LoadSpeciesMap(ctx context.Context) (map[string]c.Species, error) {
+	return loadJSONMap[c.Species](ctx, filepath.Join(j.dir, speciesDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadTraitMap() (map[string]c.Trait, error) {
-	return loadJSONMap[c.Trait](filepath.Join(j.dir, traitDir))
+func (j *JSONNPCConfigLoader) LoadTraitMap(ctx context.Context) (map[string]c.Trait, error) {
+	return loadJSONMap[c.Trait](ctx, filepath.Join(j.dir, traitDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNameMap() (map[string]c.NameData, error) {
-	return loadJSONMap[c.NameData](filepath.Join(j.dir, nameDir))
+func (j *JSONNPCConfigLoader) LoadNameMap(ctx context.Context) (map[string]c.NameData, error) {
+	return loadJSONMap[c.NameData](ctx, filepath.Join(j.dir, nameDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNpcCivilianSubtypeMap() (map[string]c.NPCSubtype, error) {
-	return loadJSONMap[c.NPCSubtype](filepath.Join(j.dir, npcCivilianSubtypeDir))
+func (j *JSONNPCConfigLoader) LoadNpcCivilianSubtypeMap(ctx context.Context) (map[string]c.NPCSubtype, error) {
+	return loadJSONMap[c.NPCSubtype](ctx, filepath.Join(j.dir, npcCivilianSubtypeDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap() (map[string]c.NPCSubtype, error) {
-	return loadJSONMap[c.NPCSubtype](filepath.Join(j.dir, npcMilitarySubtypeDir))
+func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap(ctx context.Context) (map[string]c.NPCSubtype, error) {
+	return loadJSONMap[c.NPCSubtype](ctx, filepath.Join(j.dir, npcMilitarySubtypeDir))
 }
 
-func loadJSONMap[T shared.Nameable](dir string) (map[string]T, error) {
+func loadJSONMap[T shared.Nameable](ctx context.Context, dir string) (map[string]T, error) {
 	dataMap := make(map[string]T)
+	if err := ctx.Err(); err != nil {
+		return dataMap, err
+	}
 	files, err := os.ReadDir(dir)
 	if err != nil {
 		return dataMap, fmt.Errorf("error reading directory %s: %w", dir, err)
 	}
 	var errs []error
 	for _, file := range files {
+		if err := ctx.Err(); err != nil {
+			return dataMap, err
+		}
 		if file.IsDir() {
 			continue
 		}
@@ -71,7 +77,7 @@ func loadJSONMap[T shared.Nameable](dir string) (map[string]T, error) {
 		if !strings.EqualFold(ext, ".json") {
 			continue
 		}
-		data, err := loadJSON[T](filepath.Join(dir, file.Name()))
+		data, err := loadJSON[T](ctx, filepath.Join(dir, file.Name()))
 		if err != nil {
 			errs = append(errs, fmt.Errorf("failed to load file %s: %w", file.Name(), err))
 			continue
@@ -86,15 +92,18 @@ func loadJSONMap[T shared.Nameable](dir string) (map[string]T, error) {
 }
 
 // loadJSON reads a JSON file and unmarshals it into the provided type.
-func loadJSON[T any](filePath string) (T, error) {
+// loadJSON reads a JSON file and unmarshals it into the provided type.
+func loadJSON[T any](ctx context.Context, filePath string) (T, error) {
 	var result T
-	file, err := os.Open(filePath)
-	if err != nil {
-		return result, fmt.Errorf("error opening file %s: %w", filePath, err)
+	if err := ctx.Err(); err != nil {
+		return result, err
 	}
-	defer file.Close()
-	decoder := json.NewDecoder(file)
-	if err = decoder.Decode(&result); err != nil {
+	// read full file into memory (config files are small)
+	raw, err := os.ReadFile(filePath)
+	if err != nil {
+		return result, fmt.Errorf("error reading file %s: %w", filePath, err)
+	}
+	if err := json.Unmarshal(raw, &result); err != nil {
 		return result, fmt.Errorf("error decoding JSON from %s: %w", filePath, err)
 	}
 	if validatable, ok := any(result).(interface{ Validate() error }); ok {

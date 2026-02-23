@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"log"
@@ -20,21 +21,57 @@ import (
 
 type Server struct {
 	npcController *NPCListController
+	httpServer    *http.Server
 }
 
 func NewServer(nc *NPCListController) *Server {
 	return &Server{npcController: nc}
 }
 
+// Routes registers HTTP handlers for the server. It is called by main() to set up the server before starting it.
+// This method is deprecated in favor of Start(), which also registers handlers but returns any error instead of exiting the process.
 func (s *Server) Routes() {
+	// Deprecated compatibility method: keep old behavior (process-exiting)
+	// Register handlers and start listening on :8080; any error will be fatal.
 	http.Handle("/web_demo/", http.StripPrefix("/web_demo/", http.FileServer(http.Dir("web_demo"))))
 
 	http.HandleFunc("/api/npcs", s.npcsHandler)
 	http.HandleFunc("/api/npcs/", s.npcByIDHandler)
 	http.HandleFunc("/api/generate", s.generateHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		log.Fatalf("server failed: %v", err)
+	}
 }
 
+// Start registers handlers and starts the HTTP server on the provided address.
+// It returns any error to the caller instead of exiting the process, making
+// it safe to use this package as a library.
+func (s *Server) Start(addr string) error {
+	mux := http.NewServeMux()
+	mux.Handle("/web_demo/", http.StripPrefix("/web_demo/", http.FileServer(http.Dir("web_demo"))))
+
+	mux.HandleFunc("/api/npcs", s.npcsHandler)
+	mux.HandleFunc("/api/npcs/", s.npcByIDHandler)
+	mux.HandleFunc("/api/generate", s.generateHandler)
+
+	s.httpServer = &http.Server{
+		Addr:    addr,
+		Handler: mux,
+	}
+	return s.httpServer.ListenAndServe()
+}
+
+// Shutdown gracefully shuts down the server using the provided context.
+// If Start has not been called or the server is not running, Shutdown is a no-op.
+func (s *Server) Shutdown(ctx context.Context) error {
+	if s.httpServer == nil {
+		return nil
+	}
+	return s.httpServer.Shutdown(ctx)
+}
+
+// Handler for GET/POST /api/npcs - list all NPCs or create a new NPC.
+// For GET, returns a JSON array of all NPCs. For POST, expects a JSON body with NPC data, creates it, and returns the created NPC as JSON.
 func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	switch r.Method {
@@ -55,6 +92,8 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Handler for GET/DELETE/PUT /api/npcs/:id - get, delete, or update an NPC by ID.
+// For GET, returns the NPC as JSON. For DELETE, removes it from the service. For PUT, updates it with the provided data.
 func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	id := strings.TrimPrefix(r.URL.Path, "/api/npcs/")
@@ -87,6 +126,8 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Handler for POST /api/generate - creates a new random NPC server-side and returns it as JSON.
+// The NPC is also stored in the service, so it will be included in subsequent GET /api/npcs responses.
 func (s *Server) generateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.Method != http.MethodPost {
@@ -102,6 +143,8 @@ func (s *Server) generateHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(npc)
 }
 
+// Helper function to parse NPC data from request body and convert it to model.NPC struct.
+// Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Stats, Items, Description, LocationID, and Traits (array of strings).
 func parseNPCFromBody(body io.ReadCloser) (model.NPC, error) {
 	defer body.Close()
 	var p struct {

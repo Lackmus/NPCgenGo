@@ -2,6 +2,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	"maps"
 	"slices"
@@ -24,9 +25,11 @@ type CreationDataService struct {
 	npcSubtypeForTypeMap                                  map[string][]string
 }
 
-func NewCreationDataService(npcConfigLoader shared.NPCConfigLoader) (*CreationDataService, error) {
+func NewCreationDataService(ctx context.Context, npcConfigLoader shared.NPCConfigLoader) (*CreationDataService, error) {
 	cds := &CreationDataService{}
-	cds.initConfigLoaderMaps(npcConfigLoader)
+	if err := cds.initConfigLoaderMaps(ctx, npcConfigLoader); err != nil {
+		return nil, err
+	}
 	cds.npcTypeMap = cds.loadNpcTypeMap()
 	cds.npcSubtypeMap = cds.mergeNpcSubtypeMaps(cds.civilianSubtypeMap, cds.militarySubtypeMap)
 	cds.speciesNameMap = cds.buildSpeciesNameMap()
@@ -34,30 +37,30 @@ func NewCreationDataService(npcConfigLoader shared.NPCConfigLoader) (*CreationDa
 	return cds, nil
 }
 
-func (c *CreationDataService) initConfigLoaderMaps(npcConfigLoader shared.NPCConfigLoader) {
-	factionMap, err := npcConfigLoader.LoadFactionMap()
+func (c *CreationDataService) initConfigLoaderMaps(ctx context.Context, npcConfigLoader shared.NPCConfigLoader) error {
+	factionMap, err := npcConfigLoader.LoadFactionMap(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to load faction map: %w", err))
+		return fmt.Errorf("failed to load faction map: %w", err)
 	}
-	speciesMap, err := npcConfigLoader.LoadSpeciesMap()
+	speciesMap, err := npcConfigLoader.LoadSpeciesMap(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to load species map: %w", err))
+		return fmt.Errorf("failed to load species map: %w", err)
 	}
-	traitMap, err := npcConfigLoader.LoadTraitMap()
+	traitMap, err := npcConfigLoader.LoadTraitMap(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to load trait map: %w", err))
+		return fmt.Errorf("failed to load trait map: %w", err)
 	}
-	nameMap, err := npcConfigLoader.LoadNameMap()
+	nameMap, err := npcConfigLoader.LoadNameMap(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to load name map: %w", err))
+		return fmt.Errorf("failed to load name map: %w", err)
 	}
-	civilianSubtypeMap, err := npcConfigLoader.LoadNpcCivilianSubtypeMap()
+	civilianSubtypeMap, err := npcConfigLoader.LoadNpcCivilianSubtypeMap(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to load civilian subtype map: %w", err))
+		return fmt.Errorf("failed to load civilian subtype map: %w", err)
 	}
-	militarySubtypeMap, err := npcConfigLoader.LoadNpcMilitarySubtypeMap()
+	militarySubtypeMap, err := npcConfigLoader.LoadNpcMilitarySubtypeMap(ctx)
 	if err != nil {
-		panic(fmt.Errorf("failed to load military subtype map: %w", err))
+		return fmt.Errorf("failed to load military subtype map: %w", err)
 	}
 
 	c.factionMap = factionMap
@@ -66,6 +69,7 @@ func (c *CreationDataService) initConfigLoaderMaps(npcConfigLoader shared.NPCCon
 	c.nameMap = nameMap
 	c.civilianSubtypeMap = civilianSubtypeMap
 	c.militarySubtypeMap = militarySubtypeMap
+	return nil
 }
 
 func (c *CreationDataService) buildSpeciesNameMap() map[string]string {
@@ -102,52 +106,52 @@ func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeMaps ...map[string]cp.N
 	return merged
 }
 
-func (c *CreationDataService) GetFactionData(key string) cp.Faction {
+func (c *CreationDataService) GetFactionData(key string) (cp.Faction, error) {
 	faction, ok := c.factionMap[key]
 	if !ok {
-		panic(fmt.Sprintf("faction not found: %s", key))
+		return cp.Faction{}, fmt.Errorf("faction not found: %s", key)
 	}
-	return faction
+	return faction, nil
 }
 
-func (c *CreationDataService) GetTraitData(key string) cp.Trait {
+func (c *CreationDataService) GetTraitData(key string) (cp.Trait, error) {
 	trait, ok := c.traitMap[key]
 	if !ok {
-		panic(fmt.Sprintf("trait not found: %s", key))
+		return cp.Trait{}, fmt.Errorf("trait not found: %s", key)
 	}
-	return trait
+	return trait, nil
 }
 
-func (c *CreationDataService) GetNameData(key string) cp.NameData {
+func (c *CreationDataService) GetNameData(key string) (cp.NameData, error) {
 	nd, ok := c.nameMap[key]
 	if ok {
-		return nd
+		return nd, nil
 	}
-	panic(fmt.Sprintf("name not found: %s", key))
+	return cp.NameData{}, fmt.Errorf("name not found: %s", key)
 }
 
-func (c *CreationDataService) GetSpeciesData(key string) cp.Species {
+func (c *CreationDataService) GetSpeciesData(key string) (cp.Species, error) {
 	s, ok := c.speciesMap[key]
 	if ok {
-		return s
+		return s, nil
 	}
-	panic(fmt.Sprintf("species not found: %s", key))
+	return cp.Species{}, fmt.Errorf("species not found: %s", key)
 }
 
-func (c *CreationDataService) GetNpcTypeData(key string) t.NPCType {
+func (c *CreationDataService) GetNpcTypeData(key string) (t.NPCType, error) {
 	nt, ok := c.npcTypeMap[key]
 	if ok {
-		return nt
+		return nt, nil
 	}
-	panic(fmt.Sprintf("npc type not found: %s", key))
+	return t.NPCType{}, fmt.Errorf("npc type not found: %s", key)
 }
 
-func (c *CreationDataService) GetNpcSubtypeData(key string) cp.NPCSubtype {
+func (c *CreationDataService) GetNpcSubtypeData(key string) (cp.NPCSubtype, error) {
 	ns, ok := c.npcSubtypeMap[key]
 	if ok {
-		return ns
+		return ns, nil
 	}
-	panic(fmt.Sprintf("npc subtype not found: %s", key))
+	return cp.NPCSubtype{}, fmt.Errorf("npc subtype not found: %s", key)
 }
 
 func (c *CreationDataService) GetFactionMap() map[string]cp.Faction {

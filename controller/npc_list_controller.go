@@ -4,7 +4,7 @@ package controller
 import (
 	"log"
 
-	h "github.com/lackmus/npcgengo/helper"
+	h "github.com/lackmus/npcgengo/internal/helpers"
 	"github.com/lackmus/npcgengo/model"
 	"github.com/lackmus/npcgengo/service"
 	"github.com/lackmus/npcgengo/shared"

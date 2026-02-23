@@ -1,14 +1,21 @@
 package loader
 
 import (
+	"context"
+	"strings"
 	"testing"
 )
 
 func TestJSONNPCConfigLoader_LoadFactionMap(t *testing.T) {
-	loader := NewJSONNPCConfigLoader("G:\\My Drive\\RootProject\\NPCgenGo\\data\\creation_data")
+	dir := t.TempDir()
+	if err := CreateSampleCreationData(dir); err != nil {
+		t.Fatal(err)
+	}
+	loader := NewJSONNPCConfigLoader(dir)
+	ctx := context.Background()
 
 	// Test loading faction data
-	factions, err := loader.LoadFactionMap()
+	factions, err := loader.LoadFactionMap(ctx)
 
 	// Check if error occurred
 	if err != nil {
@@ -27,10 +34,15 @@ func TestJSONNPCConfigLoader_LoadFactionMap(t *testing.T) {
 }
 
 func TestJSONNPCConfigLoader_LoadSpeciesMap(t *testing.T) {
-	loader := NewJSONNPCConfigLoader("data/creation_data")
+	dir := t.TempDir()
+	if err := CreateSampleCreationData(dir); err != nil {
+		t.Fatal(err)
+	}
+	loader := NewJSONNPCConfigLoader(dir)
+	ctx := context.Background()
 
 	// Test loading species data
-	species, err := loader.LoadSpeciesMap()
+	species, err := loader.LoadSpeciesMap(ctx)
 
 	// Check if error occurred
 	if err != nil {
@@ -49,10 +61,15 @@ func TestJSONNPCConfigLoader_LoadSpeciesMap(t *testing.T) {
 }
 
 func TestJSONNPCConfigLoader_LoadTraitMap(t *testing.T) {
-	loader := NewJSONNPCConfigLoader("data/creation_data")
+	dir := t.TempDir()
+	if err := CreateSampleCreationData(dir); err != nil {
+		t.Fatal(err)
+	}
+	loader := NewJSONNPCConfigLoader(dir)
+	ctx := context.Background()
 
 	// Test loading trait data
-	traits, err := loader.LoadTraitMap()
+	traits, err := loader.LoadTraitMap(ctx)
 
 	// Check if error occurred
 	if err != nil {
@@ -64,17 +81,30 @@ func TestJSONNPCConfigLoader_LoadTraitMap(t *testing.T) {
 		t.Errorf("expected traits map to be non-empty, got empty map")
 	}
 
-	// Check for a specific trait ID (modify as needed)
-	if _, exists := traits["someTraitID"]; !exists {
-		t.Errorf("expected trait ID 'someTraitID' to exist")
+	// Check for a specific trait ID (modify as needed). Trait GetName includes Opposes text,
+	// so match by prefix instead of map key.
+	found := false
+	for _, tr := range traits {
+		if strings.HasPrefix(tr.GetName(), "someTraitID") {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Errorf("expected trait with name prefix 'someTraitID' to exist")
 	}
 }
 
 func TestJSONNPCConfigLoader_LoadNameMap(t *testing.T) {
-	loader := NewJSONNPCConfigLoader("data/creation_data")
+	dir := t.TempDir()
+	if err := CreateSampleCreationData(dir); err != nil {
+		t.Fatal(err)
+	}
+	loader := NewJSONNPCConfigLoader(dir)
+	ctx := context.Background()
 
 	// Test loading name data
-	names, err := loader.LoadNameMap()
+	names, err := loader.LoadNameMap(ctx)
 
 	// Check if error occurred
 	if err != nil {
@@ -93,10 +123,15 @@ func TestJSONNPCConfigLoader_LoadNameMap(t *testing.T) {
 }
 
 func TestJSONNPCConfigLoader_LoadNpcCivilianSubtypeMap(t *testing.T) {
-	loader := NewJSONNPCConfigLoader("data/creation_data")
+	dir := t.TempDir()
+	if err := CreateSampleCreationData(dir); err != nil {
+		t.Fatal(err)
+	}
+	loader := NewJSONNPCConfigLoader(dir)
+	ctx := context.Background()
 
 	// Test loading civilian subtype data
-	subtypes, err := loader.LoadNpcCivilianSubtypeMap()
+	subtypes, err := loader.LoadNpcCivilianSubtypeMap(ctx)
 
 	// Check if error occurred
 	if err != nil {
@@ -115,10 +150,15 @@ func TestJSONNPCConfigLoader_LoadNpcCivilianSubtypeMap(t *testing.T) {
 }
 
 func TestJSONNPCConfigLoader_LoadNpcMilitarySubtypeMap(t *testing.T) {
-	loader := NewJSONNPCConfigLoader("data/creation_data")
+	dir := t.TempDir()
+	if err := CreateSampleCreationData(dir); err != nil {
+		t.Fatal(err)
+	}
+	loader := NewJSONNPCConfigLoader(dir)
+	ctx := context.Background()
 
 	// Test loading military subtype data
-	subtypes, err := loader.LoadNpcMilitarySubtypeMap()
+	subtypes, err := loader.LoadNpcMilitarySubtypeMap(ctx)
 
 	// Check if error occurred
 	if err != nil {

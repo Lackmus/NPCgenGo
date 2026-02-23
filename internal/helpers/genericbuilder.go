@@ -25,30 +25,30 @@ func (b *GenericBuilder[T]) Build() T {
 /*
 // Example usage:
 type Npc struct {
-	Name string
+    Name string
 }
 
 func main() {
 
-	npcBuilder := NewGenericBuilder(func() Npc {
-		return Npc{}
-	}).With(func(n *Npc) {
-		n.Name = "John Doe"
-	})
+    npcBuilder := NewGenericBuilder(func() Npc {
+        return Npc{}
+    }).With(func(n *Npc) {
+        n.Name = "John Doe"
+    })
 
-	npc := npcBuilder.Build()
-	fmt.Println(npc.Name)
+    npc := npcBuilder.Build()
+    log.Printf("%s", npc.Name)
 }
-	// usage of updating an existing npc
-	npc := Npc{Name: "Jane Doe"}
-	npcBuilder := NewGenericBuilder(func() Npc {
-		return npc
-	}).With(func(n *Npc) {
-		n.Name = "John Doe"
-	})
+    // usage of updating an existing npc
+    npc := Npc{Name: "Jane Doe"}
+    npcBuilder := NewGenericBuilder(func() Npc {
+        return npc
+    }).With(func(n *Npc) {
+        n.Name = "John Doe"
+    })
 
-	npc = npcBuilder.Build()
-	fmt.Println(npc.Name)
+    npc = npcBuilder.Build()
+    log.Printf("%s", npc.Name)
 }
 */
 

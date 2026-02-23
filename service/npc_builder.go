@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	h "github.com/lackmus/npcgengo/helper"
+	h "github.com/lackmus/npcgengo/internal/helpers"
 	m "github.com/lackmus/npcgengo/model"
 	cp "github.com/lackmus/npcgengo/model/npc_components" // assumed package for component types/keys
 	t "github.com/lackmus/npcgengo/model/npc_components/types"
@@ -71,10 +71,29 @@ func (b *NPCBuilder) fetchAndSetComponents(npc m.NPC) {
 	speciesID := npc.GetComponent(cp.CompSpecies)
 	traitID := npc.GetComponent(cp.CompTrait)
 
-	b.npctypeData = ptr(b.supplier.CreationDataService.GetNpcTypeData(npctypeID))
-	b.subtypeData = ptr(b.supplier.CreationDataService.GetNpcSubtypeData(subtypeID))
-	b.speciesData = ptr(b.supplier.CreationDataService.GetSpeciesData(speciesID))
-	b.traitData = ptr(b.supplier.CreationDataService.GetTraitData(traitID))
+	if data, err := b.supplier.CreationDataService.GetNpcTypeData(npctypeID); err == nil {
+		b.npctypeData = ptr(data)
+	} else {
+		b.addErrorWithContext("fetchAndSetComponents", err)
+	}
+
+	if data, err := b.supplier.CreationDataService.GetNpcSubtypeData(subtypeID); err == nil {
+		b.subtypeData = ptr(data)
+	} else {
+		b.addErrorWithContext("fetchAndSetComponents", err)
+	}
+
+	if data, err := b.supplier.CreationDataService.GetSpeciesData(speciesID); err == nil {
+		b.speciesData = ptr(data)
+	} else {
+		b.addErrorWithContext("fetchAndSetComponents", err)
+	}
+
+	if data, err := b.supplier.CreationDataService.GetTraitData(traitID); err == nil {
+		b.traitData = ptr(data)
+	} else {
+		b.addErrorWithContext("fetchAndSetComponents", err)
+	}
 }
 
 // ptr is a helper function that returns a pointer to the provided value.
@@ -88,7 +107,11 @@ func (b *NPCBuilder) WithType(npctype string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
-	data := b.supplier.CreationDataService.GetNpcTypeData(npctype)
+	data, err := b.supplier.CreationDataService.GetNpcTypeData(npctype)
+	if err != nil {
+		b.addErrorWithContext("WithType", err)
+		return b
+	}
 	b.npctypeData = &data
 	b.updateComponent(cp.CompType, npctype)
 	return b
@@ -112,7 +135,11 @@ func (b *NPCBuilder) WithSubtype(subtype string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
-	data := b.supplier.CreationDataService.GetNpcSubtypeData(subtype)
+	data, err := b.supplier.CreationDataService.GetNpcSubtypeData(subtype)
+	if err != nil {
+		b.addErrorWithContext("WithSubtype", err)
+		return b
+	}
 	b.subtypeData = &data
 	b.updateComponent(cp.CompSubtype, subtype)
 	return b
@@ -186,7 +213,11 @@ func (b *NPCBuilder) WithSpecies(species string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
-	data := b.supplier.CreationDataService.GetSpeciesData(species)
+	data, err := b.supplier.CreationDataService.GetSpeciesData(species)
+	if err != nil {
+		b.addErrorWithContext("WithSpecies", err)
+		return b
+	}
 	b.speciesData = &data
 	b.updateComponent(cp.CompSpecies, species)
 	return b
@@ -216,7 +247,11 @@ func (b *NPCBuilder) WithRandomName() *NPCBuilder {
 		b.addErrorWithContext("WithRandomName", errors.New("species must be set before name can be added"))
 		return b
 	}
-	data := b.supplier.CreationDataService.GetNameData(b.speciesData.NameSource)
+	data, err := b.supplier.CreationDataService.GetNameData(b.speciesData.NameSource)
+	if err != nil {
+		b.addErrorWithContext("WithRandomName", err)
+		return b
+	}
 	b.WithName(data.GenerateName())
 	return b
 }
@@ -243,7 +278,11 @@ func (b *NPCBuilder) WithTrait(trait string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
-	data := b.supplier.CreationDataService.GetTraitData(trait)
+	data, err := b.supplier.CreationDataService.GetTraitData(trait)
+	if err != nil {
+		b.addErrorWithContext("WithTrait", err)
+		return b
+	}
 	b.traitData = &data
 	b.updateComponent(cp.CompTrait, trait)
 	return b

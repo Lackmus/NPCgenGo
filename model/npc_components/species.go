@@ -2,7 +2,7 @@
 package npc_components
 
 import (
-	"github.com/lackmus/npcgengo/helper"
+	helper "github.com/lackmus/npcgengo/internal/helpers"
 )
 
 type Species struct {
