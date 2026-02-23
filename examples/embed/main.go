@@ -8,27 +8,17 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/lackmus/npcgengo/appdata"
 	"github.com/lackmus/npcgengo/controller"
-	"github.com/lackmus/npcgengo/loader"
-	"github.com/lackmus/npcgengo/service"
 )
 
 func main() {
-	// Example: embed NPCGen server inside another application without the
-	// server package calling os.Exit or log.Fatal itself.
-
-	creationLoader := loader.NewJSONNPCConfigLoader("data/creation_data")
-	creationSupplier, err := service.NewNPCCreationSupplier(creationLoader)
+	npcGen, err := appdata.NewNPCGen()
 	if err != nil {
-		log.Fatalf("failed to init creation supplier: %v", err)
+		log.Fatal("failed to initialize NPCGen:", err)
 	}
 
-	npcService, err := service.NewNPCService(context.Background(), loader.NewJSONNPCStorage("data/npc_database"))
-	if err != nil {
-		log.Printf("warning: NPCService initialized with partial data: %v", err)
-	}
-	nc := controller.NewNPCListController(creationSupplier, npcService, "default")
-	srv := controller.NewServer(nc)
+	srv := controller.NewServer(npcGen.NPCListController)
 
 	// Start server non-fatally so the host app controls lifecycle.
 	go func() {

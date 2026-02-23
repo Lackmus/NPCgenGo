@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/lackmus/npcgengo/appdata"
 	"github.com/lackmus/npcgengo/controller"
 )
 
@@ -15,7 +16,7 @@ func main() {
 	// Example: embed NPCGen server inside another application without the
 	// server package calling os.Exit or log.Fatal itself.
 
-	npcGen, err := NewNPCGen()
+	npcGen, err := appdata.NewNPCGen()
 	if err != nil {
 		log.Fatal("failed to initialize NPCGen:", err)
 	}
