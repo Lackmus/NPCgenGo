@@ -37,6 +37,16 @@ func (c *NPCListController) CreateRandomNPC() (model.NPC, error) {
 	return npc, nil
 }
 
+func (c *NPCListController) CreateNPC(npctype string, faction string) (model.NPC, error) {
+	npc, err := service.CreateNPCWithOptions(npctype, faction, c.CreationSupplier, c.LocationID)
+	if err != nil {
+		log.Printf("Error creating NPC: %v", err)
+		return model.NPC{}, err
+	}
+	c.AddNpc(npc)
+	return npc, nil
+}
+
 func (c *NPCListController) InitEditController() *NPCEditController {
 	log.Println("Initializing edit controller...")
 	return NewNPCEditController(c.CreationSupplier, c, c.LocationID)
