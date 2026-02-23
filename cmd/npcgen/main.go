@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/lackmus/npcgengo"
-	"github.com/lackmus/npcgengo/cmd/npcgen/handlers"
+	"github.com/lackmus/npcgengo/internal/app/handlers"
 )
 
 func main() {

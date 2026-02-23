@@ -7,14 +7,37 @@ Quick notes on running the binary and where it looks for `data/`.
 Applied structure scope (only):
 
 - `cmd/` â€” executable entrypoints and CLI wiring
+- `internal/app/` â€” application orchestration layer (controllers, server adapters, views)
 - `pkg/` â€” reusable core application logic (`pkg/product/...`)
 - `internal/` â€” module-private implementation details (`internal/platform/...`)
 
 No additional optional folders from that setup were added.
 
+`cmd/` is now kept entrypoint-only (`cmd/npcgen/main.go`), while app wiring lives in `internal/app/`.
+
 Current project folders also include:
 - `data/` â€” runtime JSON creation data and local NPC database files
 - `web_demo/` â€” web demonstration assets
+
+## Architecture walkthrough
+
+Typical flow (CLI or HTTP):
+
+1. Entry point starts in `cmd/npcgen/main.go`.
+2. Root facade (`NPCGen.go`) delegates app setup to `internal/app/npcgen_app.go`.
+3. App layer wires handlers/controllers/views in `internal/app/handlers` and `internal/app/view`.
+4. Handlers call domain services in `pkg/product/service`.
+5. Services use domain models/contracts in `pkg/product/model` and `pkg/product/shared`.
+6. Persistence/config loading is handled by platform adapters in `internal/platform/loader`.
+7. Data is read/written in `data/creation_data` and `data/npc_database`.
+
+Quick mental model:
+
+- `cmd` = startup and process lifecycle
+- `internal/app` = orchestration and adapters (HTTP/controller/view wiring)
+- `pkg/product` = reusable business/domain logic
+- `internal/platform` = infrastructure/plumbing (JSON loaders, helpers)
+- `data` = runtime content
 
 Priority order for data directory resolution (implemented):
 
