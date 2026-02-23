@@ -108,6 +108,12 @@ function setSpeciesEnabled(enabled) {
   select.disabled = !enabled;
 }
 
+function setNameRerollEnabled(enabled) {
+  const button = document.getElementById("btnRerollName");
+  if (!button) return;
+  button.disabled = !enabled;
+}
+
 function setDetailValue(id, value) {
   const element = document.getElementById(id);
   if (!element) return;
@@ -168,6 +174,7 @@ function startCreateNPC() {
   document.getElementById("f_stats").textContent = "—";
   document.getElementById("f_items").textContent = "—";
   setRerollEnabled(false);
+  setNameRerollEnabled(false);
   renderDetails(null);
   showEditPanel();
 }
@@ -189,6 +196,7 @@ function updateSpeciesDropdown(selectedFaction, selectedSpecies = "") {
   const species = speciesMap[selectedFaction] || [];
   setSelectOptions("f_species", species, true);
   setSelectValue("f_species", selectedSpecies);
+  setNameRerollEnabled(Boolean((selectedSpecies || "").trim()));
 }
 
 async function applySubtypeRoll(subtype) {
@@ -243,6 +251,7 @@ function clearForm() {
 	setSubtypeEnabled(false);
 	setSpeciesEnabled(false);
 	setRerollEnabled(false);
+  setNameRerollEnabled(false);
   renderDetails(null);
   exitEditMode();
 }
@@ -338,6 +347,7 @@ async function setupActions() {
     }
   });
   document.getElementById("f_species").addEventListener("change", async (event) => {
+		setNameRerollEnabled(Boolean((event.target.value || "").trim()));
     try {
       await applySpeciesNameRoll(event.target.value);
     } catch (error) {
@@ -395,6 +405,19 @@ async function setupActions() {
       alert(error.message || "Failed to reroll subtype fields.");
     }
   });
+  document.getElementById("btnRerollName").addEventListener("click", async () => {
+    const species = document.getElementById("f_species").value;
+    if (!species) {
+      alert("Select a species first.");
+      return;
+    }
+    try {
+      await applySpeciesNameRoll(species);
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Failed to reroll name.");
+    }
+  });
 
   document.getElementById("btnCancelEdit").addEventListener("click", () => {
     setForm(selectedNPC);
@@ -410,6 +433,7 @@ async function setupActions() {
   setSubtypeEnabled(Boolean((document.getElementById("f_type").value || "").trim()));
 	setSpeciesEnabled(Boolean((document.getElementById("f_faction").value || "").trim()));
 	setRerollEnabled(Boolean((document.getElementById("f_subtype").value || "").trim()));
+  setNameRerollEnabled(Boolean((document.getElementById("f_species").value || "").trim()));
   renderDetails(null);
   exitEditMode();
 }

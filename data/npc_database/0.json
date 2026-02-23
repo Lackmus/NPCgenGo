@@ -1,13 +1,13 @@
 {
   "ID": "0",
   "Components": {
-    "1": "Briar Glenhoof",
+    "1": "Smudge Whiffington",
     "2": "civilian",
-    "3": "Farmer",
-    "4": "Deer",
-    "5": "Neutral",
-    "6": "Loyal",
-    "7": "farming: 9\nstrength: 4",
-    "8": "tools: Sickle\nclothing: Wool Sweater and Scarf\naccessories: Sunglasses"
+    "3": "Scholar",
+    "4": "Skunk",
+    "5": "Woodland Alliance",
+    "6": "Reckless",
+    "7": "knowledge: 10\nanalysis: 8\nmemory: 5",
+    "8": "tools: Reference Scroll\nclothing: Plain Tunic and Cloak\naccessories: Bookmark Ribbon"
   }
 }

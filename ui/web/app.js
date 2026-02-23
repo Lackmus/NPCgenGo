@@ -134,6 +134,12 @@ function setSpeciesEnabled(enabled) {
   select.disabled = !enabled;
 }
 
+function setNameRerollEnabled(enabled) {
+  const button = document.getElementById('btnRerollName');
+  if (!button) return;
+  button.disabled = !enabled;
+}
+
 function updateSubtypeDropdown(selectedType, selectedSubtype = '') {
   if (!creationOptions) return;
   setSubtypeEnabled(Boolean((selectedType || '').trim()));
@@ -151,6 +157,7 @@ function updateSpeciesDropdown(selectedFaction, selectedSpecies = '') {
   const species = speciesMap[selectedFaction] || [];
   setSelectOptions('f_species', species, true);
   setSelectValue('f_species', selectedSpecies);
+  setNameRerollEnabled(Boolean((selectedSpecies || '').trim()));
 }
 
 function populateOptionDropdowns() {
@@ -219,6 +226,7 @@ async function main() {
     }
   });
   document.getElementById('f_species').addEventListener('change', async (event) => {
+    setNameRerollEnabled(Boolean((event.target.value || '').trim()));
     try {
       await applySpeciesNameRoll(event.target.value);
     } catch (error) {
@@ -245,13 +253,30 @@ async function main() {
       alert(error.message || 'Failed to reroll subtype fields.');
     }
   });
+  document.getElementById('btnRerollName').addEventListener('click', async () => {
+    const species = document.getElementById('f_species').value;
+    if (!species) {
+      alert('Select a species first.');
+      return;
+    }
+    try {
+      await applySpeciesNameRoll(species);
+    } catch (error) {
+      console.error(error);
+      alert(error.message || 'Failed to reroll name.');
+    }
+  });
   document.getElementById('btnClose').addEventListener('click', () => {
     document.getElementById('npcForm').reset();
     setSubtypeEnabled(false);
+    setSpeciesEnabled(false);
     setRerollEnabled(false);
+    setNameRerollEnabled(false);
   });
   setSubtypeEnabled(Boolean((document.getElementById('f_type').value || '').trim()));
+	setSpeciesEnabled(Boolean((document.getElementById('f_faction').value || '').trim()));
 	setRerollEnabled(Boolean((document.getElementById('f_subtype').value || '').trim()));
+	setNameRerollEnabled(Boolean((document.getElementById('f_species').value || '').trim()));
   await renderList();
 }
 
@@ -269,11 +294,13 @@ async function showDetails(id) {
   updateSubtypeDropdown(selectedType, selectedSubtype);
   setSelectValue('f_species', (npc.Components && npc.Components['4']) || npc.species || '');
   setSelectValue('f_faction', (npc.Components && npc.Components['5']) || '');
+  updateSpeciesDropdown((npc.Components && npc.Components['5']) || '', (npc.Components && npc.Components['4']) || npc.species || '');
   const traitValue = (npc.Components && npc.Components['6']) || '';
   setSelectValue('f_traits', traitValue.split(',')[0]?.trim() || '');
   document.getElementById('f_stats').textContent = (npc.Components && npc.Components['7']) || '—';
   document.getElementById('f_items').textContent = (npc.Components && npc.Components['8']) || '—';
 	setRerollEnabled(Boolean((selectedSubtype || '').trim()));
+	setNameRerollEnabled(Boolean(((npc.Components && npc.Components['4']) || npc.species || '').trim()));
 }
 
 async function gatherForm() {

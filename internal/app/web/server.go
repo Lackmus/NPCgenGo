@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -29,24 +28,6 @@ type Server struct {
 func NewServer(nc *controllers.NPCListController) *Server {
 	return &Server{
 		npcController: nc,
-	}
-}
-
-// Routes registers HTTP handlers for the server. It is called by main() to set up the server before starting it.
-// This method is deprecated in favor of Start(), which also registers handlers but returns any error instead of exiting the process.
-func (s *Server) Routes() {
-	// Deprecated compatibility method: keep old behavior (process-exiting)
-	// Register handlers and start listening on :8080; any error will be fatal.
-	http.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir("ui/web"))))
-
-	http.HandleFunc("/api/npcs", s.npcsHandler)
-	http.HandleFunc("/api/npcs/", s.npcByIDHandler)
-	http.HandleFunc("/api/species/", s.speciesNameRollHandler)
-	http.HandleFunc("/api/subtypes/", s.subtypeRollHandler)
-	http.HandleFunc("/api/generate", s.generateHandler)
-	http.HandleFunc("/api/options", s.optionsHandler)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatalf("server failed: %v", err)
 	}
 }
 
