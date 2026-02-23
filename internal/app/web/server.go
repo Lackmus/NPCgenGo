@@ -12,7 +12,6 @@ import (
 	"github.com/lackmus/npcgengo/internal/app/controllers"
 	"github.com/lackmus/npcgengo/internal/app/mapper"
 	"github.com/lackmus/npcgengo/pkg/product/model"
-	"github.com/lackmus/npcgengo/pkg/product/service"
 )
 
 // Simple HTTP server that serves the web UI and exposes API endpoints
@@ -24,14 +23,12 @@ import (
 
 type Server struct {
 	npcController *controllers.NPCListController
-	validator     *service.NPCValidationService
 	httpServer    *http.Server
 }
 
 func NewServer(nc *controllers.NPCListController) *Server {
 	return &Server{
 		npcController: nc,
-		validator:     service.NewNPCValidationService(nc.CreationSupplier.CreationDataService),
 	}
 }
 
@@ -93,12 +90,12 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(npcs)
 	case http.MethodPost:
-		m, err := parseNPCFromBody(r.Body)
+		m, err := parseNPCFromBody(r.Body, s.npcController)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if err := s.validator.ValidateNPC(m); err != nil {
+		if err := s.npcController.ValidateNPC(m); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -131,12 +128,16 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 		s.npcController.DeleteNPC(id)
 		w.WriteHeader(http.StatusNoContent)
 	case http.MethodPut:
-		m, err := parseNPCFromBody(r.Body)
+		var original *model.NPC
+		if npcData, err := s.npcController.GetNpcByID(id); err == nil {
+			original = &npcData
+		}
+		m, err := parseNPCFromBodyWithOriginal(r.Body, s.npcController, original)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if err := s.validator.ValidateNPC(m); err != nil {
+		if err := s.npcController.ValidateNPC(m); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -171,13 +172,12 @@ func (s *Server) optionsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(s.npcController.CreationSupplier.CreationOptions)
+	json.NewEncoder(w).Encode(s.npcController.GetCreationOptions())
 }
 
 type subtypeRollResponse struct {
-	Stats       string `json:"stats"`
-	Items       string `json:"items"`
-	Description string `json:"description"`
+	Stats string `json:"stats"`
+	Items string `json:"items"`
 }
 
 type speciesNameRollResponse struct {
@@ -209,7 +209,7 @@ func (s *Server) subtypeRollHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	subtypeData, err := s.npcController.CreationSupplier.CreationDataService.GetNpcSubtypeData(subtype)
+	stats, items, err := s.npcController.GetSubtypeFields(subtype)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -217,9 +217,8 @@ func (s *Server) subtypeRollHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(subtypeRollResponse{
-		Stats:       subtypeData.GetStats(),
-		Items:       subtypeData.GetEquipment(),
-		Description: subtypeData.GetDescription(),
+		Stats: stats,
+		Items: items,
 	})
 }
 
@@ -248,30 +247,36 @@ func (s *Server) speciesNameRollHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	speciesData, err := s.npcController.CreationSupplier.CreationDataService.GetSpeciesData(species)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	nameData, err := s.npcController.CreationSupplier.CreationDataService.GetNameData(speciesData.NameSource)
+	name, err := s.npcController.GetSpeciesName(species)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(speciesNameRollResponse{Name: nameData.GenerateName()})
+	json.NewEncoder(w).Encode(speciesNameRollResponse{Name: name})
 }
 
 // Helper function to parse NPC data from request body and convert it to model.NPC struct.
-// Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Stats, Items, Description, LocationID, and Traits (array of strings).
-func parseNPCFromBody(body io.ReadCloser) (model.NPC, error) {
+// Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Stats, Items, LocationID, and Traits (array of strings).
+func parseNPCFromBody(body io.ReadCloser, controller *controllers.NPCListController) (model.NPC, error) {
 	defer body.Close()
 	var p mapper.NPCInput
 	if err := json.NewDecoder(body).Decode(&p); err != nil {
 		return model.NPC{}, err
 	}
 
-	return mapper.ToModelNPC(p), nil
+	return mapper.ToModelNPC(p, controller.GetNPCBuilder())
+}
+
+// parseNPCFromBodyWithOriginal is like parseNPCFromBody but passes the original NPC
+// so unchanged values can be retained by the builder flow.
+func parseNPCFromBodyWithOriginal(body io.ReadCloser, controller *controllers.NPCListController, original *model.NPC) (model.NPC, error) {
+	defer body.Close()
+	var p mapper.NPCInput
+	if err := json.NewDecoder(body).Decode(&p); err != nil {
+		return model.NPC{}, err
+	}
+
+	return mapper.ToModelNPCWithOriginal(p, controller.GetNPCBuilder(), original)
 }

@@ -1,9 +1,4 @@
 {
     "name": "Skunk",
-    "nameSource": "SkunkNames",
-    "description": [
-        "Fiercely independent and unafraid.",
-        "A defender who never backs down.",
-        "A strong will wrapped in black and white."
-    ]
+    "nameSource": "SkunkNames"
 }

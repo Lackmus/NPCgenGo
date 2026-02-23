@@ -11,12 +11,10 @@ func GetMilitaryInstance() *Military {
 	if militaryInstance == nil {
 		militaryInstance = &Military{
 			NPCType: NPCType{
-				Name:        "Military",
-				Description: "A military npc",
-				Stats:       []string{"health", "speed", "strength"},
+				Name:  "Military",
+				Stats: []string{"health", "speed", "strength"},
 			},
 		}
 	}
 	return militaryInstance
 }
-

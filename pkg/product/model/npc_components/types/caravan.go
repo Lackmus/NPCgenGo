@@ -11,12 +11,10 @@ func GetCaravanInstance() *Caravan {
 	if caravanInstance == nil {
 		caravanInstance = &Caravan{
 			NPCType: NPCType{
-				Name:        "Caravan",
-				Description: "A caravan",
-				Stats:       []string{"health", "speed", "strength"},
+				Name:  "Caravan",
+				Stats: []string{"health", "speed", "strength"},
 			},
 		}
 	}
 	return caravanInstance
 }
-

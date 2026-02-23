@@ -7,6 +7,7 @@ function appBindings() {
 }
 
 let creationOptions = null;
+let selectedNPC = null;
 
 function compValue(npc, key) {
   if (!npc || !npc.Components) return "";
@@ -19,6 +20,8 @@ function currentId() {
 
 function readForm() {
 	const traitValue = document.getElementById("f_traits").value;
+	const statsValue = (document.getElementById("f_stats")?.textContent || "").trim();
+	const itemsValue = (document.getElementById("f_items")?.textContent || "").trim();
   return {
     id: document.getElementById("f_id").value,
     name: document.getElementById("f_name").value,
@@ -27,10 +30,30 @@ function readForm() {
     species: document.getElementById("f_species").value,
     faction: document.getElementById("f_faction").value,
     traits: traitValue ? [traitValue] : [],
-    stats: document.getElementById("f_stats").value,
-    items: document.getElementById("f_items").value,
-    description: document.getElementById("f_description").value,
+    stats: statsValue === "—" ? "" : statsValue,
+    items: itemsValue === "—" ? "" : itemsValue,
     locationID: document.getElementById("f_location").value || "default",
+  };
+}
+
+function validatePayload(payload) {
+  const checks = [
+    ["name", payload.name],
+    ["type", payload.type],
+    ["subtype", payload.subtype],
+    ["species", payload.species],
+    ["faction", payload.faction],
+    ["traits", Array.isArray(payload.traits) ? payload.traits.join(",") : payload.traits],
+    ["locationID", payload.locationID],
+  ];
+
+  const missing = checks
+    .filter(([, value]) => !String(value || "").trim())
+    .map(([label]) => label);
+
+  return {
+    ok: missing.length === 0,
+    missing,
   };
 }
 
@@ -87,6 +110,72 @@ function setSpeciesEnabled(enabled) {
   select.disabled = !enabled;
 }
 
+function setDetailValue(id, value) {
+  const element = document.getElementById(id);
+  if (!element) return;
+  element.textContent = (value || "").trim() || "—";
+}
+
+function renderDetails(npc) {
+  setDetailValue("d_name", compValue(npc, "1"));
+  setDetailValue("d_type", compValue(npc, "2"));
+  setDetailValue("d_subtype", compValue(npc, "3"));
+  setDetailValue("d_species", compValue(npc, "4"));
+  setDetailValue("d_faction", compValue(npc, "5"));
+  setDetailValue("d_traits", compValue(npc, "6"));
+  setDetailValue("d_stats", compValue(npc, "7"));
+  setDetailValue("d_items", compValue(npc, "8"));
+  setDetailValue("d_location", npc?.LocationID || "");
+
+  const editButton = document.getElementById("btnEdit");
+  if (editButton) {
+    editButton.disabled = !(npc?.ID || "");
+  }
+}
+
+function showDetailsPanel() {
+  const details = document.getElementById("npcDetails");
+  const form = document.getElementById("npcForm");
+  if (details) details.style.display = "grid";
+  if (form) form.style.display = "none";
+}
+
+function showEditPanel() {
+  const details = document.getElementById("npcDetails");
+  const form = document.getElementById("npcForm");
+  if (details) details.style.display = "none";
+  if (form) form.style.display = "grid";
+}
+
+function enterEditMode() {
+  if (!currentId()) {
+    alert("Select an NPC first.");
+    return;
+  }
+  showEditPanel();
+}
+
+function exitEditMode() {
+  showDetailsPanel();
+}
+
+function startCreateNPC() {
+  selectedNPC = null;
+  document.getElementById("f_id").value = "";
+  document.getElementById("f_name").value = "";
+  setSelectValue("f_type", "");
+  updateSubtypeDropdown("", "");
+  setSelectValue("f_faction", "");
+  updateSpeciesDropdown("", "");
+  setSelectValue("f_traits", "");
+  document.getElementById("f_stats").textContent = "—";
+  document.getElementById("f_items").textContent = "—";
+  document.getElementById("f_location").value = "default";
+  setRerollEnabled(false);
+  renderDetails(null);
+  showEditPanel();
+}
+
 function updateSubtypeDropdown(selectedType, selectedSubtype = "") {
   if (!creationOptions) return;
   setSubtypeEnabled(Boolean((selectedType || "").trim()));
@@ -108,16 +197,14 @@ function updateSpeciesDropdown(selectedFaction, selectedSpecies = "") {
 
 async function applySubtypeRoll(subtype) {
   if (!subtype) {
-    document.getElementById("f_stats").value = "";
-    document.getElementById("f_items").value = "";
-    document.getElementById("f_description").value = "";
+    document.getElementById("f_stats").textContent = "—";
+    document.getElementById("f_items").textContent = "—";
     return;
   }
   const backend = appBindings();
   const rolled = await backend.RollSubtypeFields(subtype);
-  document.getElementById("f_stats").value = rolled?.stats || rolled?.Stats || "";
-  document.getElementById("f_items").value = rolled?.items || rolled?.Items || "";
-  document.getElementById("f_description").value = rolled?.description || rolled?.Description || "";
+  document.getElementById("f_stats").textContent = rolled?.stats || rolled?.Stats || "—";
+  document.getElementById("f_items").textContent = rolled?.items || rolled?.Items || "—";
 }
 
 async function applySpeciesNameRoll(species) {
@@ -131,6 +218,7 @@ async function applySpeciesNameRoll(species) {
 }
 
 function setForm(npc) {
+  selectedNPC = npc || null;
   document.getElementById("f_id").value = npc?.ID || "";
   document.getElementById("f_name").value = compValue(npc, "1");
   const selectedType = compValue(npc, "2");
@@ -143,18 +231,26 @@ function setForm(npc) {
   updateSpeciesDropdown(selectedFaction, selectedSpecies);
   const traitValue = compValue(npc, "6");
   setSelectValue("f_traits", traitValue.split(",")[0]?.trim() || "");
-  document.getElementById("f_stats").value = compValue(npc, "7");
-  document.getElementById("f_items").value = compValue(npc, "8");
-  document.getElementById("f_description").value = compValue(npc, "9");
+  document.getElementById("f_stats").textContent = compValue(npc, "7") || "—";
+  document.getElementById("f_items").textContent = compValue(npc, "8") || "—";
   document.getElementById("f_location").value = npc?.LocationID || "default";
+
+  const id = npc?.ID || "";
+  const editButton = document.getElementById("btnEdit");
+  if (editButton) {
+    editButton.disabled = !id;
+  }
 }
 
 function clearForm() {
+  selectedNPC = null;
   document.getElementById("npcForm").reset();
   document.getElementById("f_location").value = "default";
 	setSubtypeEnabled(false);
 	setSpeciesEnabled(false);
 	setRerollEnabled(false);
+  renderDetails(null);
+  exitEditMode();
 }
 
 function npcCard(npc) {
@@ -182,6 +278,8 @@ function npcCard(npc) {
     const backend = appBindings();
     const loaded = await backend.GetNPC(id);
     setForm(loaded);
+    renderDetails(loaded);
+    exitEditMode();
   });
 
   element.querySelector("button").addEventListener("click", async () => {
@@ -227,9 +325,9 @@ async function setupActions() {
   populateOptionDropdowns();
   document.getElementById("f_type").addEventListener("change", (event) => {
     updateSubtypeDropdown(event.target.value);
-    document.getElementById("f_stats").value = "";
-    document.getElementById("f_items").value = "";
-		document.getElementById("f_description").value = "";
+    document.getElementById("f_stats").textContent = "—";
+    document.getElementById("f_items").textContent = "—";
+
 		setRerollEnabled(false);
   });
   document.getElementById("f_faction").addEventListener("change", (event) => {
@@ -259,6 +357,11 @@ async function setupActions() {
     await renderList();
   });
 
+  const createButton = document.getElementById("btnCreate");
+  if (createButton) {
+    createButton.addEventListener("click", startCreateNPC);
+  }
+
   document.getElementById("btnRefresh").addEventListener("click", renderList);
 
   document.getElementById("btnClear").addEventListener("click", async () => {
@@ -270,14 +373,21 @@ async function setupActions() {
 
   document.getElementById("btnSave").addEventListener("click", async () => {
     const payload = readForm();
-    if (!payload.id) {
-			alert("No ID present. Generate an NPC first.");
+    const validation = validatePayload(payload);
+    if (!validation.ok) {
+      alert(`Please fill all fields before saving. Missing: ${validation.missing.join(", ")}`);
       return;
     }
-    const saved = await backend.SaveNPC(payload);
+    const saved = payload.id ? await backend.SaveNPC(payload) : await backend.CreateNPC(payload);
     setForm(saved);
+    renderDetails(saved);
+    exitEditMode();
     await renderList();
   });
+  const editButton = document.getElementById("btnEdit");
+  if (editButton) {
+    editButton.addEventListener("click", enterEditMode);
+  }
   document.getElementById("btnReroll").addEventListener("click", async () => {
     const subtype = document.getElementById("f_subtype").value;
     if (!subtype) {
@@ -292,9 +402,22 @@ async function setupActions() {
     }
   });
 
+  document.getElementById("btnCancelEdit").addEventListener("click", () => {
+    setForm(selectedNPC);
+    renderDetails(selectedNPC);
+    exitEditMode();
+  });
   document.getElementById("btnClose").addEventListener("click", clearForm);
+
+  const btn = document.getElementById("btnEdit");
+  if (btn) {
+    btn.disabled = true;
+  }
   setSubtypeEnabled(Boolean((document.getElementById("f_type").value || "").trim()));
+	setSpeciesEnabled(Boolean((document.getElementById("f_faction").value || "").trim()));
 	setRerollEnabled(Boolean((document.getElementById("f_subtype").value || "").trim()));
+  renderDetails(null);
+  exitEditMode();
 }
 
 async function main() {

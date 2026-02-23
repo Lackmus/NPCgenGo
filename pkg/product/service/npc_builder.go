@@ -17,11 +17,11 @@ import (
 type NPCBuilder struct {
 	npc         *m.NPC
 	supplier    *NPCCreationSupplier
+	idData      *string
 	subtypeData *cp.NPCSubtype
 	speciesData *cp.Species
 	traitData   *cp.Trait
 	npctypeData *t.NPCType
-	description string
 	errors      []error
 }
 
@@ -94,6 +94,16 @@ func (b *NPCBuilder) fetchAndSetComponents(npc m.NPC) {
 	} else {
 		b.addErrorWithContext("fetchAndSetComponents", err)
 	}
+}
+
+// ----- ID Methods -----
+
+func (b *NPCBuilder) WithID(d string) *NPCBuilder {
+	if value := strings.TrimSpace(d); value != "" {
+		b.npc.ID = value
+		b.idData = &value
+	}
+	return b
 }
 
 // ptr is a helper function that returns a pointer to the provided value.
@@ -296,50 +306,10 @@ func (b *NPCBuilder) WithRandomTrait() *NPCBuilder {
 	return b.WithTrait(randomTrait)
 }
 
-// ----- Description Methods -----
-
-func (b *NPCBuilder) WithDescription(description string) *NPCBuilder {
-	if b.HasErrors() {
-		return b
-	}
-	b.description = description
-	b.updateComponent(cp.CompDescription, description)
-	return b
-}
-
-func formatDescription(subtype, species, trait string) string {
-	var sb strings.Builder
-	if trimmed := strings.TrimSpace(subtype); trimmed != "" {
-		sb.WriteString(trimmed + "\n")
-	}
-	if trimmed := strings.TrimSpace(species); trimmed != "" {
-		sb.WriteString(trimmed + "\n")
-	}
-	if trimmed := strings.TrimSpace(trait); trimmed != "" {
-		sb.WriteString(trimmed)
-	}
-	return sb.String()
-}
-
-func (b *NPCBuilder) WithRandomDescription() *NPCBuilder {
-	if b.HasErrors() {
-		return b
-	}
-	if h.IsNilOrEmpty(b.subtypeData) || h.IsNilOrEmpty(b.speciesData) || h.IsNilOrEmpty(b.traitData) {
-		b.addErrorWithContext("WithRandomDescription", errors.New("subtype, species, and trait must be set before description can be added"))
-		return b
-	}
-	desc := formatDescription(b.subtypeData.GetDescription(), b.speciesData.GetDescription(), b.traitData.GetDescription())
-	b.description = desc
-	if !h.IsNilOrEmpty(desc) {
-		b.WithDescription(desc)
-	}
-	return b
-}
-
 // ----- Build Method -----
 
 func (b *NPCBuilder) Validate() error {
+
 	if h.IsNilOrEmpty(b.npctypeData) {
 		return errors.New("NPC type is not set")
 	}
@@ -376,4 +346,3 @@ func (b *NPCBuilder) Build() (m.NPC, error) {
 	}
 	return *b.npc, nil
 }
-

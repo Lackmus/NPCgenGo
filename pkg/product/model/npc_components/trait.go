@@ -2,9 +2,8 @@
 package npc_components
 
 type Trait struct {
-	Name        string
-	Description string
-	Opposes     string
+	Name    string
+	Opposes string
 }
 
 func (t Trait) GetName() string {
@@ -16,8 +15,4 @@ func (t Trait) GetDisplayName() string {
 		return t.Name
 	}
 	return t.Name + "\nOpposes: " + t.Opposes
-}
-
-func (t Trait) GetDescription() string {
-	return t.Description
 }

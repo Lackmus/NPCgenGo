@@ -132,11 +132,3 @@ func (n *NPC) Items() string {
 func (n *NPC) SetItems(value string) {
 	n.SetComponent(cp.CompItems, value)
 }
-
-func (n *NPC) Description() string {
-	return n.GetComponent(cp.CompDescription)
-}
-
-func (n *NPC) SetDescription(value string) {
-	n.SetComponent(cp.CompDescription, value)
-}

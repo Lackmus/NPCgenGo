@@ -10,7 +10,6 @@ import (
 type NPCSubtype struct {
 	Name             string
 	NpcTypeName      string
-	Description      []string
 	Stats            []string
 	EquipmentOptions map[string][]string
 }
@@ -40,8 +39,3 @@ func (n NPCSubtype) GetEquipment() string {
 	}
 	return sb.String()
 }
-
-func (n NPCSubtype) GetDescription() string {
-	return helper.GetRandomElement(n.Description)
-}
-

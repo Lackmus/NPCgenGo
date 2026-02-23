@@ -10,7 +10,6 @@ export namespace main {
 	    traits: string[];
 	    stats: string;
 	    items: string;
-	    description: string;
 	    locationID: string;
 	
 	    static createFrom(source: any = {}) {
@@ -28,8 +27,21 @@ export namespace main {
 	        this.traits = source["traits"];
 	        this.stats = source["stats"];
 	        this.items = source["items"];
-	        this.description = source["description"];
 	        this.locationID = source["locationID"];
+	    }
+	}
+	export class SubtypeRoll {
+	    stats: string;
+	    items: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SubtypeRoll(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.stats = source["stats"];
+	        this.items = source["items"];
 	    }
 	}
 
@@ -51,6 +63,33 @@ export namespace model {
 	        this.ID = source["ID"];
 	        this.LocationID = source["LocationID"];
 	        this.Components = source["Components"];
+	    }
+	}
+
+}
+
+export namespace service {
+	
+	export class NPCCreationOptions {
+	    Factions: string[];
+	    Species: string[];
+	    Traits: string[];
+	    NpcTypes: string[];
+	    NpcSubtypeForTypeMap: Record<string, Array<string>>;
+	    NpcSpeciesForFactionMap: Record<string, Array<string>>;
+	
+	    static createFrom(source: any = {}) {
+	        return new NPCCreationOptions(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Factions = source["Factions"];
+	        this.Species = source["Species"];
+	        this.Traits = source["Traits"];
+	        this.NpcTypes = source["NpcTypes"];
+	        this.NpcSubtypeForTypeMap = source["NpcSubtypeForTypeMap"];
+	        this.NpcSpeciesForFactionMap = source["NpcSpeciesForFactionMap"];
 	    }
 	}
 

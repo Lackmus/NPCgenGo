@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"maps"
 	"slices"
-	"strings"
 
 	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
 	t "github.com/lackmus/npcgengo/pkg/product/model/npc_components/types"
@@ -83,9 +82,8 @@ func (c *CreationDataService) buildNpcTypeMap() map[string]t.NPCType {
 	typeMap := make(map[string]t.NPCType)
 	for typeName := range c.npcSubtypeForTypeMap {
 		typeMap[typeName] = t.NPCType{
-			Name:        typeName,
-			Description: fmt.Sprintf("A %s npc", strings.ToLower(typeName)),
-			Stats:       []string{"health", "speed", "strength"},
+			Name:  typeName,
+			Stats: []string{"health", "speed", "strength"},
 		}
 	}
 	return typeMap

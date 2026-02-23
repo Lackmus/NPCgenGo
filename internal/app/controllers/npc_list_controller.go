@@ -2,6 +2,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 
 	h "github.com/lackmus/npcgengo/internal/platform/helpers"
@@ -13,18 +14,27 @@ import (
 type NPCListController struct {
 	NpcService       *service.NPCService
 	CreationSupplier *service.NPCCreationSupplier
+	validator        *service.NPCValidationService
 	observers        []shared.NPCObserver
 	LocationID       string
+	CreationOptions  *service.NPCCreationOptions
 }
 
 func NewNPCListController(creationSupplier *service.NPCCreationSupplier, npcService *service.NPCService, locationID string) *NPCListController {
 	log.Println("Creating NPCListController...")
+	validator := service.NewNPCValidationService(creationSupplier.CreationDataService)
 	return &NPCListController{
 		NpcService:       npcService,
 		CreationSupplier: creationSupplier,
+		validator:        validator,
 		LocationID:       locationID,
+		CreationOptions:  creationSupplier.CreationOptions,
 		observers:        []shared.NPCObserver{},
 	}
+}
+
+func (c *NPCListController) GetNPCBuilder() *service.NPCBuilder {
+	return service.NewNPCBuilder(c.CreationSupplier, c.LocationID)
 }
 
 func (c *NPCListController) CreateRandomNPC() (model.NPC, error) {
@@ -107,4 +117,48 @@ func (c *NPCListController) GetNPCByLocation() []model.NPC {
 
 func (c *NPCListController) CreateNPCGroup() {
 	// Implementation will be in the view that uses this controller
+}
+
+// GetCreationOptions returns the available creation options for NPC generation.
+func (c *NPCListController) GetCreationOptions() *service.NPCCreationOptions {
+	if c.CreationSupplier == nil {
+		return nil
+	}
+	return c.CreationSupplier.CreationOptions
+}
+
+// ValidateNPC validates an NPC using the controller's validation service.
+func (c *NPCListController) ValidateNPC(npc model.NPC) error {
+	if c.validator == nil {
+		return nil
+	}
+	return c.validator.ValidateNPC(npc)
+}
+
+// GetSubtypeFields returns the rolled stats and items for a given subtype.
+func (c *NPCListController) GetSubtypeFields(subtype string) (stats, items string, err error) {
+	if c.CreationSupplier == nil {
+		return "", "", fmt.Errorf("creation supplier not initialized")
+	}
+	subtypeData, err := c.CreationSupplier.CreationDataService.GetNpcSubtypeData(subtype)
+	if err != nil {
+		return "", "", err
+	}
+	return subtypeData.GetStats(), subtypeData.GetEquipment(), nil
+}
+
+// GetSpeciesName returns a generated name for a given species.
+func (c *NPCListController) GetSpeciesName(species string) (string, error) {
+	if c.CreationSupplier == nil {
+		return "", fmt.Errorf("creation supplier not initialized")
+	}
+	speciesData, err := c.CreationSupplier.CreationDataService.GetSpeciesData(species)
+	if err != nil {
+		return "", err
+	}
+	nameData, err := c.CreationSupplier.CreationDataService.GetNameData(speciesData.NameSource)
+	if err != nil {
+		return "", err
+	}
+	return nameData.GenerateName(), nil
 }

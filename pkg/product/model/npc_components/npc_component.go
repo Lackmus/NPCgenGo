@@ -16,15 +16,14 @@ func NewComponent(name CompEnum, value string) NPCComponent {
 type CompEnum int
 
 const (
-	CompName        CompEnum = 1
-	CompType        CompEnum = 2
-	CompSubtype     CompEnum = 3
-	CompSpecies     CompEnum = 4
-	CompFaction     CompEnum = 5
-	CompTrait       CompEnum = 6
-	CompStats       CompEnum = 7
-	CompItems       CompEnum = 8
-	CompDescription CompEnum = 9
+	CompName    CompEnum = 1
+	CompType    CompEnum = 2
+	CompSubtype CompEnum = 3
+	CompSpecies CompEnum = 4
+	CompFaction CompEnum = 5
+	CompTrait   CompEnum = 6
+	CompStats   CompEnum = 7
+	CompItems   CompEnum = 8
 )
 
 func CompEnumValues() []CompEnum {
@@ -37,7 +36,6 @@ func CompEnumValues() []CompEnum {
 		CompTrait,
 		CompStats,
 		CompItems,
-		CompDescription,
 	}
 }
 
@@ -59,10 +57,7 @@ func (c CompEnum) String() string {
 		return "Stats"
 	case CompItems:
 		return "Items"
-	case CompDescription:
-		return "Description"
 	default:
 		return "UNKNOWN_COMPONENT"
 	}
 }
-

@@ -1,9 +1,4 @@
 {
     "name": "Deer",
-    "nameSource": "DeerNames",
-    "description": [
-        "Graceful and swift, yet strong-willed.",
-        "A keen-eyed watcher of the woods.",
-        "A noble heart with a quiet resolve."
-    ]
+    "nameSource": "DeerNames"
 }

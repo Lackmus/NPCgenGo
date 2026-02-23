@@ -11,12 +11,10 @@ func GetCivilianInstance() *Civilian {
 	if civilianInstance == nil {
 		civilianInstance = &Civilian{
 			NPCType: NPCType{
-				Name:        "Civilian",
-				Description: "A regular civilian",
-				Stats:       []string{"health", "speed", "strength"},
+				Name:  "Civilian",
+				Stats: []string{"health", "speed", "strength"},
 			},
 		}
 	}
 	return civilianInstance
 }
-

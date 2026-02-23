@@ -1,9 +1,4 @@
 {
     "name": "Mouse",
-    "nameSource": "MouseNames",
-    "description": [
-        "Tiny but full of courage.",
-        "Knows every tunnel and hidden path.",
-        "Quiet, observant, and resilient."
-    ]
+    "nameSource": "MouseNames"
 }

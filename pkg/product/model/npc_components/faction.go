@@ -4,10 +4,8 @@ package npc_components
 type Faction struct {
 	Name        string
 	SpeciesList []string
-	Description []string
 }
 
 func (f Faction) GetName() string {
 	return f.Name
 }
-

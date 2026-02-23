@@ -30,12 +30,12 @@ export function ListNPCs() {
   return window['go']['main']['WailsAPI']['ListNPCs']();
 }
 
-export function RollSubtypeFields(arg1) {
-  return window['go']['main']['WailsAPI']['RollSubtypeFields'](arg1);
-}
-
 export function RollSpeciesName(arg1) {
   return window['go']['main']['WailsAPI']['RollSpeciesName'](arg1);
+}
+
+export function RollSubtypeFields(arg1) {
+  return window['go']['main']['WailsAPI']['RollSubtypeFields'](arg1);
 }
 
 export function SaveNPC(arg1) {
