@@ -104,7 +104,6 @@ func (v *ConsoleView) showDetails(id string) {
 	}
 
 	fmt.Println("\n--- NPC Details ---")
-	fmt.Printf("ID: %s\n", npc.ID)
 	fmt.Printf("Name: %s\n", npc.Name())
 	fmt.Printf("Type: %s\n", npc.Type())
 	fmt.Printf("Subtype: %s\n", npc.Subtype())
