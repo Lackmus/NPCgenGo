@@ -1,5 +1,5 @@
 // Description: This file contains the ConsoleEditView struct and its methods. This struct is used to display an NPC in the console.
-package view
+package console
 
 import (
 	"fmt"
@@ -33,4 +33,3 @@ func (v *ConsoleEditView) UpdateField(field cp.CompEnum, value any) {
 func (v *ConsoleEditView) OnNPCEditError(err error) {
 	fmt.Println("Error: ", err)
 }
-

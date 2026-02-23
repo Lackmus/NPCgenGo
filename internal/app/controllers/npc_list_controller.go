@@ -1,5 +1,5 @@
 // Description: This file contains the controller for the list of NPCs.
-package handlers
+package controllers
 
 import (
 	"log"

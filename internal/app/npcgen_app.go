@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/lackmus/npcgengo/internal/app/handlers"
-	"github.com/lackmus/npcgengo/internal/app/view"
+	"github.com/lackmus/npcgengo/internal/app/controllers"
 	"github.com/lackmus/npcgengo/internal/platform/loader"
 	"github.com/lackmus/npcgengo/pkg/product/service"
+	consoleui "github.com/lackmus/npcgengo/ui/console"
 )
 
 const defaultLocationID = "default"
@@ -18,7 +18,7 @@ const defaultLocationID = "default"
 type NPCGen struct {
 	CreationSupplier  *service.NPCCreationSupplier
 	NpcService        *service.NPCService
-	NPCListController *handlers.NPCListController
+	NPCListController *controllers.NPCListController
 }
 
 // NewNPCGen initializes a new NPCGen instance using the default on-disk data directory.
@@ -45,7 +45,7 @@ func NewNPCGenWithDataDir(dataDir string) (*NPCGen, error) {
 		return nil, fmt.Errorf("failed to initialize NPCService: %w", err)
 	}
 
-	npcListController := handlers.NewNPCListController(creationSupplier, npcService, defaultLocationID)
+	npcListController := controllers.NewNPCListController(creationSupplier, npcService, defaultLocationID)
 
 	return &NPCGen{
 		CreationSupplier:  creationSupplier,
@@ -56,8 +56,8 @@ func NewNPCGenWithDataDir(dataDir string) (*NPCGen, error) {
 
 // InitNPCListView creates and starts the console list view for a location.
 func (n *NPCGen) InitNPCListView(locationID string) {
-	npcListController := handlers.NewNPCListController(n.CreationSupplier, n.NpcService, locationID)
-	npcListView := view.NewConsoleView(npcListController)
+	npcListController := controllers.NewNPCListController(n.CreationSupplier, n.NpcService, locationID)
+	npcListView := consoleui.NewConsoleView(npcListController)
 	npcListController.InitView(npcListView)
 	npcListView.Run()
 }

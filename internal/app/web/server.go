@@ -1,4 +1,4 @@
-package handlers
+package web
 
 import (
 	"context"
@@ -8,11 +8,12 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/lackmus/npcgengo/internal/app/controllers"
 	"github.com/lackmus/npcgengo/pkg/product/model"
 	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
 )
 
-// Simple HTTP server that serves the web demo and exposes API endpoints
+// Simple HTTP server that serves the web UI and exposes API endpoints
 // Routes:
 //  GET  /api/npcs         -> list all NPCs
 //  GET  /api/npcs/:id     -> get NPC by id
@@ -20,11 +21,11 @@ import (
 //  DELETE /api/npcs/:id   -> delete NPC by id
 
 type Server struct {
-	npcController *NPCListController
+	npcController *controllers.NPCListController
 	httpServer    *http.Server
 }
 
-func NewServer(nc *NPCListController) *Server {
+func NewServer(nc *controllers.NPCListController) *Server {
 	return &Server{npcController: nc}
 }
 
@@ -33,7 +34,7 @@ func NewServer(nc *NPCListController) *Server {
 func (s *Server) Routes() {
 	// Deprecated compatibility method: keep old behavior (process-exiting)
 	// Register handlers and start listening on :8080; any error will be fatal.
-	http.Handle("/web_demo/", http.StripPrefix("/web_demo/", http.FileServer(http.Dir("web_demo"))))
+	http.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir("ui/web"))))
 
 	http.HandleFunc("/api/npcs", s.npcsHandler)
 	http.HandleFunc("/api/npcs/", s.npcByIDHandler)
@@ -48,7 +49,7 @@ func (s *Server) Routes() {
 // it safe to use this package as a library.
 func (s *Server) Start(addr string) error {
 	mux := http.NewServeMux()
-	mux.Handle("/web_demo/", http.StripPrefix("/web_demo/", http.FileServer(http.Dir("web_demo"))))
+	mux.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir("ui/web"))))
 
 	mux.HandleFunc("/api/npcs", s.npcsHandler)
 	mux.HandleFunc("/api/npcs/", s.npcByIDHandler)

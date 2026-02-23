@@ -3,7 +3,7 @@ This tiny demo shows how to load your `data/creation_data` JSON files and store 
 How to run:
 1. Serve the demo from your Go backend (recommended).
 
-This demo now uses your Go backend API for NPC storage. Make sure your Go server serves static files from the project root (so `/web_demo` is accessible) and exposes the following endpoints:
+This demo now uses your Go backend API for NPC storage. Make sure your Go server serves static files from `ui/web` (mounted at `/ui`) and exposes the following endpoints:
 
 - `GET  /api/npcs`        â€” return list of stored NPCs (JSON array)
 - `POST /api/npcs`        â€” create NPC (accepts NPC JSON body)
@@ -11,10 +11,10 @@ This demo now uses your Go backend API for NPC storage. Make sure your Go server
 
 Example: run your Go app (it listens on `:8080` in the provided server snippet), then open:
 
-http://localhost:8080/web_demo/
+http://localhost:8080/ui/
 
 Notes:
 - The demo still fetches creation JSON from `data/creation_data/...` (served statically by the Go server).
-- If your server uses a different path or port, update `API_BASE` in `web_demo/app.js`.
+- If your server uses a different path or port, update `API_BASE` in `ui/web/app.js`.
 
-If you want, I can add a `server.go` file that mounts `web_demo/` and implements the `/api/npcs` handlers using your existing `NPCService` so it works out-of-the-box.
+If you want, I can add a `server.go` file that mounts `ui/web/` and implements the `/api/npcs` handlers using your existing `NPCService` so it works out-of-the-box.

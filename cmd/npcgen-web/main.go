@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/lackmus/npcgengo"
-	"github.com/lackmus/npcgengo/internal/app/handlers"
+	"github.com/lackmus/npcgengo/internal/app/web"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 		log.Fatal("failed to initialize NPCGen:", err)
 	}
 
-	srv := handlers.NewServer(npcGen.NPCListController)
+	srv := web.NewServer(npcGen.NPCListController)
 
 	go func() {
 		if err := srv.Start(":8080"); err != nil {

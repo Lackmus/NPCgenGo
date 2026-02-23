@@ -1,4 +1,4 @@
-package view
+package console
 
 import (
 	"bufio"
@@ -6,17 +6,17 @@ import (
 	"os"
 	"strings"
 
-	"github.com/lackmus/npcgengo/internal/app/handlers"
+	"github.com/lackmus/npcgengo/internal/app/controllers"
 	"github.com/lackmus/npcgengo/pkg/product/model"
 	"github.com/lackmus/npcgengo/pkg/product/shared"
 )
 
 type ConsoleView struct {
-	controller *handlers.NPCListController
+	controller *controllers.NPCListController
 	lastNpcs   []model.NPC
 }
 
-func NewConsoleView(ctrl *handlers.NPCListController) shared.NPCListViewer {
+func NewConsoleView(ctrl *controllers.NPCListController) shared.NPCListViewer {
 	return &ConsoleView{controller: ctrl}
 }
 

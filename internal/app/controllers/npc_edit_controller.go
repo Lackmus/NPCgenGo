@@ -1,5 +1,5 @@
 // Package controller provides controllers for managing NPC editing.
-package handlers
+package controllers
 
 import (
 	"errors"

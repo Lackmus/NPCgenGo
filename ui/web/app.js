@@ -1,4 +1,4 @@
-// web_demo client — interacts with Go backend API
+// ui client — interacts with Go backend API
 const API_BASE = '/api';
 
 async function generateNPC() {
