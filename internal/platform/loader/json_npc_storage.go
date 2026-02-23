@@ -43,6 +43,9 @@ func (j *JSONNPCStorage) LoadAllNPC(ctx context.Context) (map[string]model.NPC, 
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
+	if err := os.MkdirAll(j.Dir, os.ModePerm); err != nil {
+		return nil, err
+	}
 	files, err := os.ReadDir(j.Dir)
 	if err != nil {
 		return nil, err
@@ -121,6 +124,9 @@ func (j *JSONNPCStorage) DeleteNPC(ctx context.Context, id string) error {
 
 func (j *JSONNPCStorage) DeleteAllNPC(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if err := os.MkdirAll(j.Dir, os.ModePerm); err != nil {
 		return err
 	}
 	files, err := os.ReadDir(j.Dir)

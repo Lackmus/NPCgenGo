@@ -1,7 +1,7 @@
 function appBindings() {
-  const backend = window?.go?.main?.App;
+  const backend = window?.go?.main?.WailsAPI || window?.go?.main?.App;
   if (!backend) {
-    throw new Error("Wails bindings not available. Run via Wails runtime.");
+    throw new Error("Wails bindings not available. Expected window.go.main.WailsAPI (or legacy App).");
   }
   return backend;
 }

@@ -27,7 +27,7 @@ func main() {
 		log.Fatal("failed to initialize NPCGen: ", err)
 	}
 
-	app := NewApp(npcGen.NPCListController)
+	app := NewWailsAPI(npcGen.NPCListController)
 
 	err = wails.Run(&options.App{
 		Title:  "NPCGen",
