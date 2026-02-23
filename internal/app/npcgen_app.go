@@ -12,8 +12,6 @@ import (
 	consoleui "github.com/lackmus/npcgengo/ui/console"
 )
 
-const defaultLocationID = "default"
-
 // NPCGen is the application orchestration layer.
 // It wires together creation/loading services and transport-facing controllers.
 type NPCGen struct {
@@ -43,7 +41,7 @@ func NewNPCGenWithDataDir(dataDir string) (*NPCGen, error) {
 		return nil, fmt.Errorf("failed to initialize NPCService: %w", err)
 	}
 
-	npcListController := controllers.NewNPCListController(creationSupplier, npcService, defaultLocationID)
+	npcListController := controllers.NewNPCListController(creationSupplier, npcService)
 
 	return &NPCGen{
 		CreationSupplier:  creationSupplier,
@@ -121,8 +119,8 @@ func hasCreationData(base string) bool {
 	return info.IsDir()
 }
 
-// InitNPCListView creates and starts the console list view for a location.
-func (n *NPCGen) InitNPCListView(locationID string) {
+// InitNPCListView creates and starts the console list view.
+func (n *NPCGen) InitNPCListView() {
 	npcListView := consoleui.NewConsoleView(n.NPCListController)
 	n.NPCListController.InitView(npcListView)
 	npcListView.Run()

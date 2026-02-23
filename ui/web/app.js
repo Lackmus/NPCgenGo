@@ -273,7 +273,6 @@ async function showDetails(id) {
   setSelectValue('f_traits', traitValue.split(',')[0]?.trim() || '');
   document.getElementById('f_stats').textContent = (npc.Components && npc.Components['7']) || '—';
   document.getElementById('f_items').textContent = (npc.Components && npc.Components['8']) || '—';
-  document.getElementById('f_location').value = npc.LocationID || '';
 	setRerollEnabled(Boolean((selectedSubtype || '').trim()));
 }
 
@@ -288,10 +287,9 @@ async function gatherForm() {
     subtype: document.getElementById('f_subtype').value,
     species: document.getElementById('f_species').value,
     faction: document.getElementById('f_faction').value,
-    traits: traitValue ? [traitValue] : [],
+    trait: traitValue,
     stats: statsValue === '—' ? '' : statsValue,
-    items: itemsValue === '—' ? '' : itemsValue,
-    locationID: document.getElementById('f_location').value || 'default'
+    items: itemsValue === '—' ? '' : itemsValue
   };
 }
 

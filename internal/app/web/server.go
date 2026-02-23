@@ -258,7 +258,7 @@ func (s *Server) speciesNameRollHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 // Helper function to parse NPC data from request body and convert it to model.NPC struct.
-// Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Stats, Items, LocationID, and Traits (array of strings).
+// Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Trait, Stats, and Items.
 func parseNPCFromBody(body io.ReadCloser, controller *controllers.NPCListController) (model.NPC, error) {
 	defer body.Close()
 	var p mapper.NPCInput

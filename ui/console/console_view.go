@@ -112,11 +112,10 @@ func (v *ConsoleView) showDetails(id string) {
 	fmt.Printf("Trait: %s\n", npc.Trait())
 	fmt.Printf("Stats: %s\n", npc.Stats())
 	fmt.Printf("Items: %s\n", npc.Items())
-	fmt.Printf("LocationID: %s\n", npc.LocationID)
 }
 
 func (v *ConsoleView) createNPC(reader *bufio.Reader) {
-	input := mapper.NPCInput{LocationID: v.controller.LocationID}
+	input := mapper.NPCInput{}
 	v.collectNPCInput(reader, &input, nil)
 
 	if !v.confirm(reader, "Save new NPC?") {
@@ -135,14 +134,13 @@ func (v *ConsoleView) editNPC(reader *bufio.Reader, id string) {
 	}
 
 	input := mapper.NPCInput{
-		ID:         npc.ID,
-		Name:       npc.Name(),
-		Type:       npc.Type(),
-		Subtype:    npc.Subtype(),
-		Species:    npc.Species(),
-		Faction:    npc.Faction(),
-		Traits:     v.splitTraits(npc.Trait()),
-		LocationID: npc.LocationID,
+		ID:      npc.ID,
+		Name:    npc.Name(),
+		Type:    npc.Type(),
+		Subtype: npc.Subtype(),
+		Species: npc.Species(),
+		Faction: npc.Faction(),
+		Trait:   npc.Trait(),
 	}
 
 	v.collectNPCInput(reader, &input, &npc)
@@ -162,11 +160,7 @@ func (v *ConsoleView) collectNPCInput(reader *bufio.Reader, input *mapper.NPCInp
 	input.Subtype = v.promptOption(reader, "Subtype", options.NpcSubtypeForTypeMap[input.Type], input.Subtype)
 	input.Faction = v.promptOption(reader, "Faction", options.Factions, input.Faction)
 	input.Species = v.promptOption(reader, "Species", options.NpcSpeciesForFactionMap[input.Faction], input.Species)
-	traitCurrent := ""
-	if len(input.Traits) > 0 {
-		traitCurrent = input.Traits[0]
-	}
-	input.Traits = []string{v.promptOption(reader, "Trait", options.Traits, traitCurrent)}
+	input.Trait = v.promptOption(reader, "Trait", options.Traits, input.Trait)
 
 	nameDefault := input.Name
 	if strings.TrimSpace(nameDefault) == "" {
@@ -175,12 +169,6 @@ func (v *ConsoleView) collectNPCInput(reader *bufio.Reader, input *mapper.NPCInp
 		}
 	}
 	input.Name = v.promptText(reader, "Name", nameDefault)
-
-	locationDefault := input.LocationID
-	if strings.TrimSpace(locationDefault) == "" {
-		locationDefault = v.controller.LocationID
-	}
-	input.LocationID = v.promptText(reader, "LocationID", locationDefault)
 
 	_ = existing
 }
@@ -310,8 +298,7 @@ func (v *ConsoleView) requiredMissing(input mapper.NPCInput) []string {
 		{label: "subtype", value: input.Subtype},
 		{label: "species", value: input.Species},
 		{label: "faction", value: input.Faction},
-		{label: "traits", value: strings.Join(input.Traits, ",")},
-		{label: "locationID", value: input.LocationID},
+		{label: "trait", value: input.Trait},
 	}
 
 	missing := make([]string, 0)
@@ -321,21 +308,6 @@ func (v *ConsoleView) requiredMissing(input mapper.NPCInput) []string {
 		}
 	}
 	return missing
-}
-
-func (v *ConsoleView) splitTraits(value string) []string {
-	if strings.TrimSpace(value) == "" {
-		return nil
-	}
-	parts := strings.Split(value, ",")
-	out := make([]string, 0, len(parts))
-	for _, part := range parts {
-		trimmed := strings.TrimSpace(part)
-		if trimmed != "" {
-			out = append(out, trimmed)
-		}
-	}
-	return out
 }
 
 func (v *ConsoleView) rollSubtypeFields(subtype string) (string, string, error) {

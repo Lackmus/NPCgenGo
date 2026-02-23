@@ -4,39 +4,20 @@ import (
 	"strings"
 
 	"github.com/lackmus/npcgengo/pkg/product/model"
+	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
 	"github.com/lackmus/npcgengo/pkg/product/service"
 )
 
-const defaultLocationID = "default"
-
 type NPCInput struct {
-	ID         string   `json:"id"`
-	Name       string   `json:"name"`
-	Type       string   `json:"type"`
-	Subtype    string   `json:"subtype"`
-	Species    string   `json:"species"`
-	Faction    string   `json:"faction"`
-	Traits     []string `json:"traits"`
-	Stats      string   `json:"stats"`
-	Items      string   `json:"items"`
-	LocationID string   `json:"locationID"`
-}
-
-// toTraitString normalizes trait array to comma-separated string
-func toTraitString(traits []string) string {
-	if len(traits) == 0 {
-		return ""
-	}
-	trimmed := make([]string, 0, len(traits))
-	for _, t := range traits {
-		if s := strings.TrimSpace(t); s != "" {
-			trimmed = append(trimmed, s)
-		}
-	}
-	if len(trimmed) == 0 {
-		return ""
-	}
-	return strings.Join(trimmed, ", ")
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Subtype string `json:"subtype"`
+	Species string `json:"species"`
+	Faction string `json:"faction"`
+	Trait   string `json:"trait"`
+	Stats   string `json:"stats"`
+	Items   string `json:"items"`
 }
 
 // ToModelNPC constructs a new NPC from user input using the builder pattern.
@@ -47,39 +28,40 @@ func ToModelNPC(input NPCInput, builder *service.NPCBuilder) (model.NPC, error) 
 // ToModelNPCWithOriginal builds an NPC from input, loading the original first if provided.
 // If original is nil, creates a new NPC. If original exists, loads it first then only applies changed fields.
 func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, original *model.NPC) (model.NPC, error) {
-	locationID := strings.TrimSpace(input.LocationID)
-	if locationID == "" {
-		locationID = defaultLocationID
-	}
-
 	// If editing an existing NPC, load it first to preserve unchanged fields
 	if original != nil {
 		builder = builder.WithNPC(*original)
 	}
 
-	// Set location
-	builder.GetNPC().LocationID = locationID
+	name := preserveOriginalValue(strings.TrimSpace(input.Name), original, cp.CompName)
+	npcType := preserveOriginalValue(strings.TrimSpace(input.Type), original, cp.CompType)
+	subtype := preserveOriginalValue(strings.TrimSpace(input.Subtype), original, cp.CompSubtype)
+	species := preserveOriginalValue(strings.TrimSpace(input.Species), original, cp.CompSpecies)
+	faction := preserveOriginalValue(strings.TrimSpace(input.Faction), original, cp.CompFaction)
+	trait := preserveOriginalValue(strings.TrimSpace(input.Trait), original, cp.CompTrait)
+	stats := preserveOriginalValue(strings.TrimSpace(input.Stats), original, cp.CompStats)
+	items := preserveOriginalValue(strings.TrimSpace(input.Items), original, cp.CompItems)
 
 	// Build using single chain - apply all input fields
-	npc, err := builder.
-		WithType(strings.TrimSpace(input.Type)).
-		WithSubtype(strings.TrimSpace(input.Subtype)).
-		WithSpecies(strings.TrimSpace(input.Species)).
-		WithFaction(strings.TrimSpace(input.Faction)).
-		WithName(strings.TrimSpace(input.Name)).
-		WithTrait(toTraitString(input.Traits)).
-		WithSubtypeStats(strings.TrimSpace(input.Stats)).
-		WithSubtypeEquipment(strings.TrimSpace(input.Items)).
+	return builder.
+		WithType(npcType).
+		WithSubtype(subtype).
+		WithSpecies(species).
+		WithFaction(faction).
+		WithName(name).
+		WithTrait(trait).
+		WithSubtypeStats(stats).
+		WithID(strings.TrimSpace(input.ID)).
+		WithSubtypeEquipment(items).
 		Build()
+}
 
-	if err != nil {
-		return model.NPC{}, err
+func preserveOriginalValue(inputValue string, original *model.NPC, component cp.CompEnum) string {
+	if inputValue != "" {
+		return inputValue
 	}
-
-	// Set ID if provided
-	if id := strings.TrimSpace(input.ID); id != "" {
-		npc.ID = id
+	if original == nil {
+		return ""
 	}
-
-	return npc, nil
+	return strings.TrimSpace(original.GetComponent(component))
 }

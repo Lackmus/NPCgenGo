@@ -29,10 +29,9 @@ function readForm() {
     subtype: document.getElementById("f_subtype").value,
     species: document.getElementById("f_species").value,
     faction: document.getElementById("f_faction").value,
-    traits: traitValue ? [traitValue] : [],
+    trait: traitValue,
     stats: statsValue === "—" ? "" : statsValue,
     items: itemsValue === "—" ? "" : itemsValue,
-    locationID: document.getElementById("f_location").value || "default",
   };
 }
 
@@ -43,8 +42,7 @@ function validatePayload(payload) {
     ["subtype", payload.subtype],
     ["species", payload.species],
     ["faction", payload.faction],
-    ["traits", Array.isArray(payload.traits) ? payload.traits.join(",") : payload.traits],
-    ["locationID", payload.locationID],
+    ["trait", payload.trait],
   ];
 
   const missing = checks
@@ -125,7 +123,6 @@ function renderDetails(npc) {
   setDetailValue("d_traits", compValue(npc, "6"));
   setDetailValue("d_stats", compValue(npc, "7"));
   setDetailValue("d_items", compValue(npc, "8"));
-  setDetailValue("d_location", npc?.LocationID || "");
 
   const editButton = document.getElementById("btnEdit");
   if (editButton) {
@@ -170,7 +167,6 @@ function startCreateNPC() {
   setSelectValue("f_traits", "");
   document.getElementById("f_stats").textContent = "—";
   document.getElementById("f_items").textContent = "—";
-  document.getElementById("f_location").value = "default";
   setRerollEnabled(false);
   renderDetails(null);
   showEditPanel();
@@ -233,7 +229,6 @@ function setForm(npc) {
   setSelectValue("f_traits", traitValue.split(",")[0]?.trim() || "");
   document.getElementById("f_stats").textContent = compValue(npc, "7") || "—";
   document.getElementById("f_items").textContent = compValue(npc, "8") || "—";
-  document.getElementById("f_location").value = npc?.LocationID || "default";
 
   const id = npc?.ID || "";
   const editButton = document.getElementById("btnEdit");
@@ -245,7 +240,6 @@ function setForm(npc) {
 function clearForm() {
   selectedNPC = null;
   document.getElementById("npcForm").reset();
-  document.getElementById("f_location").value = "default";
 	setSubtypeEnabled(false);
 	setSpeciesEnabled(false);
 	setRerollEnabled(false);

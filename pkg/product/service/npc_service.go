@@ -94,16 +94,6 @@ func (s *NPCService) GetAllNPC() []model.NPC {
 	return slices.Clone(npcList)
 }
 
-func (s *NPCService) GetNPCByLocation(locationID string) []model.NPC {
-	var result []model.NPC
-	for _, npc := range s.npcs {
-		if npc.LocationID == locationID {
-			result = append(result, npc)
-		}
-	}
-	return result
-}
-
 func (s *NPCService) GetNPCByID(id string) (model.NPC, error) {
 	npc, found := s.npcs[id]
 	if !found {
@@ -142,4 +132,3 @@ func (s *NPCService) PrintAllNPC() {
 		log.Printf("%+v", npc)
 	}
 }
-

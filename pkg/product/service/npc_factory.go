@@ -6,8 +6,8 @@ import (
 	m "github.com/lackmus/npcgengo/pkg/product/model"
 )
 
-func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier, locationID string) (m.NPC, error) {
-	builder := NewNPCBuilder(c, locationID)
+func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier) (m.NPC, error) {
+	builder := NewNPCBuilder(c)
 
 	if npctype == h.Random {
 		builder = builder.WithRandomType()

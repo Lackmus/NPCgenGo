@@ -26,9 +26,8 @@ type NPCBuilder struct {
 }
 
 // NewNPCBuilder creates a new NPCBuilder using the proper NPC constructor.
-func NewNPCBuilder(supplier *NPCCreationSupplier, locationID string) *NPCBuilder {
+func NewNPCBuilder(supplier *NPCCreationSupplier) *NPCBuilder {
 	npc := m.NewNPC()
-	npc.LocationID = locationID
 	return &NPCBuilder{
 		npc:      npc,
 		supplier: supplier,

@@ -10,7 +10,6 @@ import (
 
 type NPC struct {
 	ID         string
-	LocationID string
 	Components map[cp.CompEnum]string
 }
 

@@ -16,39 +16,35 @@ type NPCListController struct {
 	CreationSupplier *service.NPCCreationSupplier
 	validator        *service.NPCValidationService
 	observers        []shared.NPCObserver
-	LocationID       string
 	CreationOptions  *service.NPCCreationOptions
 }
 
-func NewNPCListController(creationSupplier *service.NPCCreationSupplier, npcService *service.NPCService, locationID string) *NPCListController {
+func NewNPCListController(creationSupplier *service.NPCCreationSupplier, npcService *service.NPCService) *NPCListController {
 	log.Println("Creating NPCListController...")
 	validator := service.NewNPCValidationService(creationSupplier.CreationDataService)
 	return &NPCListController{
 		NpcService:       npcService,
 		CreationSupplier: creationSupplier,
 		validator:        validator,
-		LocationID:       locationID,
 		CreationOptions:  creationSupplier.CreationOptions,
 		observers:        []shared.NPCObserver{},
 	}
 }
 
 func (c *NPCListController) GetNPCBuilder() *service.NPCBuilder {
-	return service.NewNPCBuilder(c.CreationSupplier, c.LocationID)
+	return service.NewNPCBuilder(c.CreationSupplier)
 }
 
 func (c *NPCListController) CreateRandomNPC() (model.NPC, error) {
-	npc, err := service.CreateNPCWithOptions(h.Random, h.Random, c.CreationSupplier, c.LocationID)
-	if err != nil {
-		log.Printf("Error creating NPC: %v", err)
-		return model.NPC{}, err
-	}
-	c.AddNpc(npc)
-	return npc, nil
+	return c.createAndAddNPC(h.Random, h.Random)
 }
 
 func (c *NPCListController) CreateNPC(npctype string, faction string) (model.NPC, error) {
-	npc, err := service.CreateNPCWithOptions(npctype, faction, c.CreationSupplier, c.LocationID)
+	return c.createAndAddNPC(npctype, faction)
+}
+
+func (c *NPCListController) createAndAddNPC(npctype string, faction string) (model.NPC, error) {
+	npc, err := service.CreateNPCWithOptions(npctype, faction, c.CreationSupplier)
 	if err != nil {
 		log.Printf("Error creating NPC: %v", err)
 		return model.NPC{}, err
@@ -72,7 +68,7 @@ func (c *NPCListController) RegisterObserver(o shared.NPCObserver) {
 }
 
 func (c *NPCListController) NotifyObservers() {
-	npcs := c.NpcService.GetNPCByLocation(c.LocationID)
+	npcs := c.NpcService.GetAllNPC()
 	for _, o := range c.observers {
 		o.Update(npcs)
 	}
@@ -81,7 +77,7 @@ func (c *NPCListController) NotifyObservers() {
 func (c *NPCListController) GetAllNpcs() []model.NPC {
 	npcs := c.NpcService.GetAllNPC()
 	if len(npcs) == 0 {
-		log.Println("No NPCs found in the current location.")
+		log.Println("No NPCs found.")
 	}
 	return npcs
 }
@@ -109,10 +105,6 @@ func (c *NPCListController) DeleteNPC(id string) {
 func (c *NPCListController) DeleteAllNPC() {
 	c.NpcService.DeleteAllNPC()
 	c.NotifyObservers()
-}
-
-func (c *NPCListController) GetNPCByLocation() []model.NPC {
-	return c.NpcService.GetNPCByLocation(c.LocationID)
 }
 
 func (c *NPCListController) CreateNPCGroup() {

@@ -7,10 +7,9 @@ export namespace main {
 	    subtype: string;
 	    species: string;
 	    faction: string;
-	    traits: string[];
+	    trait: string;
 	    stats: string;
 	    items: string;
-	    locationID: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new NPCInput(source);
@@ -24,10 +23,9 @@ export namespace main {
 	        this.subtype = source["subtype"];
 	        this.species = source["species"];
 	        this.faction = source["faction"];
-	        this.traits = source["traits"];
+	        this.trait = source["trait"];
 	        this.stats = source["stats"];
 	        this.items = source["items"];
-	        this.locationID = source["locationID"];
 	    }
 	}
 	export class SubtypeRoll {
@@ -51,7 +49,6 @@ export namespace model {
 	
 	export class NPC {
 	    ID: string;
-	    LocationID: string;
 	    Components: Record<number, string>;
 	
 	    static createFrom(source: any = {}) {
@@ -61,7 +58,6 @@ export namespace model {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.ID = source["ID"];
-	        this.LocationID = source["LocationID"];
 	        this.Components = source["Components"];
 	    }
 	}
