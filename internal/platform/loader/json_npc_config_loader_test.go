@@ -2,7 +2,6 @@ package loader
 
 import (
 	"context"
-	"strings"
 	"testing"
 )
 
@@ -81,17 +80,9 @@ func TestJSONNPCConfigLoader_LoadTraitMap(t *testing.T) {
 		t.Errorf("expected traits map to be non-empty, got empty map")
 	}
 
-	// Check for a specific trait ID (modify as needed). Trait GetName includes Opposes text,
-	// so match by prefix instead of map key.
-	found := false
-	for _, tr := range traits {
-		if strings.HasPrefix(tr.GetName(), "someTraitID") {
-			found = true
-			break
-		}
-	}
-	if !found {
-		t.Errorf("expected trait with name prefix 'someTraitID' to exist")
+	// Check for a specific trait ID
+	if _, exists := traits["someTraitID"]; !exists {
+		t.Errorf("expected trait ID 'someTraitID' to exist")
 	}
 }
 
@@ -122,7 +113,7 @@ func TestJSONNPCConfigLoader_LoadNameMap(t *testing.T) {
 	}
 }
 
-func TestJSONNPCConfigLoader_LoadNpcCivilianSubtypeMap(t *testing.T) {
+func TestJSONNPCConfigLoader_LoadNpcSubtypeMaps(t *testing.T) {
 	dir := t.TempDir()
 	if err := CreateSampleCreationData(dir); err != nil {
 		t.Fatal(err)
@@ -130,49 +121,33 @@ func TestJSONNPCConfigLoader_LoadNpcCivilianSubtypeMap(t *testing.T) {
 	loader := NewJSONNPCConfigLoader(dir)
 	ctx := context.Background()
 
-	// Test loading civilian subtype data
-	subtypes, err := loader.LoadNpcCivilianSubtypeMap(ctx)
+	// Test loading dynamic subtype data
+	subtypeMaps, err := loader.LoadNpcSubtypeMaps(ctx)
 
 	// Check if error occurred
 	if err != nil {
-		t.Errorf("unexpected error loading civilian subtypes: %v", err)
+		t.Errorf("unexpected error loading subtype maps: %v", err)
 	}
 
-	// Check if the civilian subtype map is not empty
-	if len(subtypes) == 0 {
-		t.Errorf("expected civilian subtypes map to be non-empty, got empty map")
+	if len(subtypeMaps) == 0 {
+		t.Errorf("expected subtype maps to be non-empty, got empty map")
 	}
 
-	// Check for a specific civilian subtype ID (modify as needed)
-	if _, exists := subtypes["someCivilianSubtypeID"]; !exists {
+	civilianSubtypes, ok := subtypeMaps["Civilian"]
+	if !ok {
+		t.Fatalf("expected subtype map for 'Civilian' to exist")
+	}
+
+	if _, exists := civilianSubtypes["someCivilianSubtypeID"]; !exists {
 		t.Errorf("expected civilian subtype ID 'someCivilianSubtypeID' to exist")
 	}
-}
 
-func TestJSONNPCConfigLoader_LoadNpcMilitarySubtypeMap(t *testing.T) {
-	dir := t.TempDir()
-	if err := CreateSampleCreationData(dir); err != nil {
-		t.Fatal(err)
-	}
-	loader := NewJSONNPCConfigLoader(dir)
-	ctx := context.Background()
-
-	// Test loading military subtype data
-	subtypes, err := loader.LoadNpcMilitarySubtypeMap(ctx)
-
-	// Check if error occurred
-	if err != nil {
-		t.Errorf("unexpected error loading military subtypes: %v", err)
+	militarySubtypes, ok := subtypeMaps["Military"]
+	if !ok {
+		t.Fatalf("expected subtype map for 'Military' to exist")
 	}
 
-	// Check if the military subtype map is not empty
-	if len(subtypes) == 0 {
-		t.Errorf("expected military subtypes map to be non-empty, got empty map")
-	}
-
-	// Check for a specific military subtype ID (modify as needed)
-	if _, exists := subtypes["someMilitarySubtypeID"]; !exists {
+	if _, exists := militarySubtypes["someMilitarySubtypeID"]; !exists {
 		t.Errorf("expected military subtype ID 'someMilitarySubtypeID' to exist")
 	}
 }
-

@@ -27,6 +27,10 @@ func (n *NPC) AddComponent(c cp.NPCComponent) {
 	n.Components[c.Name] = c.Value
 }
 
+func (n *NPC) SetComponent(name cp.CompEnum, value string) {
+	n.AddComponent(cp.NewComponent(name, value))
+}
+
 func (n *NPC) GetComponent(name cp.CompEnum) string {
 	if n.HasComponent(name) {
 		return n.Components[name]
@@ -65,3 +69,74 @@ func (n *NPC) HasComponent(name cp.CompEnum) bool {
 	return ok
 }
 
+func (n *NPC) Name() string {
+	return n.GetComponent(cp.CompName)
+}
+
+func (n *NPC) SetName(value string) {
+	n.SetComponent(cp.CompName, value)
+}
+
+func (n *NPC) Type() string {
+	return n.GetComponent(cp.CompType)
+}
+
+func (n *NPC) SetType(value string) {
+	n.SetComponent(cp.CompType, value)
+}
+
+func (n *NPC) Subtype() string {
+	return n.GetComponent(cp.CompSubtype)
+}
+
+func (n *NPC) SetSubtype(value string) {
+	n.SetComponent(cp.CompSubtype, value)
+}
+
+func (n *NPC) Species() string {
+	return n.GetComponent(cp.CompSpecies)
+}
+
+func (n *NPC) SetSpecies(value string) {
+	n.SetComponent(cp.CompSpecies, value)
+}
+
+func (n *NPC) Faction() string {
+	return n.GetComponent(cp.CompFaction)
+}
+
+func (n *NPC) SetFaction(value string) {
+	n.SetComponent(cp.CompFaction, value)
+}
+
+func (n *NPC) Trait() string {
+	return n.GetComponent(cp.CompTrait)
+}
+
+func (n *NPC) SetTrait(value string) {
+	n.SetComponent(cp.CompTrait, value)
+}
+
+func (n *NPC) Stats() string {
+	return n.GetComponent(cp.CompStats)
+}
+
+func (n *NPC) SetStats(value string) {
+	n.SetComponent(cp.CompStats, value)
+}
+
+func (n *NPC) Items() string {
+	return n.GetComponent(cp.CompItems)
+}
+
+func (n *NPC) SetItems(value string) {
+	n.SetComponent(cp.CompItems, value)
+}
+
+func (n *NPC) Description() string {
+	return n.GetComponent(cp.CompDescription)
+}
+
+func (n *NPC) SetDescription(value string) {
+	n.SetComponent(cp.CompDescription, value)
+}

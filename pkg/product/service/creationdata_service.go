@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"maps"
 	"slices"
+	"strings"
 
 	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
 	t "github.com/lackmus/npcgengo/pkg/product/model/npc_components/types"
@@ -15,14 +16,15 @@ import (
 // CreationDataService provides access to the creation data for NPCs.
 // It is used to load the data from the creation data file into maps.
 type CreationDataService struct {
-	factionMap                                            map[string]cp.Faction
-	speciesMap                                            map[string]cp.Species
-	traitMap                                              map[string]cp.Trait
-	nameMap                                               map[string]cp.NameData
-	npcTypeMap                                            map[string]t.NPCType
-	npcSubtypeMap, civilianSubtypeMap, militarySubtypeMap map[string]cp.NPCSubtype
-	speciesNameMap                                        map[string]string
-	npcSubtypeForTypeMap                                  map[string][]string
+	factionMap           map[string]cp.Faction
+	speciesMap           map[string]cp.Species
+	traitMap             map[string]cp.Trait
+	nameMap              map[string]cp.NameData
+	npcTypeMap           map[string]t.NPCType
+	npcSubtypeMap        map[string]cp.NPCSubtype
+	npcSubtypeByTypeMap  map[string]map[string]cp.NPCSubtype
+	speciesNameMap       map[string]string
+	npcSubtypeForTypeMap map[string][]string
 }
 
 func NewCreationDataService(ctx context.Context, npcConfigLoader shared.NPCConfigLoader) (*CreationDataService, error) {
@@ -30,10 +32,10 @@ func NewCreationDataService(ctx context.Context, npcConfigLoader shared.NPCConfi
 	if err := cds.initConfigLoaderMaps(ctx, npcConfigLoader); err != nil {
 		return nil, err
 	}
-	cds.npcTypeMap = cds.loadNpcTypeMap()
-	cds.npcSubtypeMap = cds.mergeNpcSubtypeMaps(cds.civilianSubtypeMap, cds.militarySubtypeMap)
+	cds.npcSubtypeMap = cds.mergeNpcSubtypeMaps(cds.npcSubtypeByTypeMap)
+	cds.npcSubtypeForTypeMap = cds.buildNpcSubtypeForTypeMap()
+	cds.npcTypeMap = cds.buildNpcTypeMap()
 	cds.speciesNameMap = cds.buildSpeciesNameMap()
-	cds.npcSubtypeForTypeMap = cds.buildNpcTypeNameMap()
 	return cds, nil
 }
 
@@ -54,21 +56,16 @@ func (c *CreationDataService) initConfigLoaderMaps(ctx context.Context, npcConfi
 	if err != nil {
 		return fmt.Errorf("failed to load name map: %w", err)
 	}
-	civilianSubtypeMap, err := npcConfigLoader.LoadNpcCivilianSubtypeMap(ctx)
+	npcSubtypeByTypeMap, err := npcConfigLoader.LoadNpcSubtypeMaps(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to load civilian subtype map: %w", err)
-	}
-	militarySubtypeMap, err := npcConfigLoader.LoadNpcMilitarySubtypeMap(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to load military subtype map: %w", err)
+		return fmt.Errorf("failed to load npc subtype maps: %w", err)
 	}
 
 	c.factionMap = factionMap
 	c.speciesMap = speciesMap
 	c.traitMap = traitMap
 	c.nameMap = nameMap
-	c.civilianSubtypeMap = civilianSubtypeMap
-	c.militarySubtypeMap = militarySubtypeMap
+	c.npcSubtypeByTypeMap = npcSubtypeByTypeMap
 	return nil
 }
 
@@ -82,23 +79,29 @@ func (c *CreationDataService) buildSpeciesNameMap() map[string]string {
 	return snm
 }
 
-func (c *CreationDataService) loadNpcTypeMap() map[string]t.NPCType {
-	return map[string]t.NPCType{
-		"Civilian": t.GetCivilianInstance().NPCType, // dereference the embedded field
-		"Military": t.GetMilitaryInstance().NPCType,
+func (c *CreationDataService) buildNpcTypeMap() map[string]t.NPCType {
+	typeMap := make(map[string]t.NPCType)
+	for typeName := range c.npcSubtypeForTypeMap {
+		typeMap[typeName] = t.NPCType{
+			Name:        typeName,
+			Description: fmt.Sprintf("A %s npc", strings.ToLower(typeName)),
+			Stats:       []string{"health", "speed", "strength"},
+		}
 	}
+	return typeMap
 }
 
-func (c *CreationDataService) buildNpcTypeNameMap() map[string][]string {
-	return map[string][]string{
-		"Civilian": slices.Collect(maps.Keys(c.civilianSubtypeMap)),
-		"Military": slices.Collect(maps.Keys(c.militarySubtypeMap)),
+func (c *CreationDataService) buildNpcSubtypeForTypeMap() map[string][]string {
+	result := make(map[string][]string)
+	for typeName, subtypeMap := range c.npcSubtypeByTypeMap {
+		result[typeName] = slices.Collect(maps.Keys(subtypeMap))
 	}
+	return result
 }
 
-func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeMaps ...map[string]cp.NPCSubtype) map[string]cp.NPCSubtype {
+func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeByTypeMap map[string]map[string]cp.NPCSubtype) map[string]cp.NPCSubtype {
 	merged := make(map[string]cp.NPCSubtype)
-	for _, subtypeMap := range subtypeMaps {
+	for _, subtypeMap := range subtypeByTypeMap {
 		for key, subtype := range subtypeMap {
 			merged[key] = subtype
 		}
@@ -177,4 +180,3 @@ func (c *CreationDataService) GetNpcTypeMap() map[string]t.NPCType {
 func (c *CreationDataService) GetSpeciesNameMap() map[string]string {
 	return maps.Clone(c.speciesNameMap)
 }
-

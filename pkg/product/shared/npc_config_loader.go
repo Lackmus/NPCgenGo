@@ -24,12 +24,7 @@ type NPCConfigLoader interface {
 	// It returns a map of name names to NameData objects and an error if the data cannot be loaded.
 	LoadNameMap(ctx context.Context) (map[string]c.NameData, error)
 
-	// LoadNpcTypeMap loads the NPC type map from the config file.
-	// It returns a map of NPC type names to NPCType objects and an error if the data cannot be loaded.
-	LoadNpcCivilianSubtypeMap(ctx context.Context) (map[string]c.NPCSubtype, error)
-
-	// LoadNpcMilitarySubtypeMap loads the NPC military subtype map from the config file.
-	// It returns a map of NPC military subtype names to NPCSubtype objects and an error if the data cannot be loaded.
-	LoadNpcMilitarySubtypeMap(ctx context.Context) (map[string]c.NPCSubtype, error)
+	// LoadNpcSubtypeMaps loads subtype maps grouped by NPC type.
+	// The returned map key is NPC type name and each value is a subtype map keyed by subtype name.
+	LoadNpcSubtypeMaps(ctx context.Context) (map[string]map[string]c.NPCSubtype, error)
 }
-

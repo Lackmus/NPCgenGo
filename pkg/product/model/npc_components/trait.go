@@ -8,10 +8,16 @@ type Trait struct {
 }
 
 func (t Trait) GetName() string {
+	return t.Name
+}
+
+func (t Trait) GetDisplayName() string {
+	if t.Opposes == "" {
+		return t.Name
+	}
 	return t.Name + "\nOpposes: " + t.Opposes
 }
 
 func (t Trait) GetDescription() string {
 	return t.Description
 }
-

@@ -18,16 +18,61 @@ type NPCEditController struct {
 	npcListController *NPCListController
 	observers         []shared.NPCEditObserver
 	errors            []error
+	saveHandlers      map[cp.CompEnum]func(string)
+	randomHandlers    map[cp.CompEnum]func() string
+	optionHandlers    map[cp.CompEnum]func() []string
 }
 
 func NewNPCEditController(creationSupplier *service.NPCCreationSupplier, controller *NPCListController, locationID string) *NPCEditController {
-	return &NPCEditController{
+	c := &NPCEditController{
 		creationSupplier:  creationSupplier,
 		rand:              creationSupplier.RandomizerService,
 		npcBuilder:        service.NewNPCBuilder(creationSupplier, locationID),
 		npcListController: controller,
 		observers:         []shared.NPCEditObserver{},
 		errors:            []error{},
+	}
+	c.initHandlers()
+	return c
+}
+
+func (c *NPCEditController) initHandlers() {
+	c.saveHandlers = map[cp.CompEnum]func(string){
+		cp.CompName:        func(value string) { c.npcBuilder.WithName(value) },
+		cp.CompFaction:     func(value string) { c.npcBuilder.WithFaction(value) },
+		cp.CompSpecies:     func(value string) { c.npcBuilder.WithSpecies(value) },
+		cp.CompType:        func(value string) { c.npcBuilder.WithType(value) },
+		cp.CompSubtype:     func(value string) { c.npcBuilder.WithSubtype(value) },
+		cp.CompTrait:       func(value string) { c.npcBuilder.WithTrait(value) },
+		cp.CompStats:       func(value string) { c.npcBuilder.WithSubtypeStats(value) },
+		cp.CompItems:       func(value string) { c.npcBuilder.WithSubtypeEquipment(value) },
+		cp.CompDescription: func(value string) { c.npcBuilder.WithDescription(value) },
+	}
+
+	c.randomHandlers = map[cp.CompEnum]func() string{
+		cp.CompName:        func() string { return c.npcBuilder.WithRandomName().GetNPC().Name() },
+		cp.CompFaction:     func() string { return c.npcBuilder.WithRandomFaction().GetNPC().Faction() },
+		cp.CompSpecies:     func() string { return c.npcBuilder.WithRandomSpecies().GetNPC().Species() },
+		cp.CompType:        func() string { return c.npcBuilder.WithRandomType().GetNPC().Type() },
+		cp.CompSubtype:     func() string { return c.npcBuilder.WithRandomSubtype().GetNPC().Subtype() },
+		cp.CompTrait:       func() string { return c.npcBuilder.WithRandomTrait().GetNPC().Trait() },
+		cp.CompStats:       func() string { return c.npcBuilder.WithRandomSubtypeStats().GetNPC().Stats() },
+		cp.CompItems:       func() string { return c.npcBuilder.WithRandomSubtypeEquipment().GetNPC().Items() },
+		cp.CompDescription: func() string { return c.npcBuilder.WithRandomDescription().GetNPC().Description() },
+	}
+
+	c.optionHandlers = map[cp.CompEnum]func() []string{
+		cp.CompType:    func() []string { return c.creationSupplier.CreationOptions.NpcTypes },
+		cp.CompFaction: func() []string { return c.creationSupplier.CreationOptions.Factions },
+		cp.CompSpecies: func() []string { return c.creationSupplier.CreationOptions.Species },
+		cp.CompTrait:   func() []string { return c.creationSupplier.CreationOptions.Traits },
+		cp.CompSubtype: func() []string {
+			npcType := c.npcBuilder.GetNPC().Type()
+			if subtypes, ok := c.creationSupplier.CreationOptions.NpcSubtypeForTypeMap[npcType]; ok {
+				return subtypes
+			}
+			return nil
+		},
 	}
 }
 
@@ -74,29 +119,12 @@ func (c *NPCEditController) SaveNPC() {
 }
 
 func (c *NPCEditController) SaveField(field cp.CompEnum, value string) error {
-	switch field {
-	case cp.CompName:
-		c.npcBuilder.WithName(value)
-	case cp.CompFaction:
-		c.npcBuilder.WithFaction(value)
-	case cp.CompSpecies:
-		c.npcBuilder.WithSpecies(value)
-	case cp.CompType:
-		c.npcBuilder.WithType(value)
-	case cp.CompSubtype:
-		c.npcBuilder.WithSubtype(value)
-	case cp.CompTrait:
-		c.npcBuilder.WithTrait(value)
-	case cp.CompStats:
-		c.npcBuilder.WithSubtypeStats(value)
-	case cp.CompItems:
-		c.npcBuilder.WithSubtypeEquipment(value)
-	case cp.CompDescription:
-		c.npcBuilder.WithDescription(value)
-	default:
+	handler, ok := c.saveHandlers[field]
+	if !ok {
 		log.Printf("SaveField: unrecognized field %v (%s)", field, field.String())
 		return nil
 	}
+	handler(value)
 	if err := c.handleErrors("SaveField", field.String()); err != nil {
 		return err
 	}
@@ -105,30 +133,12 @@ func (c *NPCEditController) SaveField(field cp.CompEnum, value string) error {
 }
 
 func (c *NPCEditController) RandomizeField(field cp.CompEnum) string {
-	var value string
-	switch field {
-	case cp.CompName:
-		value = c.npcBuilder.WithRandomName().GetNPC().GetComponent(cp.CompName)
-	case cp.CompFaction:
-		value = c.npcBuilder.WithRandomFaction().GetNPC().GetComponent(cp.CompFaction)
-	case cp.CompSpecies:
-		value = c.npcBuilder.WithRandomSpecies().GetNPC().GetComponent(cp.CompSpecies)
-	case cp.CompType:
-		value = c.npcBuilder.WithRandomType().GetNPC().GetComponent(cp.CompType)
-	case cp.CompSubtype:
-		value = c.npcBuilder.WithRandomSubtype().GetNPC().GetComponent(cp.CompSubtype)
-	case cp.CompTrait:
-		value = c.npcBuilder.WithRandomTrait().GetNPC().GetComponent(cp.CompTrait)
-	case cp.CompStats:
-		value = c.npcBuilder.WithRandomSubtypeStats().GetNPC().GetComponent(cp.CompStats)
-	case cp.CompItems:
-		value = c.npcBuilder.WithRandomSubtypeEquipment().GetNPC().GetComponent(cp.CompItems)
-	case cp.CompDescription:
-		value = c.npcBuilder.WithRandomDescription().GetNPC().GetComponent(cp.CompDescription)
-	default:
+	handler, ok := c.randomHandlers[field]
+	if !ok {
 		log.Printf("RandomizeField: unrecognized field %v (%s)", field, field.String())
 		return ""
 	}
+	value := handler()
 
 	c.handleErrors("RandomizeField", field.String())
 
@@ -136,25 +146,11 @@ func (c *NPCEditController) RandomizeField(field cp.CompEnum) string {
 }
 
 func (c *NPCEditController) GetFieldOptions(field cp.CompEnum) []string {
-	options := c.creationSupplier.CreationOptions
-	switch field {
-	case cp.CompType:
-		return options.NpcTypes
-	case cp.CompFaction:
-		return options.Factions
-	case cp.CompSpecies:
-		return options.Species
-	case cp.CompSubtype:
-		npcType := c.npcBuilder.GetNPCType()
-		if subtypes, ok := options.NpcSubtypeForTypeMap[npcType]; ok {
-			return subtypes
-		}
-		return nil
-	case cp.CompTrait:
-		return options.Traits
-	default:
+	handler, ok := c.optionHandlers[field]
+	if !ok {
 		return nil
 	}
+	return handler()
 }
 
 func (c *NPCEditController) handleErrors(context string, field string) error {
