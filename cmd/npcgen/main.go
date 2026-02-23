@@ -24,7 +24,8 @@ func main() {
 		}
 	}
 
-	npcGen, err := npcgengo.NewNPCGenWithDataDir(*dataDir)
+	//npcGen, err := npcgengo.NewNPCGenWithDataDir(*dataDir)
+	npcGen, err := npcgengo.NewNPCGen()
 	if err != nil {
 		log.Fatal("failed to initialize NPCGen:", err)
 	}
