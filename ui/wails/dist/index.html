@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NPCGen Desktop</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main>
+    <h1>NPCGen — Wails UI</h1>
+
+    <div class="actions">
+      <button id="btnGenerate">Generate NPC</button>
+      <button id="btnRefresh">Refresh List</button>
+      <button id="btnClear">Delete All</button>
+    </div>
+
+    <div class="columns">
+      <section class="left">
+        <h2>Stored NPCs</h2>
+        <div id="list"></div>
+      </section>
+
+      <section class="right">
+        <h2>NPC Details / Edit</h2>
+        <form id="npcForm">
+          <div><label>ID <input id="f_id" name="id" readonly /></label></div>
+          <div><label>Name <input id="f_name" name="name" /></label></div>
+          <div><label>Type <input id="f_type" name="type" /></label></div>
+          <div><label>Subtype <input id="f_subtype" name="subtype" /></label></div>
+          <div><label>Species <input id="f_species" name="species" /></label></div>
+          <div><label>Faction <input id="f_faction" name="faction" /></label></div>
+          <div><label>Traits (comma) <input id="f_traits" name="traits" /></label></div>
+          <div><label>Stats <input id="f_stats" name="stats" /></label></div>
+          <div><label>Items <input id="f_items" name="items" /></label></div>
+          <div><label>Description <input id="f_description" name="description" /></label></div>
+          <div><label>LocationID <input id="f_location" name="location" value="default" /></label></div>
+
+          <div class="actions">
+            <button type="button" id="btnSave">Save</button>
+            <button type="button" id="btnCreate">Create New</button>
+            <button type="button" id="btnClose">Close</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

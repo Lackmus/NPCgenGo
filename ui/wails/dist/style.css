@@ -1,0 +1,80 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 16px;
+  align-items: start;
+}
+
+.left,
+.right {
+  border: 1px solid #80808044;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.npc {
+  border: 1px solid #80808044;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.npc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.npc-name {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+form {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  display: grid;
+  gap: 4px;
+}
+
+input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+}
+
+small.error {
+  color: #d32f2f;
+}
+
+@media (max-width: 900px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}

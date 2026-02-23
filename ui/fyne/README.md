@@ -1,11 +1,16 @@
-# Fyne UI (scaffold)
+# Desktop UI (Wails)
 
-This folder is reserved for the desktop UI implementation using Fyne.
+Desktop UI is implemented with Wails.
 
-Suggested structure:
-- `app.go` for app bootstrap
-- `windows/` for window composition
-- `widgets/` for reusable controls
+Backend entrypoint:
+- `cmd/npcgen-wails`
+
+Frontend assets:
+- `ui/wails/dist`
+- Build guide: `ui/wails/README.md`
 
 Run entrypoint:
-- `go run ./cmd/npcgen-fyne`
+- `go run ./cmd/npcgen-wails`
+
+Optional data directory override:
+- `go run ./cmd/npcgen-wails --data-dir "G:\\My Drive\\RootProject\\NPCgenGo\\data"`

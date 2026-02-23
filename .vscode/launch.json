@@ -4,7 +4,18 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
+        {
+            "name": "NPCGen Wails: Go Run (desktop,production)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/npcgen-wails",
+            "cwd": "${workspaceFolder}/cmd/npcgen-wails",
+            "buildFlags": "-tags=desktop,production",
+            "env": {
+                "NPCGEN_DATA": "${workspaceFolder}/data"
+            }
+        }
 
     ]
 }

@@ -11,18 +11,19 @@ Core layout:
 - `pkg/` â€” reusable core application logic (`pkg/product/...`)
 - `internal/` â€” module-private implementation details (`internal/platform/...`)
 
-`cmd/` is entrypoint-only (`cmd/npcgen-web/main.go`, `cmd/npcgen-console/main.go`, `cmd/npcgen-fyne/main.go`). App wiring lives in `internal/app/`.
+`cmd/` is entrypoint-only (`cmd/npcgen-web/main.go`, `cmd/npcgen-console/main.go`, `cmd/npcgen-wails/main.go`). App wiring lives in `internal/app/`.
 
 UI and runtime data:
 - `data/` â€” runtime JSON creation data and local NPC database files
 - `ui/web/` â€” browser UI assets
 - `ui/console/` â€” console UI assets (Go package)
-- `ui/fyne/` â€” desktop UI (Fyne) area
+- `ui/fyne/` â€” desktop UI notes
+- `ui/wails/` â€” Wails frontend assets for desktop app
 
 Entrypoints:
 - `cmd/npcgen-web/main.go` â€” web/API host
 - `cmd/npcgen-console/main.go` â€” console host
-- `cmd/npcgen-fyne/main.go` â€” desktop UI host scaffold
+- `cmd/npcgen-wails/main.go` â€” desktop UI host (Wails)
 
 ## Architecture walkthrough
 
@@ -51,8 +52,13 @@ Priority order for data directory resolution (implemented):
 
 - `--data-dir <path>` CLI flag (highest precedence)
 - `NPCGEN_DATA` environment variable
-- `data/` directory located next to the running executable (useful for installed binaries)
-- `./data` in the current working directory (developer-friendly default)
+- Auto-discovery by searching upward from the current working directory for `data/creation_data/factiondata`
+- If still not found, auto-discovery by searching upward from the executable directory
+- Final fallback: literal `data` relative path
+
+Examples:
+- Running `wails build` from `cmd/npcgen-wails` still resolves project-root `data/` automatically.
+- Passing `--data-dir` to either a project root or an explicit `.../data` path is supported.
 
 ## Run modes
 
@@ -60,7 +66,7 @@ Priority order for data directory resolution (implemented):
 |---|---|---|---|
 | Web/API host | `cmd/npcgen-web/main.go` | `go run ./cmd/npcgen-web --data-dir "G:\My Drive\RootProject\NPCgenGo\data"` | Serves API and web UI at `/ui/` |
 | Console UI | `cmd/npcgen-console/main.go` | `go run ./cmd/npcgen-console --data-dir "G:\My Drive\RootProject\NPCgenGo\data"` | Interactive terminal UI |
-| Fyne UI (scaffold) | `cmd/npcgen-fyne/main.go` | `go run ./cmd/npcgen-fyne` | Placeholder desktop entrypoint |
+| Desktop UI (Wails) | `cmd/npcgen-wails/main.go` | `go run ./cmd/npcgen-wails --data-dir "G:\\My Drive\\RootProject\\NPCgenGo\\data"` | Wails desktop host |
 
 Running the example host (same wiring):
 ```powershell
