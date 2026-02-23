@@ -99,6 +99,14 @@ func (c *CreationDataService) buildNpcSubtypeForTypeMap() map[string][]string {
 	return result
 }
 
+func (c *CreationDataService) buildSpeciesForFactionMap() map[string][]string {
+	result := make(map[string][]string)
+	for factionName, faction := range c.factionMap {
+		result[factionName] = faction.SpeciesList
+	}
+	return result
+}
+
 func (c *CreationDataService) mergeNpcSubtypeMaps(subtypeByTypeMap map[string]map[string]cp.NPCSubtype) map[string]cp.NPCSubtype {
 	merged := make(map[string]cp.NPCSubtype)
 	for _, subtypeMap := range subtypeByTypeMap {
@@ -179,4 +187,8 @@ func (c *CreationDataService) GetNpcTypeMap() map[string]t.NPCType {
 
 func (c *CreationDataService) GetSpeciesNameMap() map[string]string {
 	return maps.Clone(c.speciesNameMap)
+}
+
+func (c *CreationDataService) GetSpeciesForFactionMap() map[string][]string {
+	return c.buildSpeciesForFactionMap()
 }

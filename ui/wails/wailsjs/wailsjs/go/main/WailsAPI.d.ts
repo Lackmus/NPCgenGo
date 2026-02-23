@@ -11,8 +11,14 @@ export function DeleteNPC(arg1:string):Promise<void>;
 
 export function GenerateNPC():Promise<model.NPC>;
 
+export function GetCreationOptions():Promise<any>;
+
 export function GetNPC(arg1:string):Promise<model.NPC>;
 
 export function ListNPCs():Promise<Array<model.NPC>>;
+
+export function RollSubtypeFields(arg1:string):Promise<any>;
+
+export function RollSpeciesName(arg1:string):Promise<string>;
 
 export function SaveNPC(arg1:main.NPCInput):Promise<model.NPC>;

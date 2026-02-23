@@ -47,11 +47,6 @@ func (c *NPCListController) CreateNPC(npctype string, faction string) (model.NPC
 	return npc, nil
 }
 
-func (c *NPCListController) InitEditController() *NPCEditController {
-	log.Println("Initializing edit controller...")
-	return NewNPCEditController(c.CreationSupplier, c, c.LocationID)
-}
-
 func (c *NPCListController) InitView(view shared.NPCListViewer) {
 	log.Println("Initializing view...")
 	c.RegisterObserver(view)

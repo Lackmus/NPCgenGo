@@ -18,12 +18,24 @@ export function GenerateNPC() {
   return window['go']['main']['WailsAPI']['GenerateNPC']();
 }
 
+export function GetCreationOptions() {
+  return window['go']['main']['WailsAPI']['GetCreationOptions']();
+}
+
 export function GetNPC(arg1) {
   return window['go']['main']['WailsAPI']['GetNPC'](arg1);
 }
 
 export function ListNPCs() {
   return window['go']['main']['WailsAPI']['ListNPCs']();
+}
+
+export function RollSubtypeFields(arg1) {
+  return window['go']['main']['WailsAPI']['RollSubtypeFields'](arg1);
+}
+
+export function RollSpeciesName(arg1) {
+  return window['go']['main']['WailsAPI']['RollSpeciesName'](arg1);
 }
 
 export function SaveNPC(arg1) {

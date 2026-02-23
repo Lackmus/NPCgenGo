@@ -1,0 +1,15 @@
+{
+  "ID": "0",
+  "LocationID": "default",
+  "Components": {
+    "1": "Willow Shadowfang",
+    "2": "military",
+    "3": "Soldier",
+    "4": "Wolf",
+    "5": "Neutral",
+    "6": "Wise",
+    "7": "combat: 3\nstrength: 8\ndefense: 5",
+    "8": "weapons: Warhammer\narmor: Brigandine\naccessories: Gauntlets",
+    "9": "A soldier who protects the kingdom from threats.\nSPECIES_DESCRIPTION\nMakes decisions based on deep understanding and experience."
+  }
+}

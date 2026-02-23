@@ -6,11 +6,13 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/lackmus/npcgengo/internal/app/controllers"
+	"github.com/lackmus/npcgengo/internal/app/mapper"
 	"github.com/lackmus/npcgengo/pkg/product/model"
-	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
+	"github.com/lackmus/npcgengo/pkg/product/service"
 )
 
 // Simple HTTP server that serves the web UI and exposes API endpoints
@@ -22,11 +24,15 @@ import (
 
 type Server struct {
 	npcController *controllers.NPCListController
+	validator     *service.NPCValidationService
 	httpServer    *http.Server
 }
 
 func NewServer(nc *controllers.NPCListController) *Server {
-	return &Server{npcController: nc}
+	return &Server{
+		npcController: nc,
+		validator:     service.NewNPCValidationService(nc.CreationSupplier.CreationDataService),
+	}
 }
 
 // Routes registers HTTP handlers for the server. It is called by main() to set up the server before starting it.
@@ -38,7 +44,10 @@ func (s *Server) Routes() {
 
 	http.HandleFunc("/api/npcs", s.npcsHandler)
 	http.HandleFunc("/api/npcs/", s.npcByIDHandler)
+	http.HandleFunc("/api/species/", s.speciesNameRollHandler)
+	http.HandleFunc("/api/subtypes/", s.subtypeRollHandler)
 	http.HandleFunc("/api/generate", s.generateHandler)
+	http.HandleFunc("/api/options", s.optionsHandler)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("server failed: %v", err)
 	}
@@ -53,7 +62,10 @@ func (s *Server) Start(addr string) error {
 
 	mux.HandleFunc("/api/npcs", s.npcsHandler)
 	mux.HandleFunc("/api/npcs/", s.npcByIDHandler)
+	mux.HandleFunc("/api/species/", s.speciesNameRollHandler)
+	mux.HandleFunc("/api/subtypes/", s.subtypeRollHandler)
 	mux.HandleFunc("/api/generate", s.generateHandler)
+	mux.HandleFunc("/api/options", s.optionsHandler)
 
 	s.httpServer = &http.Server{
 		Addr:    addr,
@@ -83,6 +95,10 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		m, err := parseNPCFromBody(r.Body)
 		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if err := s.validator.ValidateNPC(m); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -120,6 +136,10 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		if err := s.validator.ValidateNPC(m); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		s.npcController.UpdateNpc(m)
 		w.WriteHeader(http.StatusNoContent)
 	default:
@@ -144,48 +164,114 @@ func (s *Server) generateHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(npc)
 }
 
+func (s *Server) optionsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.npcController.CreationSupplier.CreationOptions)
+}
+
+type subtypeRollResponse struct {
+	Stats       string `json:"stats"`
+	Items       string `json:"items"`
+	Description string `json:"description"`
+}
+
+type speciesNameRollResponse struct {
+	Name string `json:"name"`
+}
+
+func (s *Server) subtypeRollHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/api/subtypes/")
+	if !strings.HasSuffix(path, "/roll") {
+		http.Error(w, "invalid path", http.StatusBadRequest)
+		return
+	}
+	rawSubtype := strings.TrimSuffix(path, "/roll")
+	rawSubtype = strings.TrimSuffix(rawSubtype, "/")
+	if rawSubtype == "" {
+		http.Error(w, "missing subtype", http.StatusBadRequest)
+		return
+	}
+
+	subtype, err := url.PathUnescape(rawSubtype)
+	if err != nil {
+		http.Error(w, "invalid subtype", http.StatusBadRequest)
+		return
+	}
+
+	subtypeData, err := s.npcController.CreationSupplier.CreationDataService.GetNpcSubtypeData(subtype)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(subtypeRollResponse{
+		Stats:       subtypeData.GetStats(),
+		Items:       subtypeData.GetEquipment(),
+		Description: subtypeData.GetDescription(),
+	})
+}
+
+func (s *Server) speciesNameRollHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/api/species/")
+	if !strings.HasSuffix(path, "/name") {
+		http.Error(w, "invalid path", http.StatusBadRequest)
+		return
+	}
+	rawSpecies := strings.TrimSuffix(path, "/name")
+	rawSpecies = strings.TrimSuffix(rawSpecies, "/")
+	if rawSpecies == "" {
+		http.Error(w, "missing species", http.StatusBadRequest)
+		return
+	}
+
+	species, err := url.PathUnescape(rawSpecies)
+	if err != nil {
+		http.Error(w, "invalid species", http.StatusBadRequest)
+		return
+	}
+
+	speciesData, err := s.npcController.CreationSupplier.CreationDataService.GetSpeciesData(species)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	nameData, err := s.npcController.CreationSupplier.CreationDataService.GetNameData(speciesData.NameSource)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(speciesNameRollResponse{Name: nameData.GenerateName()})
+}
+
 // Helper function to parse NPC data from request body and convert it to model.NPC struct.
 // Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Stats, Items, Description, LocationID, and Traits (array of strings).
 func parseNPCFromBody(body io.ReadCloser) (model.NPC, error) {
 	defer body.Close()
-	var p struct {
-		ID, Name, Type, Subtype, Species, Faction, Stats, Items, Description, LocationID string
-		Traits                                                                           []string `json:"traits"`
-	}
+	var p mapper.NPCInput
 	if err := json.NewDecoder(body).Decode(&p); err != nil {
 		return model.NPC{}, err
 	}
 
-	var m model.NPC
-	m.ID = p.ID
-	m.LocationID = p.LocationID
-	m.Components = make(map[cp.CompEnum]string)
-	if p.Name != "" {
-		m.Components[cp.CompName] = p.Name
-	}
-	if p.Type != "" {
-		m.Components[cp.CompType] = p.Type
-	}
-	if p.Subtype != "" {
-		m.Components[cp.CompSubtype] = p.Subtype
-	}
-	if p.Species != "" {
-		m.Components[cp.CompSpecies] = p.Species
-	}
-	if p.Faction != "" {
-		m.Components[cp.CompFaction] = p.Faction
-	}
-	if len(p.Traits) > 0 {
-		m.Components[cp.CompTrait] = strings.Join(p.Traits, ", ")
-	}
-	if p.Stats != "" {
-		m.Components[cp.CompStats] = p.Stats
-	}
-	if p.Items != "" {
-		m.Components[cp.CompItems] = p.Items
-	}
-	if p.Description != "" {
-		m.Components[cp.CompDescription] = p.Description
-	}
-	return m, nil
+	return mapper.ToModelNPC(p), nil
 }
