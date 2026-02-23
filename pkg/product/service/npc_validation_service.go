@@ -21,39 +21,44 @@ func (v *NPCValidationService) ValidateNPC(npc model.NPC) error {
 		return nil
 	}
 
-	npcType := strings.TrimSpace(npc.GetComponent(cp.CompType))
+	trimmedComponent := func(component cp.CompEnum) string {
+		return strings.TrimSpace(npc.GetComponent(component))
+	}
+
+	npcType := trimmedComponent(cp.CompType)
 	if npcType != "" {
 		if _, err := v.creationData.GetNpcTypeData(npcType); err != nil {
 			return fmt.Errorf("invalid type %q: %w", npcType, err)
 		}
 	}
 
-	subtype := strings.TrimSpace(npc.GetComponent(cp.CompSubtype))
+	subtype := trimmedComponent(cp.CompSubtype)
 	if subtype != "" {
 		subtypeData, err := v.creationData.GetNpcSubtypeData(subtype)
 		if err != nil {
 			return fmt.Errorf("invalid subtype %q: %w", subtype, err)
 		}
-		if npcType != "" && strings.TrimSpace(subtypeData.NpcTypeName) != "" && subtypeData.NpcTypeName != npcType {
+		subtypeTypeName := strings.TrimSpace(subtypeData.NpcTypeName)
+		if npcType != "" && subtypeTypeName != "" && subtypeTypeName != npcType {
 			return fmt.Errorf("subtype %q does not belong to type %q", subtype, npcType)
 		}
 	}
 
-	species := strings.TrimSpace(npc.GetComponent(cp.CompSpecies))
+	species := trimmedComponent(cp.CompSpecies)
 	if species != "" {
 		if _, err := v.creationData.GetSpeciesData(species); err != nil {
 			return fmt.Errorf("invalid species %q: %w", species, err)
 		}
 	}
 
-	faction := strings.TrimSpace(npc.GetComponent(cp.CompFaction))
+	faction := trimmedComponent(cp.CompFaction)
 	if faction != "" {
 		if _, err := v.creationData.GetFactionData(faction); err != nil {
 			return fmt.Errorf("invalid faction %q: %w", faction, err)
 		}
 	}
 
-	traitValue := strings.TrimSpace(npc.GetComponent(cp.CompTrait))
+	traitValue := trimmedComponent(cp.CompTrait)
 	if traitValue != "" {
 		for _, rawTrait := range strings.Split(traitValue, ",") {
 			trait := strings.TrimSpace(rawTrait)

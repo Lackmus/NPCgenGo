@@ -20,6 +20,41 @@ type NPCInput struct {
 	Items   string `json:"items"`
 }
 
+func (input NPCInput) normalized() NPCInput {
+	input.ID = strings.TrimSpace(input.ID)
+	input.Name = strings.TrimSpace(input.Name)
+	input.Type = strings.TrimSpace(input.Type)
+	input.Subtype = strings.TrimSpace(input.Subtype)
+	input.Species = strings.TrimSpace(input.Species)
+	input.Faction = strings.TrimSpace(input.Faction)
+	input.Trait = strings.TrimSpace(input.Trait)
+	input.Stats = strings.TrimSpace(input.Stats)
+	input.Items = strings.TrimSpace(input.Items)
+	return input
+}
+
+func ToNPCInput(npc model.NPC) NPCInput {
+	return NPCInput{
+		ID:      npc.ID,
+		Name:    npc.Name(),
+		Type:    npc.Type(),
+		Subtype: npc.Subtype(),
+		Species: npc.Species(),
+		Faction: npc.Faction(),
+		Trait:   npc.Trait(),
+		Stats:   npc.Stats(),
+		Items:   npc.Items(),
+	}.normalized()
+}
+
+func ToNPCInputs(npcs []model.NPC) []NPCInput {
+	out := make([]NPCInput, 0, len(npcs))
+	for _, npc := range npcs {
+		out = append(out, ToNPCInput(npc))
+	}
+	return out
+}
+
 // ToModelNPC constructs a new NPC from user input using the builder pattern.
 func ToModelNPC(input NPCInput, builder *service.NPCBuilder) (model.NPC, error) {
 	return ToModelNPCWithOriginal(input, builder, nil)
@@ -33,14 +68,16 @@ func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, origina
 		builder = builder.WithNPC(*original)
 	}
 
-	name := preserveOriginalValue(strings.TrimSpace(input.Name), original, cp.CompName)
-	npcType := preserveOriginalValue(strings.TrimSpace(input.Type), original, cp.CompType)
-	subtype := preserveOriginalValue(strings.TrimSpace(input.Subtype), original, cp.CompSubtype)
-	species := preserveOriginalValue(strings.TrimSpace(input.Species), original, cp.CompSpecies)
-	faction := preserveOriginalValue(strings.TrimSpace(input.Faction), original, cp.CompFaction)
-	trait := preserveOriginalValue(strings.TrimSpace(input.Trait), original, cp.CompTrait)
-	stats := preserveOriginalValue(strings.TrimSpace(input.Stats), original, cp.CompStats)
-	items := preserveOriginalValue(strings.TrimSpace(input.Items), original, cp.CompItems)
+	input = input.normalized()
+
+	name := preserveOriginalValue(input.Name, original, cp.CompName)
+	npcType := preserveOriginalValue(input.Type, original, cp.CompType)
+	subtype := preserveOriginalValue(input.Subtype, original, cp.CompSubtype)
+	species := preserveOriginalValue(input.Species, original, cp.CompSpecies)
+	faction := preserveOriginalValue(input.Faction, original, cp.CompFaction)
+	trait := preserveOriginalValue(input.Trait, original, cp.CompTrait)
+	stats := preserveOriginalValue(input.Stats, original, cp.CompStats)
+	items := preserveOriginalValue(input.Items, original, cp.CompItems)
 
 	// Build using single chain - apply all input fields
 	return builder.
@@ -51,7 +88,7 @@ func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, origina
 		WithName(name).
 		WithTrait(trait).
 		WithSubtypeStats(stats).
-		WithID(strings.TrimSpace(input.ID)).
+		WithID(input.ID).
 		WithSubtypeEquipment(items).
 		Build()
 }

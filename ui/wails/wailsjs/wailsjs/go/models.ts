@@ -1,5 +1,24 @@
 export namespace main {
 	
+	export class SubtypeRoll {
+	    stats: string;
+	    items: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SubtypeRoll(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.stats = source["stats"];
+	        this.items = source["items"];
+	    }
+	}
+
+}
+
+export namespace mapper {
+	
 	export class NPCInput {
 	    id: string;
 	    name: string;
@@ -26,39 +45,6 @@ export namespace main {
 	        this.trait = source["trait"];
 	        this.stats = source["stats"];
 	        this.items = source["items"];
-	    }
-	}
-	export class SubtypeRoll {
-	    stats: string;
-	    items: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new SubtypeRoll(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.stats = source["stats"];
-	        this.items = source["items"];
-	    }
-	}
-
-}
-
-export namespace model {
-	
-	export class NPC {
-	    ID: string;
-	    Components: Record<number, string>;
-	
-	    static createFrom(source: any = {}) {
-	        return new NPC(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.ID = source["ID"];
-	        this.Components = source["Components"];
 	    }
 	}
 

@@ -203,7 +203,8 @@ func (v *ConsoleView) promptText(reader *bufio.Reader, label string, current str
 }
 
 func (v *ConsoleView) promptRaw(reader *bufio.Reader, label string, current string) string {
-	if strings.TrimSpace(current) != "" {
+	current = strings.TrimSpace(current)
+	if current != "" {
 		fmt.Printf("%s [%s]: ", label, current)
 	} else {
 		fmt.Printf("%s: ", label)
@@ -211,7 +212,7 @@ func (v *ConsoleView) promptRaw(reader *bufio.Reader, label string, current stri
 	line, _ := reader.ReadString('\n')
 	line = strings.TrimSpace(line)
 	if line == "" {
-		return strings.TrimSpace(current)
+		return current
 	}
 	return line
 }

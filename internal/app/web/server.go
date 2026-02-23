@@ -37,6 +37,7 @@ func NewServer(nc *controllers.NPCListController) *Server {
 func (s *Server) Start(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir("ui/web"))))
+	mux.Handle("/ui-shared/", http.StripPrefix("/ui-shared/", http.FileServer(http.Dir("ui/shared"))))
 
 	mux.HandleFunc("/api/npcs", s.npcsHandler)
 	mux.HandleFunc("/api/npcs/", s.npcByIDHandler)
@@ -69,7 +70,7 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		npcs := s.npcController.GetAllNpcs()
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(npcs)
+		json.NewEncoder(w).Encode(mapper.ToNPCInputs(npcs))
 	case http.MethodPost:
 		m, err := parseNPCFromBody(r.Body, s.npcController)
 		if err != nil {
@@ -81,7 +82,9 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		s.npcController.AddNpc(m)
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(mapper.ToNPCInput(m))
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -104,7 +107,7 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(npc)
+		json.NewEncoder(w).Encode(mapper.ToNPCInput(npc))
 	case http.MethodDelete:
 		s.npcController.DeleteNPC(id)
 		w.WriteHeader(http.StatusNoContent)
@@ -143,7 +146,7 @@ func (s *Server) generateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(npc)
+	json.NewEncoder(w).Encode(mapper.ToNPCInput(npc))
 }
 
 func (s *Server) optionsHandler(w http.ResponseWriter, r *http.Request) {
