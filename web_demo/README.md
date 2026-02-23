@@ -5,9 +5,9 @@ How to run:
 
 This demo now uses your Go backend API for NPC storage. Make sure your Go server serves static files from the project root (so `/web_demo` is accessible) and exposes the following endpoints:
 
-- `GET  /api/npcs`        — return list of stored NPCs (JSON array)
-- `POST /api/npcs`        — create NPC (accepts NPC JSON body)
-- `DELETE /api/npcs/:id`  — delete NPC by id
+- `GET  /api/npcs`        â€” return list of stored NPCs (JSON array)
+- `POST /api/npcs`        â€” create NPC (accepts NPC JSON body)
+- `DELETE /api/npcs/:id`  â€” delete NPC by id
 
 Example: run your Go app (it listens on `:8080` in the provided server snippet), then open:
 
