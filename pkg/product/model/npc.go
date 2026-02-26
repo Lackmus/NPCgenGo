@@ -18,7 +18,7 @@ type NPC struct {
 func NewNPC() *NPC {
 	return &NPC{
 		SchemaVersion: CurrentNPCSchemaVersion,
-		Components: make(map[cp.CompEnum]string),
+		Components:    make(map[cp.CompEnum]string),
 	}
 }
 
