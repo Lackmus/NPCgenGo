@@ -29,6 +29,7 @@ export namespace mapper {
 	    trait: string;
 	    stats: string;
 	    items: string;
+	    notes: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new NPCInput(source);
@@ -45,6 +46,7 @@ export namespace mapper {
 	        this.trait = source["trait"];
 	        this.stats = source["stats"];
 	        this.items = source["items"];
+	        this.notes = source["notes"];
 	    }
 	}
 
