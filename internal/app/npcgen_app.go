@@ -12,6 +12,8 @@ import (
 	consoleui "github.com/lackmus/npcgengo/ui/console"
 )
 
+const defaultDataDir = "data"
+
 // NPCGen is the application orchestration layer.
 // It wires together creation/loading services and transport-facing controllers.
 type NPCGen struct {
@@ -26,9 +28,10 @@ func NewNPCGen() (*NPCGen, error) {
 }
 
 // NewNPCGenWithDataDir initializes a new NPCGen instance using the provided data directory.
-// If dataDir is empty, it defaults to the repository-relative data directory.
+// If dataDir is empty or invalid, it resolves using environment/discovery fallbacks.
 func NewNPCGenWithDataDir(dataDir string) (*NPCGen, error) {
 	base := resolveDataDir(dataDir)
+
 	creationPath := filepath.Join(base, "creation_data")
 	dbPath := filepath.Join(base, "npc_database")
 
@@ -50,32 +53,37 @@ func NewNPCGenWithDataDir(dataDir string) (*NPCGen, error) {
 	}, nil
 }
 
+// resolveDataDir determines the appropriate data directory to use based on the provided input, environment variables, and directory structure.
 func resolveDataDir(dataDir string) string {
 	if base := normalizeDataDir(dataDir); base != "" {
 		return base
 	}
 
+	// Check NPCGEN_DATA environment variable as a fallback if dataDir is not provided or valid.
 	if env := os.Getenv("NPCGEN_DATA"); env != "" {
 		if base := normalizeDataDir(env); base != "" {
 			return base
 		}
 	}
 
+	// Attempt to find the data directory by traversing up from the current working directory.
 	if cwd, err := os.Getwd(); err == nil {
 		if base := findDataDirUp(cwd); base != "" {
 			return base
 		}
 	}
 
+	// As a last resort, check the directory of the executable itself, which is useful for bundled applications.
 	if executablePath, err := os.Executable(); err == nil {
 		if base := findDataDirUp(filepath.Dir(executablePath)); base != "" {
 			return base
 		}
 	}
 
-	return "data"
+	return defaultDataDir
 }
 
+// normalizeDataDir checks if the provided base path directly contains the expected creation data structure.
 func normalizeDataDir(base string) string {
 	if base == "" {
 		return ""
@@ -90,9 +98,10 @@ func normalizeDataDir(base string) string {
 		return candidate
 	}
 
-	return base
+	return ""
 }
 
+// findDataDirUp traverses up the directory tree from the starting point to find a directory containing the expected creation data structure.
 func findDataDirUp(start string) string {
 	current := start
 
@@ -111,6 +120,7 @@ func findDataDirUp(start string) string {
 	return ""
 }
 
+// hasCreationData checks if the given base directory contains the expected creation data structure.
 func hasCreationData(base string) bool {
 	info, err := os.Stat(filepath.Join(base, "creation_data", "factiondata"))
 	if err != nil {
