@@ -34,6 +34,7 @@ func (j *JSONNPCStorage) LoadNPC(ctx context.Context, id string) (model.NPC, err
 	if err := json.Unmarshal(raw, &npc); err != nil {
 		return model.NPC{}, err
 	}
+	npc.EnsureSchemaVersion()
 	return npc, nil
 }
 
@@ -77,6 +78,7 @@ func (j *JSONNPCStorage) SaveNPC(ctx context.Context, npc model.NPC) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	npc.EnsureSchemaVersion()
 	if err := os.MkdirAll(j.Dir, os.ModePerm); err != nil {
 		return err
 	}

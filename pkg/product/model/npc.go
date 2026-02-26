@@ -7,14 +7,24 @@ import (
 	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
 )
 
+const CurrentNPCSchemaVersion = 1
+
 type NPC struct {
-	ID         string
-	Components map[cp.CompEnum]string
+	SchemaVersion int `json:"schemaVersion"`
+	ID            string
+	Components    map[cp.CompEnum]string
 }
 
 func NewNPC() *NPC {
 	return &NPC{
+		SchemaVersion: CurrentNPCSchemaVersion,
 		Components: make(map[cp.CompEnum]string),
+	}
+}
+
+func (n *NPC) EnsureSchemaVersion() {
+	if n.SchemaVersion <= 0 {
+		n.SchemaVersion = CurrentNPCSchemaVersion
 	}
 }
 
