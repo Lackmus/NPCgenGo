@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	rndMu sync.Mutex
-	rnd   = rand.New(rand.NewSource(time.Now().UnixNano()))
+	rndMu         sync.Mutex
+	seedSessionMu sync.Mutex
+	rnd           = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
 // SetSeed replaces the RNG with a new source seeded by `seed`.
@@ -27,6 +28,27 @@ func SetRand(r *rand.Rand) {
 	if r != nil {
 		rnd = r
 	}
+}
+
+// WithSeed executes fn using a temporary RNG initialized with seed.
+// The previous RNG is restored after fn returns.
+// Seeded execution is serialized to avoid cross-goroutine interference.
+func WithSeed[T any](seed int64, fn func() (T, error)) (T, error) {
+	seedSessionMu.Lock()
+	defer seedSessionMu.Unlock()
+
+	rndMu.Lock()
+	previous := rnd
+	rnd = rand.New(rand.NewSource(seed))
+	rndMu.Unlock()
+
+	defer func() {
+		rndMu.Lock()
+		rnd = previous
+		rndMu.Unlock()
+	}()
+
+	return fn()
 }
 
 func GetRandomElement[T any](elements []T) T {

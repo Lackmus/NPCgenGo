@@ -38,14 +38,32 @@ func (c *NPCListController) CreateRandomNPC() (model.NPC, error) {
 	return c.createAndAddNPC(h.Random, h.Random)
 }
 
+func (c *NPCListController) CreateRandomNPCWithSeed(seed int64) (model.NPC, error) {
+	return c.createAndAddNPCWithSeed(h.Random, h.Random, seed)
+}
+
 func (c *NPCListController) CreateNPC(npcType string, faction string) (model.NPC, error) {
 	return c.createAndAddNPC(npcType, faction)
+}
+
+func (c *NPCListController) CreateNPCWithSeed(npcType string, faction string, seed int64) (model.NPC, error) {
+	return c.createAndAddNPCWithSeed(npcType, faction, seed)
 }
 
 func (c *NPCListController) createAndAddNPC(npcType string, faction string) (model.NPC, error) {
 	npc, err := service.CreateNPCWithOptions(npcType, faction, c.CreationSupplier)
 	if err != nil {
 		log.Printf("Error creating NPC: %v", err)
+		return model.NPC{}, err
+	}
+	c.AddNPC(npc)
+	return npc, nil
+}
+
+func (c *NPCListController) createAndAddNPCWithSeed(npcType string, faction string, seed int64) (model.NPC, error) {
+	npc, err := service.CreateNPCWithOptionsAndSeed(npcType, faction, seed, c.CreationSupplier)
+	if err != nil {
+		log.Printf("Error creating NPC with seed %d: %v", seed, err)
 		return model.NPC{}, err
 	}
 	c.AddNPC(npc)

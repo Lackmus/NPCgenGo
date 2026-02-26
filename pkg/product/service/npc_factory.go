@@ -5,6 +5,15 @@ import (
 	m "github.com/lackmus/npcgengo/pkg/product/model"
 )
 
+// CreateNPCWithOptionsAndSeed creates an NPC with the given type and faction, using the provided seed for randomness.
+func CreateNPCWithOptionsAndSeed(npcType string, faction string, seed int64, c *NPCCreationSupplier) (m.NPC, error) {
+	// Use the helper function to set the seed for randomness during NPC creation.
+	return h.WithSeed(seed, func() (m.NPC, error) {
+		// Call the main NPC creation function with the provided options.
+		return CreateNPCWithOptions(npcType, faction, c)
+	})
+}
+
 func CreateNPCWithOptions(npcType string, faction string, c *NPCCreationSupplier) (m.NPC, error) {
 	builder := NewNPCBuilder(c)
 

@@ -10,7 +10,7 @@ import (
 const CurrentNPCSchemaVersion = 1
 
 type NPC struct {
-	SchemaVersion int `json:"schemaVersion"`
+	SchemaVersion int
 	ID            string
 	Components    map[cp.CompEnum]string
 }
