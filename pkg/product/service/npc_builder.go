@@ -37,6 +37,9 @@ func NewNPCBuilder(supplier *NPCCreationSupplier) *NPCBuilder {
 
 // getnpcTypeData returns the NPC type data for the current NPC.
 func (b *NPCBuilder) GetNPCType() string {
+	if h.IsNilOrEmpty(b.npctypeData) {
+		return ""
+	}
 	return b.npctypeData.Name
 }
 
@@ -98,6 +101,9 @@ func (b *NPCBuilder) fetchAndSetComponents(npc m.NPC) {
 // ----- ID Methods -----
 
 func (b *NPCBuilder) WithID(d string) *NPCBuilder {
+	if b.HasErrors() {
+		return b
+	}
 	if value := strings.TrimSpace(d); value != "" {
 		b.npc.ID = value
 		b.idData = &value
@@ -328,6 +334,12 @@ func (b *NPCBuilder) Validate() error {
 	}
 	if h.IsNilOrEmpty(b.traitData) {
 		return errors.New("NPC trait is not set")
+	}
+	if !h.IsNilOrEmpty(b.subtypeData) && !h.IsNilOrEmpty(b.npctypeData) {
+		subtypeTypeName := strings.TrimSpace(b.subtypeData.NpcTypeName)
+		if subtypeTypeName != "" && subtypeTypeName != b.npctypeData.Name {
+			return fmt.Errorf("NPC subtype %q does not belong to type %q", b.subtypeData.Name, b.npctypeData.Name)
+		}
 	}
 	return nil
 }
