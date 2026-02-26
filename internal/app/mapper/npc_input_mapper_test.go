@@ -38,10 +38,11 @@ func TestToNPCInput_MapsTypedFields(t *testing.T) {
 	npc.SetTrait(" someTraitID ")
 	npc.SetStats("  STR:1  ")
 	npc.SetItems("  Knife  ")
+	npc.SetNotes("  Keeps journal entries.  ")
 
 	got := ToNPCInput(npc)
 
-	if got.ID != "npc-123" || got.Name != "Alice" || got.Type != "Civilian" || got.Subtype != "someCivilianSubtypeID" || got.Species != "someSpeciesID" || got.Faction != "someFactionID" || got.Trait != "someTraitID" || got.Stats != "STR:1" || got.Items != "Knife" {
+	if got.ID != "npc-123" || got.Name != "Alice" || got.Type != "Civilian" || got.Subtype != "someCivilianSubtypeID" || got.Species != "someSpeciesID" || got.Faction != "someFactionID" || got.Trait != "someTraitID" || got.Stats != "STR:1" || got.Items != "Knife" || got.Notes != "Keeps journal entries." {
 		t.Fatalf("unexpected DTO mapping: %+v", got)
 	}
 }
@@ -77,6 +78,7 @@ func TestToModelNPC_BuildsFromTypedInput(t *testing.T) {
 		Trait:   "someTraitID",
 		Stats:   "STR:2, DEX:1",
 		Items:   "Fists",
+		Notes:   "Scouting routes near river crossing",
 	}
 
 	npc, err := ToModelNPC(input, builder)
@@ -94,7 +96,8 @@ func TestToModelNPC_BuildsFromTypedInput(t *testing.T) {
 		npc.GetComponent(cp.CompFaction) != input.Faction ||
 		npc.GetComponent(cp.CompTrait) != input.Trait ||
 		npc.GetComponent(cp.CompStats) != input.Stats ||
-		npc.GetComponent(cp.CompItems) != input.Items {
+		npc.GetComponent(cp.CompItems) != input.Items ||
+		npc.GetComponent(cp.CompNotes) != input.Notes {
 		t.Fatalf("unexpected model mapping from DTO: %+v", npc)
 	}
 }
@@ -112,6 +115,7 @@ func TestToModelNPCWithOriginal_PreservesMissingFields(t *testing.T) {
 	original.SetTrait("someTraitID")
 	original.SetStats("OLD-STATS")
 	original.SetItems("OLD-ITEMS")
+	original.SetNotes("OLD-NOTES")
 
 	input := NPCInput{
 		ID:    "npc-9",
@@ -136,7 +140,8 @@ func TestToModelNPCWithOriginal_PreservesMissingFields(t *testing.T) {
 		npc.GetComponent(cp.CompFaction) != "someFactionID" ||
 		npc.GetComponent(cp.CompTrait) != "someTraitID" ||
 		npc.GetComponent(cp.CompStats) != "OLD-STATS" ||
-		npc.GetComponent(cp.CompItems) != "OLD-ITEMS" {
+		npc.GetComponent(cp.CompItems) != "OLD-ITEMS" ||
+		npc.GetComponent(cp.CompNotes) != "OLD-NOTES" {
 		t.Fatalf("expected missing fields to be preserved, got npc: %+v", npc)
 	}
 }

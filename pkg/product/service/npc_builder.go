@@ -202,6 +202,14 @@ func (b *NPCBuilder) WithSubtypeEquipment(equipment string) *NPCBuilder {
 	return b
 }
 
+func (b *NPCBuilder) WithNotes(notes string) *NPCBuilder {
+	if b.HasErrors() {
+		return b
+	}
+	b.updateComponent(cp.CompNotes, notes)
+	return b
+}
+
 // WithRandomSubtypeEquipment sets the NPC's equipment using random generation.
 // It requires that a subtype has been set.
 func (b *NPCBuilder) WithRandomSubtypeEquipment() *NPCBuilder {

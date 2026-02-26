@@ -131,3 +131,11 @@ func (n *NPC) Items() string {
 func (n *NPC) SetItems(value string) {
 	n.SetComponent(cp.CompItems, value)
 }
+
+func (n *NPC) Notes() string {
+	return n.GetComponent(cp.CompNotes)
+}
+
+func (n *NPC) SetNotes(value string) {
+	n.SetComponent(cp.CompNotes, value)
+}

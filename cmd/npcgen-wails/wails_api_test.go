@@ -119,11 +119,12 @@ func TestWailsAPI_SaveNPC_ValidUpdate(t *testing.T) {
 		Trait:   "someTraitID",
 		Stats:   "STR: 3",
 		Items:   "Weapon: Fists",
+		Notes:   "Tracks patrol timings",
 	})
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}
-	if saved.ID != "existing-2" || saved.Name != "Updated Name" {
+	if saved.ID != "existing-2" || saved.Name != "Updated Name" || saved.Notes != "Tracks patrol timings" {
 		t.Fatalf("unexpected save response: %+v", saved)
 	}
 }

@@ -90,6 +90,7 @@ function renderDetails(npc) {
   byId("d_traits").textContent = textOrDash(npc?.trait);
   byId("d_stats").textContent = textOrDash(npc?.stats);
   byId("d_items").textContent = textOrDash(npc?.items);
+  byId("d_notes").textContent = textOrDash(npc?.notes);
   setButtonEnabled("btnEdit", isPresent(npcId(npc)));
 }
 
@@ -97,6 +98,7 @@ function readForm() {
   const traitValue = byId("f_traits")?.value || "";
   const statsValue = (byId("f_stats")?.textContent || "").trim();
   const itemsValue = (byId("f_items")?.textContent || "").trim();
+  const notesValue = (byId("f_notes")?.value || "").trim();
 
   return {
     id: byId("f_id")?.value || "",
@@ -108,6 +110,7 @@ function readForm() {
     trait: traitValue,
     stats: statsValue === "—" ? "" : statsValue,
     items: itemsValue === "—" ? "" : itemsValue,
+    notes: notesValue,
   };
 }
 
@@ -200,6 +203,7 @@ export function initNPCUI(api, dialog = window) {
     setSelectValue("f_traits", traitValue.split(",")[0]?.trim() || "");
     byId("f_stats").textContent = npc?.stats || "—";
     byId("f_items").textContent = npc?.items || "—";
+    byId("f_notes").value = npc?.notes || "";
     setButtonEnabled("btnReroll", isPresent(selectedSubtype));
     setButtonEnabled("btnRerollName", isPresent(selectedSpecies));
   }
@@ -226,6 +230,7 @@ export function initNPCUI(api, dialog = window) {
     setSelectValue("f_traits", "");
     byId("f_stats").textContent = "—";
     byId("f_items").textContent = "—";
+    byId("f_notes").value = "";
     setButtonEnabled("btnReroll", false);
     setButtonEnabled("btnRerollName", false);
     renderDetails(null);

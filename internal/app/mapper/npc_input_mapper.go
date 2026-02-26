@@ -18,6 +18,7 @@ type NPCInput struct {
 	Trait   string `json:"trait"`
 	Stats   string `json:"stats"`
 	Items   string `json:"items"`
+	Notes   string `json:"notes"`
 }
 
 func (input NPCInput) normalized() NPCInput {
@@ -30,6 +31,7 @@ func (input NPCInput) normalized() NPCInput {
 	input.Trait = strings.TrimSpace(input.Trait)
 	input.Stats = strings.TrimSpace(input.Stats)
 	input.Items = strings.TrimSpace(input.Items)
+	input.Notes = strings.TrimSpace(input.Notes)
 	return input
 }
 
@@ -44,6 +46,7 @@ func ToNPCInput(npc model.NPC) NPCInput {
 		Trait:   npc.Trait(),
 		Stats:   npc.Stats(),
 		Items:   npc.Items(),
+		Notes:   npc.Notes(),
 	}.normalized()
 }
 
@@ -63,7 +66,6 @@ func ToModelNPC(input NPCInput, builder *service.NPCBuilder) (model.NPC, error) 
 // ToModelNPCWithOriginal builds an NPC from input, loading the original first if provided.
 // If original is nil, creates a new NPC. If original exists, loads it first then only applies changed fields.
 func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, original *model.NPC) (model.NPC, error) {
-	// If editing an existing NPC, load it first to preserve unchanged fields
 	if original != nil {
 		builder = builder.WithNPC(*original)
 	}
@@ -78,6 +80,7 @@ func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, origina
 	trait := preserveOriginalValue(input.Trait, original, cp.CompTrait)
 	stats := preserveOriginalValue(input.Stats, original, cp.CompStats)
 	items := preserveOriginalValue(input.Items, original, cp.CompItems)
+	notes := preserveOriginalValue(input.Notes, original, cp.CompNotes)
 
 	// Build using single chain - apply all input fields
 	return builder.
@@ -90,6 +93,7 @@ func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, origina
 		WithSubtypeStats(stats).
 		WithID(input.ID).
 		WithSubtypeEquipment(items).
+		WithNotes(notes).
 		Build()
 }
 

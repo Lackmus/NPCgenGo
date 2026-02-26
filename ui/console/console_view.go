@@ -112,6 +112,7 @@ func (v *ConsoleView) showDetails(id string) {
 	fmt.Printf("Trait: %s\n", npc.Trait())
 	fmt.Printf("Stats: %s\n", npc.Stats())
 	fmt.Printf("Items: %s\n", npc.Items())
+	fmt.Printf("Notes: %s\n", npc.Notes())
 }
 
 func (v *ConsoleView) createNPC(reader *bufio.Reader) {
@@ -141,6 +142,7 @@ func (v *ConsoleView) editNPC(reader *bufio.Reader, id string) {
 		Species: npc.Species(),
 		Faction: npc.Faction(),
 		Trait:   npc.Trait(),
+		Notes:   npc.Notes(),
 	}
 
 	v.collectNPCInput(reader, &input, &npc)
@@ -169,6 +171,7 @@ func (v *ConsoleView) collectNPCInput(reader *bufio.Reader, input *mapper.NPCInp
 		}
 	}
 	input.Name = v.promptText(reader, "Name", nameDefault)
+	input.Notes = v.promptRaw(reader, "Notes (optional)", input.Notes)
 
 	_ = existing
 }

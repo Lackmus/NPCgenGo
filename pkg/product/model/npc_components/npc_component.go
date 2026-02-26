@@ -24,6 +24,7 @@ const (
 	CompTrait   CompEnum = 6
 	CompStats   CompEnum = 7
 	CompItems   CompEnum = 8
+	CompNotes   CompEnum = 9
 )
 
 func CompEnumValues() []CompEnum {
@@ -36,6 +37,7 @@ func CompEnumValues() []CompEnum {
 		CompTrait,
 		CompStats,
 		CompItems,
+		CompNotes,
 	}
 }
 
@@ -57,6 +59,8 @@ func (c CompEnum) String() string {
 		return "Stats"
 	case CompItems:
 		return "Items"
+	case CompNotes:
+		return "Notes"
 	default:
 		return "UNKNOWN_COMPONENT"
 	}

@@ -101,7 +101,7 @@ func TestServer_GenerateHandler_ReturnsTypedDTO(t *testing.T) {
 		t.Fatalf("failed to decode response body: %v", err)
 	}
 
-	requiredFields := []string{"id", "name", "type", "subtype", "species", "faction", "trait", "stats", "items"}
+	requiredFields := []string{"id", "name", "type", "subtype", "species", "faction", "trait", "stats", "items", "notes"}
 	for _, field := range requiredFields {
 		if _, ok := payload[field]; !ok {
 			t.Fatalf("missing required DTO field %q in payload: %+v", field, payload)
