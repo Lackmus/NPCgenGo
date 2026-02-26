@@ -1,4 +1,3 @@
-// Description: This file contains the NPCSubtype struct and its methods.
 package npc_components
 
 import (

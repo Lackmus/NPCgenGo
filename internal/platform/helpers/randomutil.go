@@ -1,4 +1,3 @@
-// Description: This file contains helper functions for generating random values.
 package helpers
 
 import (

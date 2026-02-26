@@ -21,10 +21,10 @@ type NPCConfigLoader interface {
 	LoadTraitMap(ctx context.Context) (map[string]c.Trait, error)
 
 	// LoadNameMap loads the name map from the config file.
-	// It returns a map of name names to NameData objects and an error if the data cannot be loaded.
+	// It returns a map of name keys to NameData values and an error if the data cannot be loaded.
 	LoadNameMap(ctx context.Context) (map[string]c.NameData, error)
 
-	// LoadNpcSubtypeMaps loads subtype maps grouped by NPC type.
+	// LoadNPCSubtypeMaps loads subtype maps grouped by NPC type.
 	// The returned map key is NPC type name and each value is a subtype map keyed by subtype name.
-	LoadNpcSubtypeMaps(ctx context.Context) (map[string]map[string]c.NPCSubtype, error)
+	LoadNPCSubtypeMaps(ctx context.Context) (map[string]map[string]c.NPCSubtype, error)
 }

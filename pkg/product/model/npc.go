@@ -1,4 +1,3 @@
-// Description: This file contains the implementation of the NPC struct, which represents a non-player character built using a set of components.
 package model
 
 import (

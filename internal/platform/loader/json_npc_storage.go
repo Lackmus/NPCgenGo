@@ -1,4 +1,3 @@
-// Description: JSON NPC storage loader implementation.
 package loader
 
 import (
@@ -38,7 +37,7 @@ func (j *JSONNPCStorage) LoadNPC(ctx context.Context, id string) (model.NPC, err
 	return npc, nil
 }
 
-func (j *JSONNPCStorage) LoadAllNPC(ctx context.Context) (map[string]model.NPC, error) {
+func (j *JSONNPCStorage) LoadAllNPCs(ctx context.Context) (map[string]model.NPC, error) {
 	dataMap := make(map[string]model.NPC)
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -95,7 +94,7 @@ func (j *JSONNPCStorage) SaveNPC(ctx context.Context, npc model.NPC) error {
 	return encoder.Encode(npc)
 }
 
-func (j *JSONNPCStorage) SaveAllNPC(ctx context.Context, dataMap map[string]model.NPC) error {
+func (j *JSONNPCStorage) SaveAllNPCs(ctx context.Context, dataMap map[string]model.NPC) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -122,7 +121,7 @@ func (j *JSONNPCStorage) DeleteNPC(ctx context.Context, id string) error {
 	return os.Remove(filename)
 }
 
-func (j *JSONNPCStorage) DeleteAllNPC(ctx context.Context) error {
+func (j *JSONNPCStorage) DeleteAllNPCs(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -144,4 +143,3 @@ func (j *JSONNPCStorage) DeleteAllNPC(ctx context.Context) error {
 	}
 	return nil
 }
-

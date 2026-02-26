@@ -1,4 +1,3 @@
-// Description: This file contains the JSONNPCConfigLoader struct and its methods.
 package loader
 
 import (
@@ -47,7 +46,7 @@ func (j *JSONNPCConfigLoader) LoadNameMap(ctx context.Context) (map[string]c.Nam
 	return loadJSONMap[c.NameData](ctx, filepath.Join(j.dir, nameDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNpcSubtypeMaps(ctx context.Context) (map[string]map[string]c.NPCSubtype, error) {
+func (j *JSONNPCConfigLoader) LoadNPCSubtypeMaps(ctx context.Context) (map[string]map[string]c.NPCSubtype, error) {
 	dataMap := make(map[string]map[string]c.NPCSubtype)
 	if err := ctx.Err(); err != nil {
 		return dataMap, err
@@ -73,7 +72,7 @@ func (j *JSONNPCConfigLoader) LoadNpcSubtypeMaps(ctx context.Context) (map[strin
 			continue
 		}
 
-		typeName := resolveNpcTypeName(entry.Name(), subtypes)
+		typeName := resolveNPCTypeName(entry.Name(), subtypes)
 		if _, ok := dataMap[typeName]; !ok {
 			dataMap[typeName] = make(map[string]c.NPCSubtype)
 		}
@@ -92,7 +91,7 @@ func (j *JSONNPCConfigLoader) LoadNpcSubtypeMaps(ctx context.Context) (map[strin
 	return dataMap, nil
 }
 
-func resolveNpcTypeName(dirName string, subtypes map[string]c.NPCSubtype) string {
+func resolveNPCTypeName(dirName string, subtypes map[string]c.NPCSubtype) string {
 	for _, subtype := range subtypes {
 		typeName := strings.TrimSpace(subtype.NpcTypeName)
 		if typeName != "" {

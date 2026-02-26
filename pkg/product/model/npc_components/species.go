@@ -1,4 +1,3 @@
-// Description: This file contains the Species struct and its methods.
 package npc_components
 
 type Species struct {

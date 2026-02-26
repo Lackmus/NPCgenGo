@@ -113,7 +113,7 @@ func TestJSONNPCConfigLoader_LoadNameMap(t *testing.T) {
 	}
 }
 
-func TestJSONNPCConfigLoader_LoadNpcSubtypeMaps(t *testing.T) {
+func TestJSONNPCConfigLoader_LoadNPCSubtypeMaps(t *testing.T) {
 	dir := t.TempDir()
 	if err := CreateSampleCreationData(dir); err != nil {
 		t.Fatal(err)
@@ -122,7 +122,7 @@ func TestJSONNPCConfigLoader_LoadNpcSubtypeMaps(t *testing.T) {
 	ctx := context.Background()
 
 	// Test loading dynamic subtype data
-	subtypeMaps, err := loader.LoadNpcSubtypeMaps(ctx)
+	subtypeMaps, err := loader.LoadNPCSubtypeMaps(ctx)
 
 	// Check if error occurred
 	if err != nil {

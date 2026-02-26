@@ -16,9 +16,9 @@ import (
 // Simple HTTP server that serves the web UI and exposes API endpoints
 // Routes:
 //  GET  /api/npcs         -> list all NPCs
-//  GET  /api/npcs/:id     -> get NPC by id
+//  GET  /api/npcs/:id     -> get NPC by ID
 //  POST /api/generate     -> create an NPC server-side and store it
-//  DELETE /api/npcs/:id   -> delete NPC by id
+//  DELETE /api/npcs/:id   -> delete NPC by ID
 
 type Server struct {
 	npcController *controllers.NPCListController
@@ -68,7 +68,7 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	switch r.Method {
 	case http.MethodGet:
-		npcs := s.npcController.GetAllNpcs()
+		npcs := s.npcController.GetAllNPCs()
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(mapper.ToNPCInputs(npcs))
 	case http.MethodPost:
@@ -81,7 +81,7 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		s.npcController.AddNpc(m)
+		s.npcController.AddNPC(m)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(mapper.ToNPCInput(m))
@@ -101,7 +101,7 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case http.MethodGet:
-		npc, err := s.npcController.GetNpcByID(id)
+		npc, err := s.npcController.GetNPCByID(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
@@ -113,7 +113,7 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	case http.MethodPut:
 		var original *model.NPC
-		if npcData, err := s.npcController.GetNpcByID(id); err == nil {
+		if npcData, err := s.npcController.GetNPCByID(id); err == nil {
 			original = &npcData
 		}
 		m, err := parseNPCFromBodyWithOriginal(r.Body, s.npcController, original)
@@ -125,7 +125,7 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		s.npcController.UpdateNpc(m)
+		s.npcController.UpdateNPC(m)
 		w.WriteHeader(http.StatusNoContent)
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)

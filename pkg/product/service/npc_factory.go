@@ -1,4 +1,3 @@
-// Description: This file contains the CreateNPCWithOptions function, which creates an NPC using the provided type and faction values. If npctype or faction is empty, the function uses a random value.
 package service
 
 import (
@@ -6,13 +5,13 @@ import (
 	m "github.com/lackmus/npcgengo/pkg/product/model"
 )
 
-func CreateNPCWithOptions(npctype string, faction string, c *NPCCreationSupplier) (m.NPC, error) {
+func CreateNPCWithOptions(npcType string, faction string, c *NPCCreationSupplier) (m.NPC, error) {
 	builder := NewNPCBuilder(c)
 
-	if npctype == h.Random {
+	if npcType == h.Random {
 		builder = builder.WithRandomType()
 	} else {
-		builder = builder.WithType(npctype)
+		builder = builder.WithType(npcType)
 	}
 
 	if faction == h.Random {

@@ -15,7 +15,7 @@ import (
 
 type ConsoleView struct {
 	controller *controllers.NPCListController
-	lastNpcs   []model.NPC
+	lastNPCs   []model.NPC
 }
 
 func NewConsoleView(ctrl *controllers.NPCListController) shared.NPCListViewer {
@@ -26,7 +26,7 @@ func NewConsoleView(ctrl *controllers.NPCListController) shared.NPCListViewer {
 
 func (v *ConsoleView) Update(npcs []model.NPC) {
 	fmt.Printf("ConsoleView: received update with %d NPCs\n", len(npcs))
-	v.lastNpcs = npcs
+	v.lastNPCs = npcs
 	fmt.Println("\n=== NPC Generator Console View ===")
 	if len(npcs) == 0 {
 		fmt.Println("No NPCs available.")
@@ -86,7 +86,7 @@ func (v *ConsoleView) Run() {
 			id := parts[1]
 			v.controller.DeleteNPC(id)
 		case "delete-all":
-			v.controller.DeleteAllNPC()
+			v.controller.DeleteAllNPCs()
 		case "quit", "exit":
 			fmt.Println("Exiting console view")
 			return
@@ -97,7 +97,7 @@ func (v *ConsoleView) Run() {
 }
 
 func (v *ConsoleView) showDetails(id string) {
-	npc, err := v.controller.GetNpcByID(id)
+	npc, err := v.controller.GetNPCByID(id)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return
@@ -128,7 +128,7 @@ func (v *ConsoleView) createNPC(reader *bufio.Reader) {
 }
 
 func (v *ConsoleView) editNPC(reader *bufio.Reader, id string) {
-	npc, err := v.controller.GetNpcByID(id)
+	npc, err := v.controller.GetNPCByID(id)
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 		return
@@ -254,7 +254,7 @@ func (v *ConsoleView) saveInput(input mapper.NPCInput) {
 		return
 	}
 
-	v.controller.UpdateNpc(npc)
+	v.controller.UpdateNPC(npc)
 	if input.ID == "" {
 		fmt.Println("created NPC")
 	} else {
@@ -284,7 +284,7 @@ func (v *ConsoleView) saveInputWithOriginal(input mapper.NPCInput, original *mod
 		return
 	}
 
-	v.controller.UpdateNpc(npc)
+	v.controller.UpdateNPC(npc)
 	if input.ID == "" {
 		fmt.Println("created NPC")
 	} else {

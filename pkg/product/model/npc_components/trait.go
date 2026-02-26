@@ -1,4 +1,3 @@
-// Description: This file contains the Trait struct which represents a trait of an NPC.
 package npc_components
 
 type Trait struct {

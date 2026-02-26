@@ -18,7 +18,7 @@ const defaultDataDir = "data"
 // It wires together creation/loading services and transport-facing controllers.
 type NPCGen struct {
 	CreationSupplier  *service.NPCCreationSupplier
-	NpcService        *service.NPCService
+	NPCService        *service.NPCService
 	NPCListController *controllers.NPCListController
 }
 
@@ -48,7 +48,7 @@ func NewNPCGenWithDataDir(dataDir string) (*NPCGen, error) {
 
 	return &NPCGen{
 		CreationSupplier:  creationSupplier,
-		NpcService:        npcService,
+		NPCService:        npcService,
 		NPCListController: npcListController,
 	}, nil
 }

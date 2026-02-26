@@ -1,4 +1,3 @@
-// Description: This file contains the CreationDataService struct and its methods. The CreationDataService struct provides access to the creation data for NPCs. It is used to load the data from the creation data file into maps.
 package service
 
 import (
@@ -55,7 +54,7 @@ func (c *CreationDataService) initConfigLoaderMaps(ctx context.Context, npcConfi
 	if err != nil {
 		return fmt.Errorf("failed to load name map: %w", err)
 	}
-	npcSubtypeByTypeMap, err := npcConfigLoader.LoadNpcSubtypeMaps(ctx)
+	npcSubtypeByTypeMap, err := npcConfigLoader.LoadNPCSubtypeMaps(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to load npc subtype maps: %w", err)
 	}

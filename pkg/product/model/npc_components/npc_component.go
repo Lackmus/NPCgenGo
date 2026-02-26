@@ -1,4 +1,3 @@
-// Description: This file contains the NPCComponent struct and its methods.
 package npc_components
 
 type NPCComponent struct {

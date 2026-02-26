@@ -1,4 +1,3 @@
-// Description: Define the NPCType struct type.
 package types
 
 type NPCType struct {

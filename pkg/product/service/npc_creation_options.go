@@ -1,4 +1,3 @@
-// Description: This file contains the NPCCreationOptions struct and the NewNPCCreationOptions function.
 package service
 
 import (

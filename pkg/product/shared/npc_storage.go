@@ -12,13 +12,13 @@ type NPCStorage interface {
 	// It returns the NPC and an error if the NPC cannot be loaded.
 	LoadNPC(ctx context.Context, id string) (model.NPC, error)
 
-	// LoadAllNPC loads all NPCs from the storage.
+	// LoadAllNPCs loads all NPCs from the storage.
 	// It returns a map of NPC IDs to NPCs and an error if the NPCs cannot be loaded.
-	LoadAllNPC(ctx context.Context) (map[string]model.NPC, error)
+	LoadAllNPCs(ctx context.Context) (map[string]model.NPC, error)
 
-	// SaveAllNPC saves all NPCs to the storage.
+	// SaveAllNPCs saves all NPCs to the storage.
 	// It takes a map of NPC IDs to NPCs and returns an error if the NPCs cannot be saved.
-	SaveAllNPC(ctx context.Context, npcs map[string]model.NPC) error
+	SaveAllNPCs(ctx context.Context, npcs map[string]model.NPC) error
 
 	// SaveNPC saves a single NPC to the storage.
 	// It takes the NPC as a parameter and returns an error if the NPC cannot be saved.
@@ -28,8 +28,7 @@ type NPCStorage interface {
 	// It returns an error if the NPC cannot be deleted.
 	DeleteNPC(ctx context.Context, id string) error
 
-	// DeleteAllNPC deletes all NPCs from the storage.
+	// DeleteAllNPCs deletes all NPCs from the storage.
 	// It returns an error if the NPCs cannot be deleted.
-	DeleteAllNPC(ctx context.Context) error
+	DeleteAllNPCs(ctx context.Context) error
 }
-

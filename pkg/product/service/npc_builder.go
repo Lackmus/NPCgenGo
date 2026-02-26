@@ -1,4 +1,3 @@
-// Description: This file contains the NPCBuilder struct and methods for constructing an NPC step by step.
 package service
 
 import (
@@ -21,7 +20,7 @@ type NPCBuilder struct {
 	subtypeData *cp.NPCSubtype
 	speciesData *cp.Species
 	traitData   *cp.Trait
-	npctypeData *t.NPCType
+	npcTypeData *t.NPCType
 	errors      []error
 }
 
@@ -35,12 +34,12 @@ func NewNPCBuilder(supplier *NPCCreationSupplier) *NPCBuilder {
 	}
 }
 
-// getnpcTypeData returns the NPC type data for the current NPC.
+// GetNPCType returns the NPC type data name for the current NPC.
 func (b *NPCBuilder) GetNPCType() string {
-	if h.IsNilOrEmpty(b.npctypeData) {
+	if h.IsNilOrEmpty(b.npcTypeData) {
 		return ""
 	}
-	return b.npctypeData.Name
+	return b.npcTypeData.Name
 }
 
 func (b *NPCBuilder) updateComponent(compType cp.CompEnum, value string) {
@@ -68,13 +67,13 @@ func (b *NPCBuilder) GetNPC() *m.NPC {
 // fetchAndSetComponents retrieves the NPC's components from the data service and sets them internally.
 // It requires that the NPC has components for type, subtype, species, and trait.
 func (b *NPCBuilder) fetchAndSetComponents(npc m.NPC) {
-	npctypeID := npc.GetComponent(cp.CompType)
+	npcTypeID := npc.GetComponent(cp.CompType)
 	subtypeID := npc.GetComponent(cp.CompSubtype)
 	speciesID := npc.GetComponent(cp.CompSpecies)
 	traitID := npc.GetComponent(cp.CompTrait)
 
-	if data, err := b.supplier.CreationDataService.GetNpcTypeData(npctypeID); err == nil {
-		b.npctypeData = ptr(data)
+	if data, err := b.supplier.CreationDataService.GetNpcTypeData(npcTypeID); err == nil {
+		b.npcTypeData = ptr(data)
 	} else {
 		b.addErrorWithContext("fetchAndSetComponents", err)
 	}
@@ -118,17 +117,17 @@ func ptr[T any](t T) *T { return &t }
 
 // WithType sets the NPC's type to the provided value.
 // It requires that the type exists in the data service.
-func (b *NPCBuilder) WithType(npctype string) *NPCBuilder {
+func (b *NPCBuilder) WithType(npcType string) *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
-	data, err := b.supplier.CreationDataService.GetNpcTypeData(npctype)
+	data, err := b.supplier.CreationDataService.GetNpcTypeData(npcType)
 	if err != nil {
 		b.addErrorWithContext("WithType", err)
 		return b
 	}
-	b.npctypeData = &data
-	b.updateComponent(cp.CompType, npctype)
+	b.npcTypeData = &data
+	b.updateComponent(cp.CompType, npcType)
 	return b
 }
 
@@ -166,11 +165,11 @@ func (b *NPCBuilder) WithRandomSubtype() *NPCBuilder {
 	if b.HasErrors() {
 		return b
 	}
-	if h.IsNilOrEmpty(b.npctypeData) {
+	if h.IsNilOrEmpty(b.npcTypeData) {
 		b.addErrorWithContext("WithRandomSubtype", errors.New("type must be set before subtype can be added"))
 		return b
 	}
-	randomSubtype := b.supplier.RandomizerService.RandomSubtype(b.npctypeData.Name)
+	randomSubtype := b.supplier.RandomizerService.RandomSubtype(b.npcTypeData.Name)
 	return b.WithSubtype(randomSubtype)
 }
 
@@ -323,7 +322,7 @@ func (b *NPCBuilder) WithRandomTrait() *NPCBuilder {
 
 func (b *NPCBuilder) Validate() error {
 
-	if h.IsNilOrEmpty(b.npctypeData) {
+	if h.IsNilOrEmpty(b.npcTypeData) {
 		return errors.New("NPC type is not set")
 	}
 	if h.IsNilOrEmpty(b.subtypeData) {
@@ -335,10 +334,10 @@ func (b *NPCBuilder) Validate() error {
 	if h.IsNilOrEmpty(b.traitData) {
 		return errors.New("NPC trait is not set")
 	}
-	if !h.IsNilOrEmpty(b.subtypeData) && !h.IsNilOrEmpty(b.npctypeData) {
+	if !h.IsNilOrEmpty(b.subtypeData) && !h.IsNilOrEmpty(b.npcTypeData) {
 		subtypeTypeName := strings.TrimSpace(b.subtypeData.NpcTypeName)
-		if subtypeTypeName != "" && subtypeTypeName != b.npctypeData.Name {
-			return fmt.Errorf("NPC subtype %q does not belong to type %q", b.subtypeData.Name, b.npctypeData.Name)
+		if subtypeTypeName != "" && subtypeTypeName != b.npcTypeData.Name {
+			return fmt.Errorf("NPC subtype %q does not belong to type %q", b.subtypeData.Name, b.npcTypeData.Name)
 		}
 	}
 	return nil

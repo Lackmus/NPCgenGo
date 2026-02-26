@@ -5,8 +5,6 @@ import "github.com/lackmus/npcgengo/pkg/product/model"
 // observer interface
 type NPCObserver interface {
 
-	// UpdateNPC updates the NPC with the given model.NPC.
-	// It takes a model.NPC as a parameter and returns nothing.
+	// Update updates observers with the current NPC list.
 	Update(npcs []model.NPC)
 }
-

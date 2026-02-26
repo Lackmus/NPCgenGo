@@ -31,7 +31,7 @@ func (a *WailsAPI) startup(ctx context.Context) {
 }
 
 func (a *WailsAPI) ListNPCs() []mapper.NPCInput {
-	return mapper.ToNPCInputs(a.npcController.GetAllNpcs())
+	return mapper.ToNPCInputs(a.npcController.GetAllNPCs())
 }
 
 func (a *WailsAPI) GetCreationOptions() *service.NPCCreationOptions {
@@ -55,7 +55,7 @@ func (a *WailsAPI) RollSpeciesName(species string) (string, error) {
 }
 
 func (a *WailsAPI) GetNPC(id string) (mapper.NPCInput, error) {
-	npc, err := a.npcController.GetNpcByID(id)
+	npc, err := a.npcController.GetNPCByID(id)
 	if err != nil {
 		return mapper.NPCInput{}, err
 	}
@@ -76,7 +76,7 @@ func (a *WailsAPI) DeleteNPC(id string) error {
 }
 
 func (a *WailsAPI) DeleteAllNPCs() error {
-	a.npcController.DeleteAllNPC()
+	a.npcController.DeleteAllNPCs()
 	return nil
 }
 
@@ -84,7 +84,7 @@ func (a *WailsAPI) SaveNPC(input mapper.NPCInput) (mapper.NPCInput, error) {
 	// Get the original NPC for preserving unchanged fields
 	var originalNPC *model.NPC
 	if input.ID != "" {
-		existing, err := a.npcController.GetNpcByID(input.ID)
+		existing, err := a.npcController.GetNPCByID(input.ID)
 		if err != nil {
 			return mapper.NPCInput{}, fmt.Errorf("npc with ID %s not found", input.ID)
 		}
@@ -114,9 +114,9 @@ func (a *WailsAPI) validateAndPersistNPC(npc model.NPC, isUpdate bool) (mapper.N
 		return mapper.NPCInput{}, err
 	}
 	if isUpdate {
-		a.npcController.UpdateNpc(npc)
+		a.npcController.UpdateNPC(npc)
 	} else {
-		a.npcController.AddNpc(npc)
+		a.npcController.AddNPC(npc)
 	}
 	return mapper.ToNPCInput(npc), nil
 }

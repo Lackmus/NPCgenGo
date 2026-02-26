@@ -53,7 +53,7 @@ func TestServer_NpcsHandler_GetReturnsTypedDTOs(t *testing.T) {
 	npc.SetComponent(cp.CompTrait, "someTraitID")
 	npc.SetComponent(cp.CompStats, "STR: 2")
 	npc.SetComponent(cp.CompItems, "Weapon: Fists")
-	srv.npcController.AddNpc(npc)
+	srv.npcController.AddNPC(npc)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/npcs", nil)
 	res := httptest.NewRecorder()
@@ -129,7 +129,7 @@ func TestServer_NpcByIDHandler_GetReturnsTypedDTO(t *testing.T) {
 	npc.SetComponent(cp.CompTrait, "someTraitID")
 	npc.SetComponent(cp.CompStats, "STR: 4")
 	npc.SetComponent(cp.CompItems, "Weapon: Fists")
-	srv.npcController.AddNpc(npc)
+	srv.npcController.AddNPC(npc)
 
 	req := httptest.NewRequest(http.MethodGet, "/api/npcs/n-2", nil)
 	res := httptest.NewRecorder()

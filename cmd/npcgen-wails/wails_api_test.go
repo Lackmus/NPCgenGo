@@ -72,7 +72,7 @@ func TestWailsAPI_SaveNPC_ValidationError(t *testing.T) {
 	existing.SetComponent(cp.CompTrait, "someTraitID")
 	existing.SetComponent(cp.CompStats, "STR: 2")
 	existing.SetComponent(cp.CompItems, "Weapon: Fists")
-	api.npcController.AddNpc(existing)
+	api.npcController.AddNPC(existing)
 
 	_, err := api.SaveNPC(mapper.NPCInput{
 		ID:      "existing-1",
@@ -107,7 +107,7 @@ func TestWailsAPI_SaveNPC_ValidUpdate(t *testing.T) {
 	existing.SetComponent(cp.CompTrait, "someTraitID")
 	existing.SetComponent(cp.CompStats, "STR: 2")
 	existing.SetComponent(cp.CompItems, "Weapon: Fists")
-	api.npcController.AddNpc(existing)
+	api.npcController.AddNPC(existing)
 
 	saved, err := api.SaveNPC(mapper.NPCInput{
 		ID:      "existing-2",
