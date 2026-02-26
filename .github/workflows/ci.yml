@@ -35,5 +35,8 @@ jobs:
       - name: Test
         run: go test ./... -v
 
+      - name: Validate creation data
+        run: go run ./cmd/npcgen-doctor --data-dir ./data
+
       - name: Race test
         run: go test -race ./...

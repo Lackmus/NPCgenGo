@@ -101,6 +101,22 @@ func main() {
 
 Tip: the provided directory should contain `creation_data/` and `npc_database/`.
 
+## Data quality check
+
+Before pushing JSON changes, run:
+
+```bash
+go run ./cmd/npcgen-doctor --data-dir ./data
+```
+
+What it validates:
+- faction → species references
+- species → name source references
+- trait `Opposes` references
+- NPC type/subtype consistency and required subtype fields (stats, equipment options)
+
+CI runs the same command, so invalid creation data will fail pull requests.
+
 ## Run modes
 
 | Mode | Entry point | Command | Notes |
