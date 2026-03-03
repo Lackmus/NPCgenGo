@@ -7,7 +7,7 @@ import (
 
 	npcgendata "github.com/lackmus/npcgengo/data"
 	"github.com/lackmus/npcgengo/internal/platform/loader"
-	"github.com/lackmus/npcgengo/pkg/product/shared"
+	"github.com/lackmus/npcgengo/pkg/shared"
 )
 
 func resolveCreationConfigLoader(base string) shared.NPCConfigLoader {
