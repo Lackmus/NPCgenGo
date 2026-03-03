@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/lackmus/npcgengo/internal/platform/loader"
-	"github.com/lackmus/npcgengo/pkg/product/service"
+	"github.com/lackmus/npcgengo/pkg/service"
 )
 
 func newControllerForTests(t *testing.T) *NPCListController {

@@ -1,0 +1,13 @@
+
+  Name: Hoot Duskglide
+  Type: civilian
+  Subtype: Scholar
+  Species: Falcon
+  Faction: Neutral
+  Trait: Impatient
+  Stats: knowledge: 2
+analysis: 7
+memory: 9
+  Items: accessories: Writing Gloves
+clothing: Plain Tunic and Cloak
+tools: Magnifying Lens

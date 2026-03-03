@@ -10,7 +10,7 @@ import (
 
 	"github.com/lackmus/npcgengo/internal/app/controllers"
 	"github.com/lackmus/npcgengo/internal/app/mapper"
-	"github.com/lackmus/npcgengo/pkg/product/model"
+	"github.com/lackmus/npcgengo/pkg/model"
 )
 
 // Simple HTTP server that serves the web UI and exposes API endpoints

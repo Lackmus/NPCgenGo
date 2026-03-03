@@ -8,7 +8,7 @@ Core layout:
 
 - `cmd/` â€” executable entrypoints and CLI wiring
 - `internal/app/` — application orchestration layer (controllers, web adapters, views)
-- `pkg/` â€” reusable core application logic (`pkg/product/...`)
+- `pkg/` â€” reusable core application logic (`pkg/...`)
 - `internal/` â€” module-private implementation details (`internal/platform/...`)
 
 `cmd/` is entrypoint-only (`cmd/npcgen-web/main.go`, `cmd/npcgen-console/main.go`, `cmd/npcgen-wails/main.go`). App wiring lives in `internal/app/`.
@@ -33,8 +33,8 @@ Typical flow (CLI or HTTP):
 2. Root facade: `npcgen.go` delegates to `internal/app/npcgen_app.go`
 3. App layer: wires `internal/app/controllers` (UI-agnostic) and `ui/console` views
 4. Web layer: `internal/app/web` HTTP server routes to controllers
-5. Controllers: call `pkg/product/service` domain services
-6. Services: use `pkg/product/model` and `pkg/product/shared` contracts
+5. Controllers: call `pkg/service` domain services
+6. Services: use `pkg/model` and `pkg/shared` contracts
 7. Persistence: `internal/platform/loader` adapters handle config/storage
 8. Data: read/write in `data/creation_data` and `data/npc_database`
 
@@ -44,7 +44,7 @@ Quick mental model:
 - `internal/app/controllers` = UI-agnostic orchestration (shared by all UIs)
 - `internal/app/web` = HTTP-specific adapters (routes, middleware)
 - `internal/app` = app wiring and initialization
-- `pkg/product` = reusable business/domain logic
+- `pkg` = reusable business/domain logic
 - `internal/platform` = infrastructure/plumbing (JSON loaders, helpers)
 - `data` = runtime content
 
