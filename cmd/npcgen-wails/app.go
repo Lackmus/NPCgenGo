@@ -39,11 +39,11 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) ListNPCs() []model.NPC {
-	return a.npcController.GetAllNpcs()
+	return a.npcController.GetAllNPCs()
 }
 
 func (a *App) GetNPC(id string) (model.NPC, error) {
-	return a.npcController.GetNpcByID(id)
+	return a.npcController.GetNPCByID(id)
 }
 
 func (a *App) GenerateNPC() (model.NPC, error) {
@@ -56,7 +56,7 @@ func (a *App) DeleteNPC(id string) error {
 }
 
 func (a *App) DeleteAllNPCs() error {
-	a.npcController.DeleteAllNPC()
+	a.npcController.DeleteAllNPCs()
 	return nil
 }
 
@@ -65,7 +65,7 @@ func (a *App) SaveNPC(input NPCInput) (model.NPC, error) {
 	if npc.ID == "" {
 		npc.ID = fmt.Sprintf("%d", time.Now().UnixNano())
 	}
-	a.npcController.UpdateNpc(npc)
+	a.npcController.UpdateNPC(npc)
 	return npc, nil
 }
 
@@ -74,21 +74,13 @@ func (a *App) CreateNPC(input NPCInput) (model.NPC, error) {
 	if npc.ID == "" {
 		npc.ID = fmt.Sprintf("%d", time.Now().UnixNano())
 	}
-	a.npcController.AddNpc(npc)
+	a.npcController.AddNPC(npc)
 	return npc, nil
 }
 
 func toModelNPC(input NPCInput) model.NPC {
-	locationID := strings.TrimSpace(input.LocationID)
-	if locationID == "" {
-		locationID = "default"
-	}
-
-	npc := model.NPC{
-		ID:         strings.TrimSpace(input.ID),
-		LocationID: locationID,
-		Components: make(map[cp.CompEnum]string),
-	}
+	npc := *model.NewNPC()
+	npc.ID = strings.TrimSpace(input.ID)
 
 	if value := strings.TrimSpace(input.Name); value != "" {
 		npc.Components[cp.CompName] = value
@@ -123,7 +115,7 @@ func toModelNPC(input NPCInput) model.NPC {
 		npc.Components[cp.CompItems] = value
 	}
 	if value := strings.TrimSpace(input.Description); value != "" {
-		npc.Components[cp.CompDescription] = value
+		npc.Components[cp.CompNotes] = value
 	}
 
 	return npc

@@ -1,4 +1,3 @@
-// Description: This file contains the NPCCreationSupplier struct, which encapsulates the services required for NPC creation.
 package service
 
 import (
@@ -33,4 +32,3 @@ func (c *NPCCreationSupplier) initCreationSupplier(loader shared.NPCConfigLoader
 	c.RandomizerService = NewRandomizerService(c.CreationDataService, c.CreationOptions)
 	return nil
 }
-

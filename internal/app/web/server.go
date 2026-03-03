@@ -4,21 +4,21 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/lackmus/npcgengo/internal/app/controllers"
+	"github.com/lackmus/npcgengo/internal/app/mapper"
 	"github.com/lackmus/npcgengo/pkg/model"
-	cp "github.com/lackmus/npcgengo/pkg/model/npc_components"
 )
 
 // Simple HTTP server that serves the web UI and exposes API endpoints
 // Routes:
 //  GET  /api/npcs         -> list all NPCs
-//  GET  /api/npcs/:id     -> get NPC by id
+//  GET  /api/npcs/:id     -> get NPC by ID
 //  POST /api/generate     -> create an NPC server-side and store it
-//  DELETE /api/npcs/:id   -> delete NPC by id
+//  DELETE /api/npcs/:id   -> delete NPC by ID
 
 type Server struct {
 	npcController *controllers.NPCListController
@@ -26,21 +26,8 @@ type Server struct {
 }
 
 func NewServer(nc *controllers.NPCListController) *Server {
-	return &Server{npcController: nc}
-}
-
-// Routes registers HTTP handlers for the server. It is called by main() to set up the server before starting it.
-// This method is deprecated in favor of Start(), which also registers handlers but returns any error instead of exiting the process.
-func (s *Server) Routes() {
-	// Deprecated compatibility method: keep old behavior (process-exiting)
-	// Register handlers and start listening on :8080; any error will be fatal.
-	http.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir("ui/web"))))
-
-	http.HandleFunc("/api/npcs", s.npcsHandler)
-	http.HandleFunc("/api/npcs/", s.npcByIDHandler)
-	http.HandleFunc("/api/generate", s.generateHandler)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatalf("server failed: %v", err)
+	return &Server{
+		npcController: nc,
 	}
 }
 
@@ -50,10 +37,14 @@ func (s *Server) Routes() {
 func (s *Server) Start(addr string) error {
 	mux := http.NewServeMux()
 	mux.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir("ui/web"))))
+	mux.Handle("/ui-shared/", http.StripPrefix("/ui-shared/", http.FileServer(http.Dir("ui/shared"))))
 
 	mux.HandleFunc("/api/npcs", s.npcsHandler)
 	mux.HandleFunc("/api/npcs/", s.npcByIDHandler)
+	mux.HandleFunc("/api/species/", s.speciesNameRollHandler)
+	mux.HandleFunc("/api/subtypes/", s.subtypeRollHandler)
 	mux.HandleFunc("/api/generate", s.generateHandler)
+	mux.HandleFunc("/api/options", s.optionsHandler)
 
 	s.httpServer = &http.Server{
 		Addr:    addr,
@@ -77,17 +68,23 @@ func (s *Server) npcsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	switch r.Method {
 	case http.MethodGet:
-		npcs := s.npcController.GetAllNpcs()
+		npcs := s.npcController.GetAllNPCs()
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(npcs)
+		json.NewEncoder(w).Encode(mapper.ToNPCInputs(npcs))
 	case http.MethodPost:
-		m, err := parseNPCFromBody(r.Body)
+		m, err := parseNPCFromBody(r.Body, s.npcController)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		s.npcController.AddNpc(m)
+		if err := s.npcController.ValidateNPC(m); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		s.npcController.AddNPC(m)
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(mapper.ToNPCInput(m))
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -104,23 +101,31 @@ func (s *Server) npcByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case http.MethodGet:
-		npc, err := s.npcController.GetNpcByID(id)
+		npc, err := s.npcController.GetNPCByID(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(npc)
+		json.NewEncoder(w).Encode(mapper.ToNPCInput(npc))
 	case http.MethodDelete:
 		s.npcController.DeleteNPC(id)
 		w.WriteHeader(http.StatusNoContent)
 	case http.MethodPut:
-		m, err := parseNPCFromBody(r.Body)
+		var original *model.NPC
+		if npcData, err := s.npcController.GetNPCByID(id); err == nil {
+			original = &npcData
+		}
+		m, err := parseNPCFromBodyWithOriginal(r.Body, s.npcController, original)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		s.npcController.UpdateNpc(m)
+		if err := s.npcController.ValidateNPC(m); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		s.npcController.UpdateNPC(m)
 		w.WriteHeader(http.StatusNoContent)
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -141,51 +146,121 @@ func (s *Server) generateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(npc)
+	json.NewEncoder(w).Encode(mapper.ToNPCInput(npc))
+}
+
+func (s *Server) optionsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(s.npcController.GetCreationOptions())
+}
+
+type subtypeRollResponse struct {
+	Stats string `json:"stats"`
+	Items string `json:"items"`
+}
+
+type speciesNameRollResponse struct {
+	Name string `json:"name"`
+}
+
+func (s *Server) subtypeRollHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/api/subtypes/")
+	if !strings.HasSuffix(path, "/roll") {
+		http.Error(w, "invalid path", http.StatusBadRequest)
+		return
+	}
+	rawSubtype := strings.TrimSuffix(path, "/roll")
+	rawSubtype = strings.TrimSuffix(rawSubtype, "/")
+	if rawSubtype == "" {
+		http.Error(w, "missing subtype", http.StatusBadRequest)
+		return
+	}
+
+	subtype, err := url.PathUnescape(rawSubtype)
+	if err != nil {
+		http.Error(w, "invalid subtype", http.StatusBadRequest)
+		return
+	}
+
+	stats, items, err := s.npcController.GetSubtypeFields(subtype)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(subtypeRollResponse{
+		Stats: stats,
+		Items: items,
+	})
+}
+
+func (s *Server) speciesNameRollHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	path := strings.TrimPrefix(r.URL.Path, "/api/species/")
+	if !strings.HasSuffix(path, "/name") {
+		http.Error(w, "invalid path", http.StatusBadRequest)
+		return
+	}
+	rawSpecies := strings.TrimSuffix(path, "/name")
+	rawSpecies = strings.TrimSuffix(rawSpecies, "/")
+	if rawSpecies == "" {
+		http.Error(w, "missing species", http.StatusBadRequest)
+		return
+	}
+
+	species, err := url.PathUnescape(rawSpecies)
+	if err != nil {
+		http.Error(w, "invalid species", http.StatusBadRequest)
+		return
+	}
+
+	name, err := s.npcController.GetSpeciesName(species)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(speciesNameRollResponse{Name: name})
 }
 
 // Helper function to parse NPC data from request body and convert it to model.NPC struct.
-// Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Stats, Items, Description, LocationID, and Traits (array of strings).
-func parseNPCFromBody(body io.ReadCloser) (model.NPC, error) {
+// Expects JSON with fields like ID, Name, Type, Subtype, Species, Faction, Trait, Stats, and Items.
+func parseNPCFromBody(body io.ReadCloser, controller *controllers.NPCListController) (model.NPC, error) {
 	defer body.Close()
-	var p struct {
-		ID, Name, Type, Subtype, Species, Faction, Stats, Items, Description, LocationID string
-		Traits                                                                           []string `json:"traits"`
-	}
+	var p mapper.NPCInput
 	if err := json.NewDecoder(body).Decode(&p); err != nil {
 		return model.NPC{}, err
 	}
 
-	var m model.NPC
-	m.ID = p.ID
-	m.LocationID = p.LocationID
-	m.Components = make(map[cp.CompEnum]string)
-	if p.Name != "" {
-		m.Components[cp.CompName] = p.Name
+	return mapper.ToModelNPC(p, controller.GetNPCBuilder())
+}
+
+// parseNPCFromBodyWithOriginal is like parseNPCFromBody but passes the original NPC
+// so unchanged values can be retained by the builder flow.
+func parseNPCFromBodyWithOriginal(body io.ReadCloser, controller *controllers.NPCListController, original *model.NPC) (model.NPC, error) {
+	defer body.Close()
+	var p mapper.NPCInput
+	if err := json.NewDecoder(body).Decode(&p); err != nil {
+		return model.NPC{}, err
 	}
-	if p.Type != "" {
-		m.Components[cp.CompType] = p.Type
-	}
-	if p.Subtype != "" {
-		m.Components[cp.CompSubtype] = p.Subtype
-	}
-	if p.Species != "" {
-		m.Components[cp.CompSpecies] = p.Species
-	}
-	if p.Faction != "" {
-		m.Components[cp.CompFaction] = p.Faction
-	}
-	if len(p.Traits) > 0 {
-		m.Components[cp.CompTrait] = strings.Join(p.Traits, ", ")
-	}
-	if p.Stats != "" {
-		m.Components[cp.CompStats] = p.Stats
-	}
-	if p.Items != "" {
-		m.Components[cp.CompItems] = p.Items
-	}
-	if p.Description != "" {
-		m.Components[cp.CompDescription] = p.Description
-	}
-	return m, nil
+
+	return mapper.ToModelNPCWithOriginal(p, controller.GetNPCBuilder(), original)
 }

@@ -1,4 +1,3 @@
-// Description: Helper functions for validation and error handling.
 package helpers
 
 import "reflect"

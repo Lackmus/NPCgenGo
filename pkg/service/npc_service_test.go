@@ -82,4 +82,3 @@ func TestNewNPCService_PartialLoadOnCorruptFile(t *testing.T) {
 		t.Fatalf("did not expect npc '2' to be present")
 	}
 }
-

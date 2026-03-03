@@ -10,7 +10,6 @@ import (
 
 func main() {
 	dataDir := flag.String("data-dir", "", "path to data directory (overrides NPCGEN_DATA env)")
-	locationID := flag.String("location-id", "default", "location id for console NPC view")
 	flag.Parse()
 
 	if *dataDir == "" {
@@ -24,5 +23,5 @@ func main() {
 		log.Fatal("failed to initialize NPCGen:", err)
 	}
 
-	npcGen.InitNPCListView(*locationID)
+	npcGen.InitNPCListView()
 }

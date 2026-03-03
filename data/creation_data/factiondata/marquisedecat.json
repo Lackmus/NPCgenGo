@@ -1,5 +1,6 @@
 {
     "name": "Marquise de Cat",
-    "speciesList":  ["Maine Coon"],
-    "description": ["#0000FF"]
+    "speciesList": [
+        "Maine Coon"
+    ]
 }

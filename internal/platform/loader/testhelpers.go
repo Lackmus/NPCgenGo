@@ -27,7 +27,6 @@ func CreateSampleCreationData(baseDir string) error {
 	faction := map[string]any{
 		"Name":        "someFactionID",
 		"SpeciesList": []string{"someSpeciesID"},
-		"Description": []string{"A faction for tests"},
 	}
 	if err := writeJSON(filepath.Join(baseDir, "factiondata", "someFactionID.json"), faction); err != nil {
 		return err
@@ -35,9 +34,8 @@ func CreateSampleCreationData(baseDir string) error {
 
 	// species
 	species := map[string]any{
-		"Name":        "someSpeciesID",
-		"NameSource":  "someNameID",
-		"Description": []string{"A test species"},
+		"Name":       "someSpeciesID",
+		"NameSource": "someNameID",
 	}
 	if err := writeJSON(filepath.Join(baseDir, "speciesdata", "someSpeciesID.json"), species); err != nil {
 		return err
@@ -45,9 +43,8 @@ func CreateSampleCreationData(baseDir string) error {
 
 	// trait
 	trait := map[string]any{
-		"Name":        "someTraitID",
-		"Description": "A test trait",
-		"Opposes":     "",
+		"Name":    "someTraitID",
+		"Opposes": "",
 	}
 	if err := writeJSON(filepath.Join(baseDir, "traitdata", "someTraitID.json"), trait); err != nil {
 		return err
@@ -67,7 +64,6 @@ func CreateSampleCreationData(baseDir string) error {
 	civ := map[string]any{
 		"Name":             "someCivilianSubtypeID",
 		"NpcTypeName":      "Civilian",
-		"Description":      []string{"Civilian subtype"},
 		"Stats":            []string{"Str", "Dex"},
 		"EquipmentOptions": map[string][]string{"Weapon": {"Fists"}},
 	}
@@ -79,7 +75,6 @@ func CreateSampleCreationData(baseDir string) error {
 	mil := map[string]any{
 		"Name":             "someMilitarySubtypeID",
 		"NpcTypeName":      "Military",
-		"Description":      []string{"Military subtype"},
 		"Stats":            []string{"Str", "Dex"},
 		"EquipmentOptions": map[string][]string{"Weapon": {"Sword"}},
 	}
@@ -100,4 +95,3 @@ func writeJSON(path string, v any) error {
 	enc.SetIndent("", "  ")
 	return enc.Encode(v)
 }
-

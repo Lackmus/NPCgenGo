@@ -63,6 +63,23 @@ label {
   gap: 4px;
 }
 
+.npc-details {
+  display: grid;
+  gap: 8px;
+}
+
+.detail-row {
+  display: grid;
+  gap: 4px;
+}
+
+.detail-row pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+}
+
 input {
   width: 100%;
   box-sizing: border-box;

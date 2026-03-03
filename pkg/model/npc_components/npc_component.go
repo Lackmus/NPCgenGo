@@ -1,4 +1,3 @@
-// Description: This file contains the NPCComponent struct and its methods.
 package npc_components
 
 type NPCComponent struct {
@@ -16,15 +15,15 @@ func NewComponent(name CompEnum, value string) NPCComponent {
 type CompEnum int
 
 const (
-	CompName        CompEnum = 1
-	CompType        CompEnum = 2
-	CompSubtype     CompEnum = 3
-	CompSpecies     CompEnum = 4
-	CompFaction     CompEnum = 5
-	CompTrait       CompEnum = 6
-	CompStats       CompEnum = 7
-	CompItems       CompEnum = 8
-	CompDescription CompEnum = 9
+	CompName    CompEnum = 1
+	CompType    CompEnum = 2
+	CompSubtype CompEnum = 3
+	CompSpecies CompEnum = 4
+	CompFaction CompEnum = 5
+	CompTrait   CompEnum = 6
+	CompStats   CompEnum = 7
+	CompItems   CompEnum = 8
+	CompNotes   CompEnum = 9
 )
 
 func CompEnumValues() []CompEnum {
@@ -37,7 +36,7 @@ func CompEnumValues() []CompEnum {
 		CompTrait,
 		CompStats,
 		CompItems,
-		CompDescription,
+		CompNotes,
 	}
 }
 
@@ -59,10 +58,9 @@ func (c CompEnum) String() string {
 		return "Stats"
 	case CompItems:
 		return "Items"
-	case CompDescription:
-		return "Description"
+	case CompNotes:
+		return "Notes"
 	default:
 		return "UNKNOWN_COMPONENT"
 	}
 }
-

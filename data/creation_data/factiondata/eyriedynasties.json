@@ -1,5 +1,13 @@
 {
     "name": "Eyrie Dynasties",
-    "speciesList":  ["Chicken", "Owl"],
-    "description": ["#0000FF"]
+    "speciesList": [
+        "Chicken",
+        "Owl",
+        "Wren",
+        "Eagle",
+        "Falcon",
+        "Hawk",
+        "Raven",
+        "Sparrow"
+    ]
 }

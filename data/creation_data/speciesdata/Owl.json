@@ -1,9 +1,4 @@
 {
     "name": "Owl",
-    "nameSource": "OwlNames",
-    "description": [
-        "Wise and watchful under moonlit skies.",
-        "A silent guardian of the woodland.",
-        "Sharp-eyed and ever patient."
-    ]
+    "nameSource": "OwlNames"
 }

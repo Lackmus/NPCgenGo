@@ -1,6 +1,6 @@
 {
     "name": "Neutral",
-    "speciesList":  [
+    "speciesList": [
         "Chicken",
         "Fox",
         "Rabbit",
@@ -20,6 +20,5 @@
         "Turtle",
         "Owl",
         "Wolf"
-      ],
-    "description": ["#0000FF"]
+    ]
 }

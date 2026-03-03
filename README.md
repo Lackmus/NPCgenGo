@@ -30,7 +30,7 @@ Entrypoints:
 Typical flow (CLI or HTTP):
 
 1. Entry point: `cmd/*/main.go` binary starts
-2. Root facade: `NPCGen.go` delegates to `internal/app/npcgen_app.go`
+2. Root facade: `npcgen.go` delegates to `internal/app/npcgen_app.go`
 3. App layer: wires `internal/app/controllers` (UI-agnostic) and `ui/console` views
 4. Web layer: `internal/app/web` HTTP server routes to controllers
 5. Controllers: call `pkg/service` domain services
@@ -59,6 +59,47 @@ Priority order for data directory resolution (implemented):
 Examples:
 - Running `wails build` from `cmd/npcgen-wails` still resolves project-root `data/` automatically.
 - Passing `--data-dir` to either a project root or an explicit `.../data` path is supported.
+
+## Using as a dependency
+
+`npcgengo.NewNPCGen()` reads JSON from runtime filesystem paths, not from embedded creation data.
+When consuming this module from another repo/app, pass an explicit data directory.
+
+```go
+package main
+
+import (
+	"log"
+	"os"
+	"path/filepath"
+
+	"github.com/lackmus/npcgengo"
+)
+
+func main() {
+	// Optional override (works well in CI/container/dev)
+	dataDir := os.Getenv("NPCGEN_DATA")
+	if dataDir == "" {
+		// Cross-platform default relative to your app's working directory.
+		// Adjust this to where you copy/provision npcgen data in your app.
+		dataDir = filepath.Join("assets", "npcgen", "data")
+	}
+
+	absDataDir, err := filepath.Abs(dataDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	app, err := npcgengo.NewNPCGenWithDataDir(absDataDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_ = app
+}
+```
+
+Tip: the provided directory should contain `creation_data/` and `npc_database/`.
 
 ## Run modes
 

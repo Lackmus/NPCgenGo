@@ -1,4 +1,3 @@
-// Description: This file contains the NameData struct and the methods associated with it.
 package npc_components
 
 import (
@@ -20,4 +19,3 @@ func (n NameData) GenerateName() string {
 	surname := h.GetRandomElement(n.Surnames)
 	return forname + " " + surname
 }
-

@@ -22,10 +22,18 @@ jobs:
 
       - name: Check formatting
         run: |
-          gofmt -l .
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "The following files need gofmt:" 
+            echo "$unformatted"
+            exit 1
+          fi
 
       - name: Vet
         run: go vet ./...
 
       - name: Test
         run: go test ./... -v
+
+      - name: Race test
+        run: go test -race ./...

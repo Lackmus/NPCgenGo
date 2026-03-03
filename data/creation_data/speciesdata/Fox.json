@@ -1,9 +1,4 @@
 {
     "name": "Fox",
-    "nameSource": "FoxNames",
-    "description": [
-        "Cunning and resourceful, a true survivor.",
-        "A keen mind with a sharp bite.",
-        "Slips through the shadows, unseen and untamed."
-    ]
+    "nameSource": "FoxNames"
 }

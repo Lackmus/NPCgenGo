@@ -1,5 +1,4 @@
 {
-    "name":  "Maine Coon",
-    "nameSource":   "CatNames",
-    "description": ["SPECIES_DESCRIPTION"]
+    "name": "Maine Coon",
+    "nameSource": "CatNames"
 }

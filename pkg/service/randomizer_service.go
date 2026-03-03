@@ -1,4 +1,3 @@
-// Description: This file contains the RandomizerService struct and its methods. The RandomizerService struct provides randomization services for NPC creation.
 package service
 
 import (
@@ -41,4 +40,3 @@ func (r *RandomizerService) RandomSubtype(npcType string) string {
 	subtype := helper.GetRandomElement(r.npcCreationOptions.NpcSubtypeForTypeMap[npcType])
 	return subtype
 }
-

@@ -1,4 +1,3 @@
-// Description: Helper functions for copying maps and slices
 package helpers
 
 func CopyMap[K comparable, V any](src map[K]V) map[K]V {

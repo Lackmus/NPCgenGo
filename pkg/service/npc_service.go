@@ -1,4 +1,3 @@
-// Description: This file contains the implementation of the NPCService struct and its methods.
 package service
 
 import (
@@ -31,7 +30,7 @@ func NewNPCService(ctx context.Context, loader shared.NPCStorage) (*NPCService, 
 		npcs:   make(map[string]model.NPC),
 	}
 
-	data, err := s.loader.LoadAllNPC(ctx)
+	data, err := s.loader.LoadAllNPCs(ctx)
 	if data != nil {
 		s.npcs = data
 	}
@@ -86,22 +85,12 @@ func (s *NPCService) AddNPC(npc model.NPC) {
 	}
 }
 
-func (s *NPCService) GetAllNPC() []model.NPC {
+func (s *NPCService) GetAllNPCs() []model.NPC {
 	npcList := make([]model.NPC, 0, len(s.npcs))
 	for _, npc := range s.npcs {
 		npcList = append(npcList, npc)
 	}
 	return slices.Clone(npcList)
-}
-
-func (s *NPCService) GetNPCByLocation(locationID string) []model.NPC {
-	var result []model.NPC
-	for _, npc := range s.npcs {
-		if npc.LocationID == locationID {
-			result = append(result, npc)
-		}
-	}
-	return result
 }
 
 func (s *NPCService) GetNPCByID(id string) (model.NPC, error) {
@@ -124,8 +113,8 @@ func (s *NPCService) DeleteNPC(id string) error {
 	return s.loader.DeleteNPC(context.Background(), id)
 }
 
-func (s *NPCService) DeleteAllNPC() {
-	if err := s.loader.DeleteAllNPC(context.Background()); err != nil {
+func (s *NPCService) DeleteAllNPCs() {
+	if err := s.loader.DeleteAllNPCs(context.Background()); err != nil {
 		log.Printf("Error deleting all NPCs: %v", err)
 	}
 	s.npcs = make(map[string]model.NPC)
@@ -133,13 +122,12 @@ func (s *NPCService) DeleteAllNPC() {
 	s.freeIDs = []int{}
 }
 
-func (s *NPCService) CountNPC() int {
+func (s *NPCService) CountNPCs() int {
 	return len(s.npcs)
 }
 
-func (s *NPCService) PrintAllNPC() {
+func (s *NPCService) PrintAllNPCs() {
 	for _, npc := range s.npcs {
 		log.Printf("%+v", npc)
 	}
 }
-

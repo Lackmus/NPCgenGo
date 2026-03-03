@@ -11,4 +11,3 @@ type NPCListViewer interface {
 	// It takes no parameters and returns nothing.
 	Run()
 }
-

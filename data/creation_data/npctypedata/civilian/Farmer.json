@@ -1,6 +1,9 @@
 {
     "name": "Farmer",
-    "stats": ["farming","strength"],
+    "stats": [
+        "farming",
+        "strength"
+    ],
     "equipmentOptions": {
         "tools": [
             "Hoe",
@@ -26,11 +29,5 @@
             "Tool Belt",
             "Hat"
         ]
-    },
-    "description":[ 
-        "A farmer who tends to the fields and livestock.",
-        "A farmer who works the land to provide food for the community.",
-        "A farmer who grows crops and raises animals.",
-        "A farmer who works hard to provide for their family."
-        ]
+    }
 }

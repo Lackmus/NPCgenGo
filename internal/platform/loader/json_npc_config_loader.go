@@ -1,4 +1,3 @@
-// Description: This file contains the JSONNPCConfigLoader struct and its methods.
 package loader
 
 import (
@@ -15,12 +14,11 @@ import (
 )
 
 const (
-	factionDir            = "factiondata"
-	speciesDir            = "speciesdata"
-	traitDir              = "traitdata"
-	nameDir               = "namedata"
-	npcCivilianSubtypeDir = "npctypedata/civilian"
-	npcMilitarySubtypeDir = "npctypedata/military"
+	factionDir    = "factiondata"
+	speciesDir    = "speciesdata"
+	traitDir      = "traitdata"
+	nameDir       = "namedata"
+	npcSubtypeDir = "npctypedata"
 )
 
 type JSONNPCConfigLoader struct {
@@ -48,12 +46,60 @@ func (j *JSONNPCConfigLoader) LoadNameMap(ctx context.Context) (map[string]c.Nam
 	return loadJSONMap[c.NameData](ctx, filepath.Join(j.dir, nameDir))
 }
 
-func (j *JSONNPCConfigLoader) LoadNpcCivilianSubtypeMap(ctx context.Context) (map[string]c.NPCSubtype, error) {
-	return loadJSONMap[c.NPCSubtype](ctx, filepath.Join(j.dir, npcCivilianSubtypeDir))
+func (j *JSONNPCConfigLoader) LoadNPCSubtypeMaps(ctx context.Context) (map[string]map[string]c.NPCSubtype, error) {
+	dataMap := make(map[string]map[string]c.NPCSubtype)
+	if err := ctx.Err(); err != nil {
+		return dataMap, err
+	}
+	baseDir := filepath.Join(j.dir, npcSubtypeDir)
+	entries, err := os.ReadDir(baseDir)
+	if err != nil {
+		return dataMap, fmt.Errorf("error reading directory %s: %w", baseDir, err)
+	}
+
+	var errs []error
+	for _, entry := range entries {
+		if err := ctx.Err(); err != nil {
+			return dataMap, err
+		}
+		if !entry.IsDir() {
+			continue
+		}
+
+		subtypes, loadErr := loadJSONMap[c.NPCSubtype](ctx, filepath.Join(baseDir, entry.Name()))
+		if loadErr != nil {
+			errs = append(errs, fmt.Errorf("failed to load subtype directory %s: %w", entry.Name(), loadErr))
+			continue
+		}
+
+		typeName := resolveNPCTypeName(entry.Name(), subtypes)
+		if _, ok := dataMap[typeName]; !ok {
+			dataMap[typeName] = make(map[string]c.NPCSubtype)
+		}
+
+		for key, subtype := range subtypes {
+			if strings.TrimSpace(subtype.NpcTypeName) == "" {
+				subtype.NpcTypeName = typeName
+			}
+			dataMap[typeName][key] = subtype
+		}
+	}
+
+	if len(errs) > 0 {
+		return dataMap, errors.Join(errs...)
+	}
+	return dataMap, nil
 }
 
-func (j *JSONNPCConfigLoader) LoadNpcMilitarySubtypeMap(ctx context.Context) (map[string]c.NPCSubtype, error) {
-	return loadJSONMap[c.NPCSubtype](ctx, filepath.Join(j.dir, npcMilitarySubtypeDir))
+func resolveNPCTypeName(dirName string, subtypes map[string]c.NPCSubtype) string {
+	for _, subtype := range subtypes {
+		typeName := strings.TrimSpace(subtype.NpcTypeName)
+		if typeName != "" {
+			return typeName
+		}
+		break
+	}
+	return dirName
 }
 
 func loadJSONMap[T shared.Nameable](ctx context.Context, dir string) (map[string]T, error) {
@@ -92,7 +138,6 @@ func loadJSONMap[T shared.Nameable](ctx context.Context, dir string) (map[string
 }
 
 // loadJSON reads a JSON file and unmarshals it into the provided type.
-// loadJSON reads a JSON file and unmarshals it into the provided type.
 func loadJSON[T any](ctx context.Context, filePath string) (T, error) {
 	var result T
 	if err := ctx.Err(); err != nil {
@@ -113,4 +158,3 @@ func loadJSON[T any](ctx context.Context, filePath string) (T, error) {
 	}
 	return result, nil
 }
-

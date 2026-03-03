@@ -11,6 +11,7 @@
     <h1>NPCGen — Wails UI</h1>
 
     <div class="actions">
+      <button id="btnCreate">Create NPC</button>
       <button id="btnGenerate">Generate NPC</button>
       <button id="btnRefresh">Refresh List</button>
       <button id="btnClear">Delete All</button>
@@ -23,30 +24,48 @@
       </section>
 
       <section class="right">
-        <h2>NPC Details / Edit</h2>
-        <form id="npcForm">
-          <div><label>ID <input id="f_id" name="id" readonly /></label></div>
-          <div><label>Name <input id="f_name" name="name" /></label></div>
-          <div><label>Type <input id="f_type" name="type" /></label></div>
-          <div><label>Subtype <input id="f_subtype" name="subtype" /></label></div>
-          <div><label>Species <input id="f_species" name="species" /></label></div>
-          <div><label>Faction <input id="f_faction" name="faction" /></label></div>
-          <div><label>Traits (comma) <input id="f_traits" name="traits" /></label></div>
-          <div><label>Stats <input id="f_stats" name="stats" /></label></div>
-          <div><label>Items <input id="f_items" name="items" /></label></div>
-          <div><label>Description <input id="f_description" name="description" /></label></div>
-          <div><label>LocationID <input id="f_location" name="location" value="default" /></label></div>
+        <h2>NPC Details</h2>
+        <div id="npcDetails" class="npc-details">
+          <div class="detail-row"><strong>Name:</strong> <span id="d_name">—</span></div>
+          <div class="detail-row"><strong>Type:</strong> <span id="d_type">—</span></div>
+          <div class="detail-row"><strong>Subtype:</strong> <span id="d_subtype">—</span></div>
+          <div class="detail-row"><strong>Species:</strong> <span id="d_species">—</span></div>
+          <div class="detail-row"><strong>Faction:</strong> <span id="d_faction">—</span></div>
+          <div class="detail-row"><strong>Trait:</strong> <span id="d_traits">—</span></div>
+          <div class="detail-row"><strong>Stats:</strong> <pre id="d_stats">—</pre></div>
+          <div class="detail-row"><strong>Items:</strong> <pre id="d_items">—</pre></div>
+          <div class="detail-row"><strong>Notes:</strong> <pre id="d_notes">—</pre></div>
+          <div class="actions">
+            <button type="button" id="btnEdit" disabled>Edit</button>
+            <button type="button" id="btnClose">Close</button>
+          </div>
+        </div>
+
+        <form id="npcForm" style="display:none;">
+          <input type="hidden" id="f_id" name="id" value="">
+          <div>
+            <label>Name <input id="f_name" name="name" /></label>
+            <button type="button" id="btnRerollName" disabled>Reroll Name</button>
+          </div>
+          <div><label>Type <select id="f_type" name="type"></select></label></div>
+          <div><label>Subtype <select id="f_subtype" name="subtype"></select></label></div>
+          <div><label>Species <select id="f_species" name="species" disabled></select></label></div>
+          <div><label>Faction <select id="f_faction" name="faction"></select></label></div>
+          <div><label>Trait <select id="f_traits" name="trait"></select></label></div>
+          <div><strong>Stats</strong> <pre id="f_stats">—</pre></div>
+          <div><strong>Items</strong> <pre id="f_items">—</pre></div>
+          <div><label>Notes <textarea id="f_notes" name="notes" rows="4"></textarea></label></div>
 
           <div class="actions">
+            <button type="button" id="btnReroll" disabled>Reroll Stats/Items</button>
             <button type="button" id="btnSave">Save</button>
-            <button type="button" id="btnCreate">Create New</button>
-            <button type="button" id="btnClose">Close</button>
+            <button type="button" id="btnCancelEdit">Cancel</button>
           </div>
         </form>
       </section>
     </div>
   </main>
 
-  <script src="./app.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
