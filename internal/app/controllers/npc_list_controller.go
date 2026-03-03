@@ -5,9 +5,9 @@ import (
 	"log"
 
 	h "github.com/lackmus/npcgengo/internal/platform/helpers"
-	"github.com/lackmus/npcgengo/pkg/product/model"
-	"github.com/lackmus/npcgengo/pkg/product/service"
-	"github.com/lackmus/npcgengo/pkg/product/shared"
+	"github.com/lackmus/npcgengo/pkg/model"
+	"github.com/lackmus/npcgengo/pkg/service"
+	"github.com/lackmus/npcgengo/pkg/shared"
 )
 
 type NPCListController struct {

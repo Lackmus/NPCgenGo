@@ -9,8 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lackmus/npcgengo/pkg/product/model"
-	"github.com/lackmus/npcgengo/pkg/product/shared"
+	"github.com/lackmus/npcgengo/pkg/model"
+	"github.com/lackmus/npcgengo/pkg/shared"
 )
 
 type JSONNPCStorage struct {

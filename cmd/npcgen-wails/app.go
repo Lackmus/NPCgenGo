@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/lackmus/npcgengo/internal/app/controllers"
-	"github.com/lackmus/npcgengo/pkg/product/model"
-	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
+	"github.com/lackmus/npcgengo/pkg/model"
+	cp "github.com/lackmus/npcgengo/pkg/model/npc_components"
 )
 
 type NPCInput struct {

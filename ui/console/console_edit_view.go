@@ -4,9 +4,9 @@ package console
 import (
 	"fmt"
 
-	"github.com/lackmus/npcgengo/pkg/product/model"
-	cp "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
-	"github.com/lackmus/npcgengo/pkg/product/shared"
+	"github.com/lackmus/npcgengo/pkg/model"
+	cp "github.com/lackmus/npcgengo/pkg/model/npc_components"
+	"github.com/lackmus/npcgengo/pkg/shared"
 )
 
 type ConsoleEditView struct {
