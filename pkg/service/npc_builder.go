@@ -7,8 +7,7 @@ import (
 
 	h "github.com/lackmus/npcgengo/internal/platform/helpers"
 	m "github.com/lackmus/npcgengo/pkg/model"
-	cp "github.com/lackmus/npcgengo/pkg/model/npc_components" // assumed package for component types/keys
-	t "github.com/lackmus/npcgengo/pkg/model/npc_components/types"
+	cp "github.com/lackmus/npcgengo/pkg/model/npc_components"
 )
 
 // NPCBuilder constructs an NPC step by step.
@@ -20,7 +19,7 @@ type NPCBuilder struct {
 	subtypeData *cp.NPCSubtype
 	speciesData *cp.Species
 	traitData   *cp.Trait
-	npcTypeData *t.NPCType
+	npcTypeData *cp.NPCType
 	errors      []error
 }
 

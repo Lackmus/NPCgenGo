@@ -7,7 +7,6 @@ import (
 	"slices"
 
 	cp "github.com/lackmus/npcgengo/pkg/model/npc_components"
-	t "github.com/lackmus/npcgengo/pkg/model/npc_components/types"
 	"github.com/lackmus/npcgengo/pkg/shared"
 )
 
@@ -18,7 +17,7 @@ type CreationDataService struct {
 	speciesMap           map[string]cp.Species
 	traitMap             map[string]cp.Trait
 	nameMap              map[string]cp.NameData
-	npcTypeMap           map[string]t.NPCType
+	npcTypeMap           map[string]cp.NPCType
 	npcSubtypeMap        map[string]cp.NPCSubtype
 	npcSubtypeByTypeMap  map[string]map[string]cp.NPCSubtype
 	speciesNameMap       map[string]string
@@ -77,10 +76,10 @@ func (c *CreationDataService) buildSpeciesNameMap() map[string]string {
 	return snm
 }
 
-func (c *CreationDataService) buildNpcTypeMap() map[string]t.NPCType {
-	typeMap := make(map[string]t.NPCType)
+func (c *CreationDataService) buildNpcTypeMap() map[string]cp.NPCType {
+	typeMap := make(map[string]cp.NPCType)
 	for typeName := range c.npcSubtypeForTypeMap {
-		typeMap[typeName] = t.NPCType{
+		typeMap[typeName] = cp.NPCType{
 			Name:  typeName,
 			Stats: []string{"health", "speed", "strength"},
 		}
@@ -146,12 +145,12 @@ func (c *CreationDataService) GetSpeciesData(key string) (cp.Species, error) {
 	return cp.Species{}, fmt.Errorf("species not found: %s", key)
 }
 
-func (c *CreationDataService) GetNpcTypeData(key string) (t.NPCType, error) {
+func (c *CreationDataService) GetNpcTypeData(key string) (cp.NPCType, error) {
 	nt, ok := c.npcTypeMap[key]
 	if ok {
 		return nt, nil
 	}
-	return t.NPCType{}, fmt.Errorf("npc type not found: %s", key)
+	return cp.NPCType{}, fmt.Errorf("npc type not found: %s", key)
 }
 
 func (c *CreationDataService) GetNpcSubtypeData(key string) (cp.NPCSubtype, error) {
@@ -178,7 +177,7 @@ func (c *CreationDataService) GetTraitMap() map[string]cp.Trait {
 	return maps.Clone(c.traitMap)
 }
 
-func (c *CreationDataService) GetNpcTypeMap() map[string]t.NPCType {
+func (c *CreationDataService) GetNpcTypeMap() map[string]cp.NPCType {
 	return maps.Clone(c.npcTypeMap)
 }
 

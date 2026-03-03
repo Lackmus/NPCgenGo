@@ -1,4 +1,4 @@
-package types
+package npc_components
 
 type NPCType struct {
 	Name  string
