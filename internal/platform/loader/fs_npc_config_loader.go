@@ -9,8 +9,8 @@ import (
 	"path"
 	"strings"
 
-	c "github.com/lackmus/npcgengo/pkg/product/model/npc_components"
-	"github.com/lackmus/npcgengo/pkg/product/shared"
+	c "github.com/lackmus/npcgengo/pkg/model/npc_components"
+	"github.com/lackmus/npcgengo/pkg/shared"
 )
 
 type FSNPCConfigLoader struct {
@@ -18,7 +18,6 @@ type FSNPCConfigLoader struct {
 	base   string
 }
 
-//
 func NewFSNPCConfigLoader(baseFS fs.FS, base string) shared.NPCConfigLoader {
 	return &FSNPCConfigLoader{
 		baseFS: baseFS,

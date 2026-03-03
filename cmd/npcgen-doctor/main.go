@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/lackmus/npcgengo/internal/platform/loader"
-	"github.com/lackmus/npcgengo/pkg/product/service"
+	"github.com/lackmus/npcgengo/pkg/service"
 )
 
 func main() {

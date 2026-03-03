@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/lackmus/npcgengo/pkg/product/shared"
+	"github.com/lackmus/npcgengo/pkg/shared"
 )
 
 // ValidateCreationData checks creation data integrity across maps and cross-references.
