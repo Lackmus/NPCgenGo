@@ -73,7 +73,7 @@ func (s *NPCService) generateNewID() string {
 	return strconv.Itoa(id)
 }
 
-func (s *NPCService) AddNPC(npc model.NPC) {
+func (s *NPCService) AddNPC(npc model.NPC) model.NPC {
 	if npc.ID == "" {
 		npc.ID = s.generateNewID()
 	}
@@ -83,6 +83,8 @@ func (s *NPCService) AddNPC(npc model.NPC) {
 	if err := s.loader.SaveNPC(context.Background(), npc); err != nil {
 		log.Printf("Error saving NPC (ID %s): %v", npc.ID, err)
 	}
+
+	return npc
 }
 
 func (s *NPCService) GetAllNPCs() []model.NPC {

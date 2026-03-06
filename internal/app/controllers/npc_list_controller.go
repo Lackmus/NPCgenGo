@@ -56,7 +56,7 @@ func (c *NPCListController) createAndAddNPC(npcType string, faction string) (mod
 		log.Printf("Error creating NPC: %v", err)
 		return model.NPC{}, err
 	}
-	c.AddNPC(npc)
+	npc = c.AddNPC(npc)
 	return npc, nil
 }
 
@@ -66,7 +66,7 @@ func (c *NPCListController) createAndAddNPCWithSeed(npcType string, faction stri
 		log.Printf("Error creating NPC with seed %d: %v", seed, err)
 		return model.NPC{}, err
 	}
-	c.AddNPC(npc)
+	npc = c.AddNPC(npc)
 	return npc, nil
 }
 
@@ -107,9 +107,10 @@ func (c *NPCListController) GetNPCByID(id string) (model.NPC, error) {
 	return npc, nil
 }
 
-func (c *NPCListController) AddNPC(npc model.NPC) {
-	c.NPCService.AddNPC(npc)
+func (c *NPCListController) AddNPC(npc model.NPC) model.NPC {
+	npc = c.NPCService.AddNPC(npc)
 	c.NotifyObservers()
+	return npc
 }
 
 func (c *NPCListController) DeleteNPC(id string) {
