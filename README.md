@@ -24,6 +24,7 @@ Entrypoints:
 - `cmd/npcgen-web/main.go` â€” web/API host
 - `cmd/npcgen-console/main.go` â€” console host
 - `cmd/npcgen-wails/main.go` â€” desktop UI host (Wails)
+- `cmd/npcgen-mapper/main.go` â€” JSON mapper demo/validation CLI
 
 ## Architecture walkthrough
 
@@ -124,6 +125,30 @@ CI runs the same command, so invalid creation data will fail pull requests.
 | Web/API host | `cmd/npcgen-web/main.go` | `go run ./cmd/npcgen-web --data-dir "G:\My Drive\RootProject\NPCgenGo\data"` | Serves API and web UI at `/ui/` |
 | Console UI | `cmd/npcgen-console/main.go` | `go run ./cmd/npcgen-console --data-dir "G:\My Drive\RootProject\NPCgenGo\data"` | Interactive terminal UI |
 | Desktop UI (Wails) | `cmd/npcgen-wails/main.go` | `go run ./cmd/npcgen-wails --data-dir "G:\\My Drive\\RootProject\\NPCgenGo\\data"` | Wails desktop host |
+| Mapper demo | `cmd/npcgen-mapper/main.go` | `go run ./cmd/npcgen-mapper --data-dir ./data --in ./npc.json` | Round-trips `pkg/mapper.NPCInput` JSON through the public mapper and validates it |
+
+Mapper demo input example:
+
+```json
+{
+	"id": "npc-42",
+	"name": "Alice Smith",
+	"type": "Civilian",
+	"subtype": "someCivilianSubtypeID",
+	"species": "someSpeciesID",
+	"faction": "someFactionID",
+	"trait": "someTraitID",
+	"stats": "STR:2, DEX:1",
+	"items": "Fists",
+	"notes": "Scouting routes near river crossing"
+}
+```
+
+You can also pipe JSON directly:
+
+```powershell
+Get-Content .\npc.json | go run ./cmd/npcgen-mapper --data-dir .\data
+```
 
 Running the example host (same wiring):
 ```powershell
