@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/lackmus/npcgengo/internal/app/controllers"
-	"github.com/lackmus/npcgengo/internal/app/mapper"
 	"github.com/lackmus/npcgengo/internal/platform/loader"
+	"github.com/lackmus/npcgengo/pkg/mapper"
 	"github.com/lackmus/npcgengo/pkg/model"
 	cp "github.com/lackmus/npcgengo/pkg/model/npc_components"
 	"github.com/lackmus/npcgengo/pkg/service"

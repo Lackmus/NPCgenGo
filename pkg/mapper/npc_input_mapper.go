@@ -58,13 +58,10 @@ func ToNPCInputs(npcs []model.NPC) []NPCInput {
 	return out
 }
 
-// ToModelNPC constructs a new NPC from user input using the builder pattern.
 func ToModelNPC(input NPCInput, builder *service.NPCBuilder) (model.NPC, error) {
 	return ToModelNPCWithOriginal(input, builder, nil)
 }
 
-// ToModelNPCWithOriginal builds an NPC from input, loading the original first if provided.
-// If original is nil, creates a new NPC. If original exists, loads it first then only applies changed fields.
 func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, original *model.NPC) (model.NPC, error) {
 	if original != nil {
 		builder = builder.WithNPC(*original)
@@ -82,7 +79,6 @@ func ToModelNPCWithOriginal(input NPCInput, builder *service.NPCBuilder, origina
 	items := preserveOriginalValue(input.Items, original, cp.CompItems)
 	notes := preserveOriginalValue(input.Notes, original, cp.CompNotes)
 
-	// Build using single chain - apply all input fields
 	return builder.
 		WithType(npcType).
 		WithSubtype(subtype).

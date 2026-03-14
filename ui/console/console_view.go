@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/lackmus/npcgengo/internal/app/controllers"
-	"github.com/lackmus/npcgengo/internal/app/mapper"
+	"github.com/lackmus/npcgengo/pkg/mapper"
 	"github.com/lackmus/npcgengo/pkg/model"
 	"github.com/lackmus/npcgengo/pkg/shared"
 )
