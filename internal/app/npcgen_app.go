@@ -17,9 +17,10 @@ const defaultDataDir = "data"
 // NPCGen is the application orchestration layer.
 // It wires together creation/loading services and transport-facing controllers.
 type NPCGen struct {
-	CreationSupplier  *service.NPCCreationSupplier
-	NPCService        *service.NPCService
-	NPCListController *controllers.NPCListController
+	CreationSupplier   *service.NPCCreationSupplier
+	NPCService         *service.NPCService
+	NPCListController  *controllers.NPCListController
+	NPCCreationOptions *service.NPCCreationOptions
 }
 
 // NewNPCGen initializes a new NPCGen instance using the default on-disk data directory.
@@ -47,9 +48,10 @@ func NewNPCGenWithDataDir(dataDir string) (*NPCGen, error) {
 	npcListController := controllers.NewNPCListController(creationSupplier, npcService)
 
 	return &NPCGen{
-		CreationSupplier:  creationSupplier,
-		NPCService:        npcService,
-		NPCListController: npcListController,
+		CreationSupplier:   creationSupplier,
+		NPCService:         npcService,
+		NPCListController:  npcListController,
+		NPCCreationOptions: creationSupplier.CreationOptions,
 	}, nil
 }
 
